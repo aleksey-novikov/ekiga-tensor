@@ -225,99 +225,8 @@ fi
 AM_CONDITIONAL(HAVE_GUDEV, test "x$found_gudev" = "xyes")
 
 
-dnl ###############################
-dnl   Evolution-data-server support
-dnl ###############################
-EDS="disabled"
-
-if test "x${gm_platform}" != "xmingw" ; then
-  AC_ARG_ENABLE(eds, AS_HELP_STRING([--enable-eds],[enable evolution-data-server addressbook support (default is enabled)]),
-[if test "x$enableval" = "xyes"; then
-  enable_eds=yes
-fi],enable_eds=yes)
-
-  if test "x$enable_eds" = "xyes"; then
-    PKG_CHECK_MODULES([EDS], [libebook-1.2], [found_eds=yes])
-    AC_SUBST(EDS_CFLAGS)
-    AC_SUBST(EDS_LIBS)
-    EDS="enabled"
-    AC_DEFINE(HAVE_EDS,1,[EDS support])
-  fi
-fi
-
-AM_CONDITIONAL(HAVE_EDS, test "x$found_eds" = "xyes")
-
-
-dnl ###############################
-dnl   LDAP support
-dnl ###############################
-LDAP="disabled"
-
-AC_ARG_ENABLE(ldap, AS_HELP_STRING([--enable-ldap],[enable LDAP addressbook support (default is enabled)]),
-[if test "x$enableval" = "xyes"; then
-  enable_ldap=yes
-fi],enable_ldap=yes)
-
-if test "x$enable_ldap" = "xyes"; then
-
-  AC_ARG_WITH(ldap-dir, AS_HELP_STRING([--with-ldap-dir=PFX],[location of LDAP]), with_ldap_dir="$withval", with_ldap_dir="/usr")
-
-  dnl Check for the includes presence
-  AC_MSG_CHECKING(for LDAP includes in ${with_ldap_dir}/include/)
-  AC_MSG_RESULT()
-
-
-  if test -f ${with_ldap_dir}/include/ldap.h; then
-  	LDAP_CFLAGS="-I${with_ldap_dir}/include"
-  else
-  	AC_MSG_ERROR([You need the LDAP headers to compile Ekiga with LDAP support])
-  fi
-
-  dnl Checking for the library presence
-  LIBS_save="$LIBS"
-  LIBS="${LIBS} -L${with_ldap_dir}/${libname}/ -llber"
-  AC_CHECK_LIB(ldap, main, ldap_libs="yes", ldap_libs="no")
-  LIBS="${LIBS_save}"
-
-  if test "x${ldap_libs}" != "xno"; then
-  	LDAP_LIBS="-llber -lldap"
-  	if test "x${with_ldap_dir}" != "x/usr"; then
-  		LDAP_LIBS="-L${with_ldap_dir}/${libname} $LDAP_LIBS"
-  	fi
-  else
-  	AC_MSG_ERROR([You need the LDAP library to compile Ekiga with LDAP support])
-  fi
-
-  dnl Checking for libsasl2
-  AC_ARG_WITH(libsasl2-dir, AS_HELP_STRING([--with-libsasl2-dir=PFX],[location of LIBSASL2]), with_libsasl2_dir="$withval", with_libsasl2_dir="/usr")
-
-  dnl Check for the libsasl2 includes presence
-  AC_MSG_CHECKING(for LIBSASL2 includes in ${with_libsasl2_dir}/include/)
-  AC_MSG_RESULT()
-
-  if test -f ${with_libsasl2_dir}/include/sasl/sasl.h; then
-  	LDAP_CFLAGS="${LDAP_CFLAGS} -I${with_libsasl2_dir}/include"
-  else
-  	AC_MSG_ERROR([You need the SASL2 library to compile Ekiga])
-  fi
-  LDAP_LIBS="$LDAP_LIBS -lsasl2"
-
-  dnl Checking for libresolv
-  if test ${gm_platform} = "linux" ; then
-  	AC_CHECK_LIB(resolv, res_gethostbyaddr, [LIBS="-lresolv $LIBS"], AC_MSG_ERROR([You need the libresolv library to compile Ekiga]), -lresolv)
-  	LDAP_LIBS="${LDAP_LIBS} -lresolv"
-  fi
-  found_ldap="yes"
-  AC_SUBST(LDAP_CFLAGS)
-  AC_SUBST(LDAP_LIBS)
-  LDAP="enabled"
-  AC_DEFINE(HAVE_LDAP,1,[LDAP support])
-fi
-
-AM_CONDITIONAL(HAVE_LDAP, test "x$found_ldap" = "xyes")
-
-
 AM_PROG_AS
+
 
 dnl ###############################
 dnl   DBUS Support
@@ -350,202 +259,6 @@ fi
 
 AM_CONDITIONAL(HAVE_DBUS, test "x$found_dbus" = "xyes")
 AM_CONDITIONAL(INSTALL_DBUS_SERVICE, test "x$DBUS_SERVICE" = "xenabled")
-
-dnl ###############################
-dnl   Avahi / mDNS Support
-dnl ###############################
-AVAHI="disabled"
-
-if test "x${gm_platform}" != "xmingw" ; then
-  AC_ARG_ENABLE(avahi, AS_HELP_STRING([--enable-avahi],[enable mDNS support (default is enabled)]),
-[if test "x$enableval" = "xyes"; then
-  enable_avahi=yes
-fi],enable_avahi=yes)
-
-  if test "x$enable_avahi" = "xyes"; then
-    PKG_CHECK_MODULES([AVAHI], [avahi-client >= 0.6 avahi-glib >= 0.6], [found_avahi=yes])
-    AC_SUBST(AVAHI_CFLAGS)
-    AC_SUBST(AVAHI_LIBS)
-    AVAHI="enabled"
-    AC_DEFINE(HAVE_AVAHI,1,[Avahi support])
-  fi
-fi
-
-AM_CONDITIONAL(HAVE_AVAHI, test "x$found_avahi" = "xyes")
-
-
-dnl ###############################
-dnl    GStreamer Plugins Support
-dnl ###############################
-GSTREAMER="disabled"
-
-AC_ARG_ENABLE(gstreamer, AS_HELP_STRING([--enable-gstreamer],[enable experimental GStreamer support (default is disabled)]),
-[if test "x$enableval" = "xyes"; then
-  enable_gstreamer=yes
-fi],)
-
-if test "x$enable_gstreamer" = "xyes"; then
-  found_gstreamer=yes
-  PKG_CHECK_MODULES([GSTREAMER], [gstreamer-plugins-base-0.10 >= 0.10.21.3 gstreamer-interfaces-0.10])
-
-  if test "x$found_gstreamer" = "xno"; then
-    AC_MSG_ERROR([Could not find GStreamer libraries])
-  fi
-  GSTREAMER_LIBS="$GSTREAMER_LIBS -lgstapp-0.10"
-  AC_SUBST(GSTREAMER_CFLAGS)
-  AC_SUBST(GSTREAMER_LIBS)
-  GSTREAMER="enabled"
-  AC_DEFINE(HAVE_GSTREAMER,1,[GStreamer support])
-fi
-
-AM_CONDITIONAL(HAVE_GSTREAMER, test "x$found_gstreamer" = "xyes")
-
-
-dnl ###############################
-dnl  KDE support
-dnl ###############################
-KDE="disabled"
-
-AC_ARG_ENABLE(kde, AS_HELP_STRING([--enable-kde],[enable experimental KDE support (default is disabled)]),
-[if test "x$enableval" = "xyes"; then
-  enable_kde=yes
-fi],)
-
-if test "x$enable_kde" = "xyes"; then
-
-  PKG_CHECK_MODULES(KDE, [QtCore], [found_kde=yes], [found_kde=no])
-
-  CPPFLAGS_save="$CPPFLAGS"
-  LIBS_save="$LIBS"
-  CPPFLAGS="$CPPFLAGS $KDE_CFLAGS"
-  LIBS="$LIBS $KDE_LIBS"
-  AC_CHECK_HEADER(kapplication.h,,found_kde=no)
-  CPPFLAGS="$CPPFLAGS_save"
-  LIBS="$LIBS_save"
-  if test "x$found_kde" = "xno"; then
-    AC_MSG_ERROR([Could not find KDE headers])
-  fi
-
-  LIBS_save="$LIBS"
-  CPPFLAGS="$CPPFLAGS $KDE_CFLAGS"
-  LIBS="$LIBS $KDE_LIBS"
-  AC_CHECK_LIB(kdeui,ki18n,found_kde=no)
-  CPPFLAGS="$CPPFLAGS_save"
-  LIBS="$LIBS_save"
-  if test "x$found_kde" = "xno"; then
-    AC_MSG_ERROR([Could not find KDE libraries])
-  fi
-
-  KDE_LIBS="$KDE_LIBS -lkdeui"
-
-  AC_SUBST(KDE_CFLAGS)
-  AC_SUBST(KDE_LIBS)
-  KDE="enabled"
-  AC_DEFINE(HAVE_KDE,1,[KDE support])
-fi
-
-AM_CONDITIONAL(HAVE_KDE, test "x$found_kde" = "xyes")
-
-dnl ###############################
-dnl  KAddressBook support
-dnl ###############################
-KAB="disabled"
-
-AC_ARG_ENABLE(kab, AS_HELP_STRING([--enable-kab],[enable experimental KAddressBook support (default is disabled)]),
-[if test "x$enableval" = "xyes"; then
-  enable_kab=yes
-fi],)
-
-if test "x$enable_kab" = "xyes"; then
-
-  if test "x$found_kde" != "xyes"; then
-    AC_MSG_ERROR([No kab without kde: --enable-kde])
-  fi
-  found_kab=yes
-  KAB_CFLAGS="-I/usr/include/qt4"
-  KAB_LIBS="-lQtCore -lkabc"
-  CPPFLAGS_save="$CPPFLAGS"
-  LIBS_save="$LIBS"
-  CPPFLAGS="$CPPFLAGS $KAB_CFLAGS"
-  LIBS="$LIBS $KAB_LIBS"
-  AC_CHECK_HEADER(kabc/addressee.h,,found_kab=no)
-  CPPFLAGS="$CPPFLAGS_save"
-  LIBS="$LIBS_save"
-  if test "x$found_kab" = "xno"; then
-    AC_MSG_ERROR([We need this header!])
-  fi
-  AC_SUBST(KAB_CFLAGS)
-  AC_SUBST(KAB_LIBS)
-  KAB="enabled"
-  AC_DEFINE(HAVE_KAB,1,[KAddressBook support])
-fi
-
-AM_CONDITIONAL(HAVE_KAB, test "x$found_kab" = "xyes")
-
-dnl ###############################
-dnl   XCAP support
-dnl ###############################
-XCAP="disabled"
-
-AC_ARG_ENABLE(xcap, AS_HELP_STRING([--enable-xcap],[enable experimental XCAP support (default is disabled)]),
-[if test "x$enableval" = "xyes"; then
-  enable_xcap=yes
-fi],)
-
-if test "x$enable_xcap" = "xyes"; then
-   PKG_CHECK_MODULES([SOUP], [libsoup-2.4])
-   found_xcap=yes
-   XCAP="enabled"
-   AC_SUBST(SOUP_CFLAGS)
-   AC_SUBST(SOUP_LIBS)
-  AC_DEFINE(HAVE_XCAP,1,[XCAP support])
-fi
-
-AM_CONDITIONAL(HAVE_XCAP, test "x$found_xcap" = "xyes")
-
-dnl ###############################
-dnl   LOUDMOUTH support
-dnl ###############################
-LOUDMOUTH="disabled"
-
-AC_ARG_ENABLE(loudmouth, AS_HELP_STRING([--enable-loudmouth],[enable experimental Loudmouth support (default is disabled)]),
-[if test "x$enableval" = "xyes"; then
-  enable_loudmouth=yes
-fi],)
-
-if test "x$enable_loudmouth" = "xyes"; then
-   PKG_CHECK_MODULES([LOUDMOUTH], [loudmouth-1.0])
-   found_loudmouth=yes
-   LOUDMOUTH="enabled"
-   AC_SUBST(LOUDMOUTH_CFLAGS)
-   AC_SUBST(LOUDMOUTH_LIBS)
-  AC_DEFINE(HAVE_LOUDMOUTH,1,[Loudmouth support])
-fi
-
-AM_CONDITIONAL(HAVE_LOUDMOUTH, test "x$found_loudmouth" = "xyes")
-
-
-dnl ###############################
-dnl   Gnome-Doc-Utils
-dnl ###############################
-# GDU is disabled for Windows; help is generated separately manually in Makefile
-GNOME_DOC_INIT(,,[GDI=no])
-if test "x${gm_platform}" != "xmingw" ; then
-  GDU="disabled"
-  AC_ARG_ENABLE(gdu, AS_HELP_STRING([--enable-gdu],[enable GNOME-Doc-Utils support, i.e. help file generation (default is enabled)]),
-[if test "x$enableval" = "xyes"; then
-  enable_gdu=yes
-fi],enable_gdu=yes)
-  if test "x$enable_gdu" = "xyes"; then
-    AC_PATH_PROG(SK_CONFIG,scrollkeeper-config,no)
-    if test "x$SK_CONFIG" != "xno" -a "x$GDI" != "xno"; then
-      GDU="enabled"
-      AC_DEFINE(HAVE_GNOME_DOC_UTILS,1,[GNOME-Doc-Utils support])
-    fi
-  fi
-fi
-
-AM_CONDITIONAL(HAVE_GNOME_DOC_UTILS, test "x${enable_gdu}" = "xyes")
 
 
 dnl ###########################################################################
@@ -608,31 +321,6 @@ AC_SUBST(PTLIB_CFLAGS)
 AC_SUBST(PTLIB_LIBS)
 AC_SUBST(OPAL_CFLAGS)
 AC_SUBST(OPAL_LIBS)
-
-# check for H.323 support
-AC_ARG_ENABLE(h323, AS_HELP_STRING([--enable-h323],[enable H.323 support (default same as opal)]),
-              enable_h323=$enableval)
-if test x$enable_h323 != xno; then
-  dnl The =1 checks are here only for backward compatibility
-  H323=`$PKG_CONFIG --variable=h323 opal`
-  if test "x$H323" = "x1"; then
-    H323="yes"
-  else
-    H323=`$PKG_CONFIG --variable=OPAL_H323 opal`
-  fi
-
-  if test "x$H323" = "xyes"; then
-    AC_DEFINE(HAVE_H323,1,[H323 support])
-  else
-    if test x$enable_h323 = xyes; then
-      AC_MSG_ERROR([To enable H.323 support you need to re-install opal with H.323 support])
-    fi
-  fi
-else
-  H323="no"
-fi
-
-AM_CONDITIONAL(HAVE_H323, test "x${H323}" = "xyes")
 
 # check for mandatory SIP support in opal
 SIP=`$PKG_CONFIG --variable=sip opal`
@@ -728,21 +416,10 @@ ekiga.convert
 org.gnome.ekiga.desktop.in
 lib/Makefile
 po/Makefile.in
-man/Makefile
 src/Makefile
 pixmaps/Makefile
 sounds/Makefile
-help/Makefile
 plugins/Makefile
-plugins/avahi/Makefile
-plugins/evolution/Makefile
-plugins/gstreamer/Makefile
-plugins/kab/Makefile
-plugins/kde/Makefile
-plugins/ldap/Makefile
-plugins/loudmouth/Makefile
-plugins/resource-list/Makefile
-plugins/xcap/Makefile
 ])
 AC_OUTPUT
 
@@ -754,31 +431,10 @@ echo ""
 echo "================ Final configuration ==================="
 echo "          Installing into prefix  :  $prefix"
 echo ""
-echo "                   H.323 support  :  $H323"
-echo ""
-if test "x${gm_platform}" != "xmingw" ; then
-echo "                     GDU support  :  $GDU"
-echo "   Evolution-Data-Server support  :  $EDS"
-echo ""
-echo "             Video4Linux support  :  $VIDEO4LINUX"
-fi
-if test "x${gm_platform}" = "xlinux" ; then
-echo "                   GUDev support  :  $GUDEV"
-fi
-echo "                    LDAP support  :  $LDAP"
-echo ""
 if test "x${gm_platform}" != "xmingw" ; then
 echo "                    DBUS support  :  $DBUS"
 echo "            DBUS service support  :  $DBUS_SERVICE"
-echo "     mDNS/DNS-SD (avahi) support  :  $AVAHI"
 fi
-echo ""
-echo "The following features are experimental -- you've been warned:"
-echo "               GStreamer support  :  $GSTREAMER"
-echo "            KAddressBook support  :  $KAB"
-echo "                     KDE support  :  $KDE"
-echo "                    XCAP support  :  $XCAP"
-echo "               Loudmouth support  :  $LOUDMOUTH"
 echo ""
 echo "                         OS Type  :  $target_os"
 echo "                    Machine Type  :  $target_cpu"

@@ -50,9 +50,6 @@
 #include "call-manager.h"
 
 #include "sip-endpoint.h"
-#ifdef HAVE_H323
-#include "h323-endpoint.h"
-#endif
 
 #include <opal/transcoders.h>
 
@@ -161,9 +158,6 @@ Opal::EndPoint::EndPoint (Ekiga::ServiceCore& _core) : core(_core)
   pcss_endpoint->SetSoundChannelPlayDevice("EKIGA");
   pcss_endpoint->SetSoundChannelRecordDevice("EKIGA");
   sip_endpoint = new Sip::EndPoint (*this, core);
-#ifdef HAVE_H323
-  h323_endpoint= new H323::EndPoint (*this, core);
-#endif
 
   call_core = core.get<Ekiga::CallCore> ("call-core");
 }
@@ -327,14 +321,6 @@ Opal::Sip::EndPoint& Opal::EndPoint::GetSipEndPoint ()
 {
   return *sip_endpoint;
 }
-
-
-#ifdef HAVE_H323
-Opal::H323::EndPoint& Opal::EndPoint::GetH323EndPoint ()
-{
-  return *h323_endpoint;
-}
-#endif
 
 
 bool Opal::EndPoint::IsReady ()

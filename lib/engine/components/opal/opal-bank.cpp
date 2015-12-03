@@ -50,17 +50,11 @@
 boost::shared_ptr<Opal::Bank>
 Opal::Bank::create (Ekiga::ServiceCore& core,
                     Opal::EndPoint& _endpoint,
-#ifdef HAVE_H323
-                    Opal::H323::EndPoint* _h323_endpoint,
-#endif
                     Opal::Sip::EndPoint* _sip_endpoint)
 {
   boost::shared_ptr<Opal::Bank> bank =
     boost::shared_ptr<Opal::Bank> (new Opal::Bank (core,
                                                    _endpoint,
-#ifdef HAVE_H323
-                                                   _h323_endpoint,
-#endif
                                                    _sip_endpoint));
 
   bank->load ();
@@ -71,18 +65,12 @@ Opal::Bank::create (Ekiga::ServiceCore& core,
 
 Opal::Bank::Bank (Ekiga::ServiceCore& core,
                   Opal::EndPoint& _endpoint,
-#ifdef HAVE_H323
-                  Opal::H323::EndPoint* _h323_endpoint,
-#endif
                   Opal::Sip::EndPoint* _sip_endpoint):
   presence_core(core.get<Ekiga::PresenceCore> ("presence-core")),
   notification_core(core.get<Ekiga::NotificationCore> ("notification-core")),
   personal_details(core.get<Ekiga::PersonalDetails> ("personal-details")),
   audiooutput_core(core.get<Ekiga::AudioOutputCore> ("audiooutput-core")),
   endpoint (_endpoint),
-#ifdef HAVE_H323
-  h323_endpoint(_h323_endpoint),
-#endif
   sip_endpoint(_sip_endpoint)
 {
   // FIXME
@@ -107,9 +95,6 @@ Opal::Bank::load_account (boost::function0<std::list<std::string> > _existing_gr
                            personal_details,
                            audiooutput_core,
                            endpoint,
-#ifdef HAVE_H323
-                           h323_endpoint,
-#endif
                            sip_endpoint,
                            _existing_groups,
                            _node);
@@ -169,49 +154,6 @@ Opal::Bank::new_account (Account::Type acc_type,
 
   switch (acc_type) {
 
-  case Opal::Account::Ekiga:
-    request->link (_("Get an Ekiga.net SIP account"), "http://www.ekiga.net");
-    request->hidden ("name", "Ekiga.net");
-    request->hidden ("host", "ekiga.net");
-    request->text ("user", _("Ekiga.im _SIP address"), username, _("sip:jon@ekiga.im"),
-                   Ekiga::FormVisitor::EKIGA_URI, false, false);
-    request->hidden ("authentication_user", username);
-    request->text ("password", _("_Password"), password, _("1234"),
-                   Ekiga::FormVisitor::PASSWORD, false, false);
-    request->text ("outbound_proxy", _("Outbound _Proxy"), "", _("proxy.company.com"),
-                   Ekiga::FormVisitor::STANDARD, true, true);
-    request->hidden ("timeout", "3600");
-    break;
-
-  case Opal::Account::DiamondCard:
-    request->link (_("Get an Ekiga Call Out account"),
-                   "https://www.diamondcard.us/exec/voip-login?act=sgn&spo=ekiga");
-    request->hidden ("name", "Ekiga Call Out");
-    request->hidden ("host", "sip.diamondcard.us");
-    request->text ("user", _("_Account ID"), username, _("1234567890"),
-                   Ekiga::FormVisitor::NUMBER, false, false);
-    request->hidden ("authentication_user", username);
-    request->text ("password", _("_PIN Code"), password, _("1234"),
-                   Ekiga::FormVisitor::NUMBER, false, false);
-    request->text ("outbound_proxy", _("Outbound _Proxy"), "", _("proxy.company.com"),
-                   Ekiga::FormVisitor::STANDARD, true, true);
-    request->hidden ("timeout", "3600");
-    break;
-
-  case Opal::Account::H323:
-    request->text ("name", _("_Name"), std::string (), _("My H.323 Account"),
-                   Ekiga::FormVisitor::STANDARD, false, false);
-    request->text ("host", _("_Gatekeeper"), std::string (), _("h323.ekiga.net"),
-                   Ekiga::FormVisitor::STANDARD, false, false);
-    request->text ("user", _("_User"), username, _("jon"),
-                   Ekiga::FormVisitor::STANDARD, false, false);
-    request->hidden ("authentication_user", username);
-    request->text ("password", _("_Password"), password, _("1234"),
-                   Ekiga::FormVisitor::PASSWORD, false, false);
-    request->text ("timeout", _("_Timeout"), "3600", "3600",
-                   Ekiga::FormVisitor::NUMBER, true, false);
-    break;
-
   case Opal::Account::SIP:
   default:
     request->text ("name", _("_Name"), std::string (), _("My SIP Account"),
@@ -247,18 +189,14 @@ Opal::Bank::on_new_account_form_submitted (bool submitted,
 
   boost::shared_ptr<Ekiga::FormRequestSimple> request = boost::shared_ptr<Ekiga::FormRequestSimple> (new Ekiga::FormRequestSimple (boost::bind (&Opal::Bank::on_new_account_form_submitted, this, _1, _2, _3, acc_type)));
 
-  std::string new_name = (acc_type == Opal::Account::SIP
-                          || acc_type == Opal::Account::H323) ? result.text ("name") : result.hidden ("name");
-  std::string new_host = (acc_type == Opal::Account::SIP
-                          || acc_type == Opal::Account::H323) ? result.text ("host") : result.hidden ("host");
+  std::string new_name = result.text ("name");
+  std::string new_host = result.text ("host");
   std::string new_user = result.text ("user");
   std::string new_authentication_user = (acc_type == Opal::Account::SIP && ! result.text ("authentication_user").empty ()) ? result.text ("authentication_user") : new_user;
   std::string new_password = result.text ("password");
   std::string new_outbound_proxy = result.text ("outbound_proxy");
   bool new_enabled = result.boolean ("enabled");
-  unsigned new_timeout = atoi ((acc_type == Opal::Account::SIP
-                                || acc_type == Opal::Account::H323) ?
-                               result.text ("timeout").c_str () : result.hidden ("timeout").c_str ());
+  unsigned new_timeout = atoi (result.text ("timeout").c_str ());
 
   // This should only happen with Ekiga.net accounts
   if (!new_user.compare (0, 4, "sip:")) {
@@ -518,14 +456,7 @@ Opal::Bank::migrate_from_gconf (const std::list<std::string> old)
       ii++;
     }
 
-    if (host == "ekiga.net")
-      acc_type = Account::Ekiga;
-    else if (host == "sip.diamondcard.us")
-      acc_type = Account::DiamondCard;
-    else if (protocol_name == "SIP")
-      acc_type = Account::SIP;
-    else
-      acc_type = Account::H323;
+    acc_type = Account::SIP;
 
     xmlNodePtr child = Opal::Account::build_node (acc_type, name, host, "", user, auth_user, password, enabled, timeout);
 
@@ -547,27 +478,9 @@ Opal::Bank::migrate_from_gconf (const std::list<std::string> old)
 void
 Opal::Bank::add_actions ()
 {
-  // Will be disabled when an Ekiga.net account is added
-  // and enabled back when an Ekiga.net account is removed
-  add_action (Ekiga::ActionPtr (new Ekiga::Action ("add-account-ekiga",
-                                                   _("_Add an Ekiga.net Account"),
-                                                   boost::bind (&Opal::Bank::new_account, this,
-                                                                Opal::Account::Ekiga, "", ""))));
-
-  // Will be disabled when a DiamondCard account is added
-  // and enabled back when an DiamondCard account is removed
-  add_action (Ekiga::ActionPtr (new Ekiga::Action ("add-account-diamondcard",
-                                                 _("_Add an Ekiga Call Out Account"),
-                                                 boost::bind (&Opal::Bank::new_account, this,
-                                                              Opal::Account::DiamondCard, "", ""))));
   add_action (Ekiga::ActionPtr (new Ekiga::Action ("add-account-sip", _("_Add a SIP Account"),
                                                    boost::bind (&Opal::Bank::new_account, this,
                                                                 Opal::Account::SIP, "", ""))));
-#ifdef HAVE_H323
-  add_action (Ekiga::ActionPtr (new Ekiga::Action ("add-account-h323", _("_Add an H.323 Account"),
-                                                   boost::bind (&Opal::Bank::new_account, this,
-                                                                Opal::Account::H323, "", ""))));
-#endif
 }
 
 

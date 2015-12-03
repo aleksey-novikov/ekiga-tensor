@@ -47,10 +47,6 @@
 
 #include "sip-call-manager.h"
 
-#ifdef HAVE_H323
-#include "h323-call-manager.h"
-#endif
-
 
 /* FIXME: add here an Ekiga::Service which will add&remove publishers,
  * and fetchers
@@ -87,9 +83,6 @@ public:
 
       Opal::EndPoint& endpoint = GnomeMeeting::Process ()->GetEndPoint ();
       Opal::Sip::EndPoint& sip_endpoint = endpoint.GetSipEndPoint ();
-#ifdef HAVE_H323
-      Opal::H323::EndPoint& h323_endpoint = endpoint.GetH323EndPoint ();
-#endif
 
       // We create our various CallManagers: SIP, H.323
       boost::shared_ptr<Opal::Sip::CallManager> sip_call_manager (new Opal::Sip::CallManager (core, endpoint, sip_endpoint));
@@ -97,12 +90,6 @@ public:
       presence_core->push_back (Ekiga::URIActionProviderPtr (sip_call_manager));
       call_core->add_manager (sip_call_manager);
 
-#ifdef HAVE_H323
-      boost::shared_ptr<Opal::H323::CallManager> h323_call_manager (new Opal::H323::CallManager (core, endpoint, h323_endpoint));
-      contact_core->push_back (Ekiga::URIActionProviderPtr (h323_call_manager));
-      presence_core->push_back (Ekiga::URIActionProviderPtr (h323_call_manager));
-      call_core->add_manager (h323_call_manager);
-#endif
 
       // We create the Bank
       // It must be created last. That way, it will handle the Opal::EndPoint
@@ -110,9 +97,6 @@ public:
       // registration could not work when STUN is used.
       boost::shared_ptr<Bank> bank = Opal::Bank::create (core,
                                                          endpoint,
-#ifdef HAVE_H323
-                                                         &h323_endpoint,
-#endif
                                                          &sip_endpoint);
       account_core->add_bank (bank);
       presence_core->add_cluster (bank);

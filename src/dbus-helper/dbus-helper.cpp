@@ -137,8 +137,7 @@ helper_get_supported_protocols (G_GNUC_UNUSED Helper *self,
 {
   *protocols = g_new (char *, 3);
   (*protocols)[0] = g_strdup ("SIP");
-  (*protocols)[1] = g_strdup ("H.323");
-  (*protocols)[2] = NULL;
+  (*protocols)[1] = NULL;
 
   return TRUE;
 }

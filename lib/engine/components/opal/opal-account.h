@@ -60,7 +60,6 @@ namespace Opal
   class Presentity;
   class EndPoint;
   namespace Sip { class EndPoint; };
-  namespace H323 { class EndPoint; };
 
   /**
    * @addtogroup accounts
@@ -77,7 +76,7 @@ namespace Opal
     friend class Presentity;
 public:
 
-    typedef enum { SIP, Ekiga, DiamondCard, H323 } Type;
+    typedef enum { SIP } Type;
 
     static xmlNodePtr build_node (Account::Type typus,
                                   std::string name,
@@ -112,9 +111,6 @@ public:
                                               boost::shared_ptr<Ekiga::PersonalDetails> _personal_details,
                                               boost::shared_ptr<Ekiga::AudioOutputCore> _audiooutput_core,
                                               EndPoint& _endpoint,
-#ifdef HAVE_H323
-                                              H323::EndPoint* _h323_endpoint,
-#endif
                                               Sip::EndPoint* _sip_endpoint,
                                               boost::function0<std::list<std::string> > _existing_groups,
                                               xmlNodePtr node_);
@@ -220,9 +216,6 @@ private:
              boost::shared_ptr<Ekiga::PersonalDetails> _personal_details,
              boost::shared_ptr<Ekiga::AudioOutputCore> _audiooutput_core,
              EndPoint& _endpoint,
-#ifdef HAVE_H323
-             H323::EndPoint* _h323_endpoint,
-#endif
              Sip::EndPoint* _sip_endpoint,
              boost::function0<std::list<std::string> > _existing_groups,
              xmlNodePtr node_);
@@ -280,7 +273,6 @@ private:
     boost::weak_ptr<Ekiga::AudioOutputCore> audiooutput_core;
 
     EndPoint& endpoint;
-    H323::EndPoint* h323_endpoint;
     Sip::EndPoint* sip_endpoint;
     PString instance_id;
   };

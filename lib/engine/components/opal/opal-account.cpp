@@ -57,7 +57,6 @@
 
 #include "opal-presentity.h"
 #include "sip-endpoint.h"
-#include "h323-endpoint.h"
 
 // remove leading and trailing spaces and tabs (useful for copy/paste)
 // also, if no protocol specified, add leading "sip:"
@@ -116,26 +115,13 @@ Opal::Account::build_node(Opal::Account::Type typus,
   //        Would it be considered cleaner or overkill?
   switch (typus) {
 
-  case Ekiga:
-    xmlSetProp (node, BAD_CAST "type", BAD_CAST "Ekiga");
-    break;
-
-  case DiamondCard:
-    xmlSetProp (node, BAD_CAST "type", BAD_CAST "DiamondCard");
-    break;
-
-  case H323:
-    xmlSetProp (node, BAD_CAST "type", BAD_CAST "H323");
-    break;
-
   case SIP:
   default:
     xmlSetProp (node, BAD_CAST "type", BAD_CAST "SIP");
     break;
   }
-  if (typus != H323)
-    xmlNewChild (node, NULL, BAD_CAST "outbound_proxy",
-                 BAD_CAST robust_xmlEscape (node->doc, outbound_proxy).c_str ());
+  xmlNewChild (node, NULL, BAD_CAST "outbound_proxy",
+               BAD_CAST robust_xmlEscape (node->doc, outbound_proxy).c_str ());
 
   xmlNewChild(node, NULL, BAD_CAST "roster", NULL);
 
@@ -150,9 +136,6 @@ Opal::Account::create (Bank & bank,
                        boost::shared_ptr<Ekiga::PersonalDetails> _personal_details,
                        boost::shared_ptr<Ekiga::AudioOutputCore> _audiooutput_core,
                        EndPoint& _endpoint,
-#ifdef HAVE_H323
-                       H323::EndPoint* _h323_endpoint,
-#endif
                        Sip::EndPoint* _sip_endpoint,
                        boost::function0<std::list<std::string> > _existing_groups,
                        xmlNodePtr _node)
@@ -164,9 +147,6 @@ Opal::Account::create (Bank & bank,
                                                          _personal_details,
                                                          _audiooutput_core,
                                                          _endpoint,
-#ifdef HAVE_H323
-                                                         _h323_endpoint,
-#endif
                                                          _sip_endpoint,
                                                          _existing_groups,
                                                          _node));
@@ -181,9 +161,6 @@ Opal::Account::Account (Opal::Bank & _bank,
                         boost::shared_ptr<Ekiga::PersonalDetails> _personal_details,
                         boost::shared_ptr<Ekiga::AudioOutputCore> _audiooutput_core,
                         Opal::EndPoint& _endpoint,
-#ifdef HAVE_H323
-                        Opal::H323::EndPoint* _h323_endpoint,
-#endif
                         Opal::Sip::EndPoint* _sip_endpoint,
                         boost::function0<std::list<std::string> > _existing_groups,
                         xmlNodePtr _node):
@@ -195,9 +172,6 @@ Opal::Account::Account (Opal::Bank & _bank,
   personal_details(_personal_details),
   audiooutput_core(_audiooutput_core),
   endpoint(_endpoint),
-#ifdef HAVE_H323
-  h323_endpoint(_h323_endpoint),
-#endif
   sip_endpoint(_sip_endpoint)
 {
   state = Unregistered;
@@ -354,7 +328,7 @@ Opal::Account::get_aor () const
 {
   std::stringstream str;
 
-  str << (get_protocol_name () == "SIP" ? "sip:" : "h323:") << get_username ();
+  str << "sip:" << get_username ();
 
   if (get_username ().find ("@") == string::npos)
     str << "@" << get_host ();
@@ -546,13 +520,7 @@ Opal::Account::enable ()
 
   /* Actual registration code */
   switch (type) {
-  case Account::H323:
-    if (h323_endpoint)
-      h323_endpoint->EnableAccount (*this);
-    break;
   case Account::SIP:
-  case Account::DiamondCard:
-  case Account::Ekiga:
   default:
     // Register the given aor to the given registrar
     if (sip_endpoint)
@@ -577,13 +545,7 @@ Opal::Account::disable ()
 
   /* Actual unregistration code */
   switch (type) {
-  case Account::H323:
-    if (h323_endpoint)
-      h323_endpoint->DisableAccount (*this);
-    break;
   case Account::SIP:
-  case Account::DiamondCard:
-  case Account::Ekiga:
   default:
     if (opal_presentity) {
 
@@ -594,7 +556,7 @@ Opal::Account::disable ()
         (*iter)->set_status ("");
       }
 
-      if (type != Account::H323 && sip_endpoint)
+      if (sip_endpoint)
         sip_endpoint->Unsubscribe (SIPSubscribe::MessageSummary, get_full_uri (get_aor ()));
 
       opal_presentity->Close ();
@@ -693,42 +655,6 @@ Opal::Account::edit ()
   std::string uri = "sip:" + get_username () + "@" + get_host ();
 
   switch (type) {
-  case Opal::Account::Ekiga:
-    request->hidden ("name", get_name ());
-    request->hidden ("host", get_host ());
-    request->text ("user", _("Ekiga.im _SIP address"), uri, _("sip:jon@ekiga.im"),
-                   Ekiga::FormVisitor::EKIGA_URI, false, false);
-    request->hidden ("authentication_user", get_authentication_username ());
-    request->text ("password", _("_Password"), get_password (), _("1234"),
-                   Ekiga::FormVisitor::PASSWORD, false, false);
-    request->text ("outbound_proxy", _("Outbound _Proxy"), get_outbound_proxy (), _("proxy.company.com"),
-                   Ekiga::FormVisitor::STANDARD, true, true);
-    request->hidden ("timeout", "3600");
-    break;
-  case Opal::Account::DiamondCard:
-    request->hidden ("name", get_name ());
-    request->hidden ("host", get_host ());
-    request->text ("user", _("_Account ID"), get_username (), _("1234567890"),
-                   Ekiga::FormVisitor::NUMBER, false, false);
-    request->hidden ("authentication_user", "");  // will be copied from user
-    request->text ("password", _("_PIN Code"), get_password (), _("1234"),
-                   Ekiga::FormVisitor::NUMBER, false, false);
-    request->text ("outbound_proxy", _("Outbound _Proxy"), get_outbound_proxy (), _("proxy.company.com"),
-                   Ekiga::FormVisitor::STANDARD, true, true);
-    request->hidden ("timeout", "3600");
-    break;
-  case Opal::Account::H323:
-    request->text ("name", _("_Name"), get_name (), _("Ekiga.Net Account"),
-                   Ekiga::FormVisitor::STANDARD, false, false);
-    request->text ("host", _("_Gatekeeper"), get_host (), _("ekiga.net"),
-                   Ekiga::FormVisitor::STANDARD, false, false);
-    request->text ("user", _("_User"), get_username (), _("jon"),
-                   Ekiga::FormVisitor::STANDARD, false, false);
-    request->text ("password", _("_Password"), get_password (), _("1234"),
-                   Ekiga::FormVisitor::PASSWORD, false, false);
-    request->text ("timeout", _("_Timeout"), "3600", "3600",
-                   Ekiga::FormVisitor::NUMBER, true, false);
-    break;
   case Opal::Account::SIP:
   default:
     request->text ("name", _("_Name"), get_name (), _("Ekiga.Net Account"),
@@ -1050,9 +976,7 @@ Opal::Account::handle_registration_event (Ekiga::Account::RegistrationState stat
         opal_presentity->SetPresenceChangeNotifier (PCREATE_PresenceChangeNotifier (OnPresenceChange));
         opal_presentity->GetAttributes().Set(OpalPresentity::AuthNameKey, get_authentication_username ());
         opal_presentity->GetAttributes().Set(OpalPresentity::AuthPasswordKey, get_password ());
-        if (type != H323) {
-          opal_presentity->GetAttributes().Set(SIP_Presentity::SubProtocolKey, "Agent");
-        }
+        opal_presentity->GetAttributes().Set(SIP_Presentity::SubProtocolKey, "Agent");
         PTRACE (4, "Created presentity for " << get_aor());
 
         opal_presentity->Open ();
@@ -1062,7 +986,7 @@ Opal::Account::handle_registration_event (Ekiga::Account::RegistrationState stat
              ++iter)
           fetch ((*iter)->get_uri());
 
-        if (type != Account::H323 && sip_endpoint)
+        if (sip_endpoint)
           sip_endpoint->Subscribe (SIPSubscribe::MessageSummary, 3600, get_full_uri (get_aor ()));
       }
       boost::shared_ptr<Ekiga::PersonalDetails> details = personal_details.lock ();
@@ -1412,14 +1336,7 @@ Opal::Account::decide_type ()
 {
   const std::string host = get_host ();
 
-  if (host == "ekiga.net")
-    type = Account::Ekiga;
-  else if (host == "sip.diamondcard.us")
-    type = Account::DiamondCard;
-  else if (get_protocol_name () == "SIP")
-    type = Account::SIP;
-  else
-    type = Account::H323;
+  type = Account::SIP;
 }
 
 

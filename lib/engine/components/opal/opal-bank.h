@@ -46,7 +46,6 @@
 #include "ekiga-settings.h"
 
 #include "sip-endpoint.h"
-#include "h323-endpoint.h"
 
 #include "cluster-impl.h"
 #include "bank-impl.h"
@@ -87,9 +86,6 @@ public:
      */
     static boost::shared_ptr<Bank> create (Ekiga::ServiceCore& _core,
                                            Opal::EndPoint& _endpoint,
-#ifdef HAVE_H323
-                                           Opal::H323::EndPoint* _h323_endpoint,
-#endif
                                            Opal::Sip::EndPoint* _sip_endpoint);
 
     ~Bank ();
@@ -130,9 +126,6 @@ public:
 private:
     Bank (Ekiga::ServiceCore& _core,
           Opal::EndPoint& _endpoint,
-#ifdef HAVE_H323
-          Opal::H323::EndPoint* _h323_endpoint,
-#endif
           Opal::Sip::EndPoint* _sip_endpoint);
 
     boost::shared_ptr<Account> load_account (boost::function0<std::list<std::string> > _existing_groups,
@@ -181,9 +174,6 @@ private:
     Ekiga::Settings *protocols_settings;
 
     Opal::EndPoint& endpoint;
-#ifdef HAVE_H323
-    Opal::H323::EndPoint* h323_endpoint;
-#endif
     Opal::Sip::EndPoint* sip_endpoint;
   };
 

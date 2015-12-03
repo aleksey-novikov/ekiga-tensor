@@ -55,8 +55,6 @@ CodecDescription::CodecDescription (const OpalMediaFormat & _format,
   video = (_format.GetMediaType () == OpalMediaType::Video ());
   if (_format.IsValidForProtocol ("SIP"))
     protocols.push_back ("SIP");
-  if (_format.IsValidForProtocol ("H.323"))
-    protocols.push_back ("H.323");
   protocols.sort ();
   for (PINDEX i = 0 ; KnownCodecs[i][0] ; i++) {
     if (name == KnownCodecs[i][0]) {

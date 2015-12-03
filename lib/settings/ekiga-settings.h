@@ -56,7 +56,6 @@
 #define PROTOCOLS_SCHEMA "org.gnome." PACKAGE_NAME ".protocols"
 #define PORTS_SCHEMA PROTOCOLS_SCHEMA ".ports"
 #define SIP_SCHEMA PROTOCOLS_SCHEMA ".sip"
-#define H323_SCHEMA PROTOCOLS_SCHEMA ".h323"
 #define CALL_FORWARDING_SCHEMA PROTOCOLS_SCHEMA ".call-forwarding"
 
 #define GENERAL_SCHEMA "org.gnome." PACKAGE_NAME ".general"

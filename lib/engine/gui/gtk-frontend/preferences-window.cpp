@@ -85,7 +85,6 @@ struct _PreferencesWindowPrivate
   boost::shared_ptr<Ekiga::AudioOutputCore> audiooutput_core;
   boost::shared_ptr<Ekiga::Settings> protocols_settings;
   boost::shared_ptr<Ekiga::Settings> sip_settings;
-  boost::shared_ptr<Ekiga::Settings> h323_settings;
   boost::shared_ptr<Ekiga::Settings> nat_settings;
   boost::shared_ptr<Ekiga::Settings> call_forwarding_settings;
   boost::shared_ptr<Ekiga::Settings> call_options_settings;
@@ -121,8 +120,6 @@ _PreferencesWindowPrivate::_PreferencesWindowPrivate ()
     boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (PROTOCOLS_SCHEMA));
   sip_settings =
     boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (SIP_SCHEMA));
-  h323_settings =
-    boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (H323_SCHEMA));
   nat_settings =
     boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (NAT_SCHEMA));
   call_forwarding_settings =
@@ -199,15 +196,6 @@ static void gm_pw_init_call_options_page (PreferencesWindow *self,
  */
 static void gm_pw_init_sound_events_page (PreferencesWindow *self,
                                           GtkWidget *container);
-
-
-/* DESCRIPTION  : /
- * BEHAVIOR     : Builds the H.323 settings page.
- * PRE          : A valid pointer to the preferences window GMObject, and to the
- * 		  container widget where to attach the generated page.
- */
-static void gm_pw_init_h323_page (PreferencesWindow *self,
-                                  GtkWidget *container);
 
 
 /* DESCRIPTION  : /
@@ -712,79 +700,6 @@ gm_pw_init_sound_events_page (PreferencesWindow *self,
   /* Place it after the signals so that we can make sure they are run if
      required */
   gm_prefs_window_sound_events_list_build (self);
-}
-
-
-static void
-gm_pw_init_h323_page (PreferencesWindow *self,
-                      GtkWidget *container)
-{
-  GtkWidget *entry = NULL;
-  Choices capabilities_choices;
-  Choices roles_choices;
-
-  static const char *capabilities[][2] =
-    { { "string",  N_("String") },
-      { "tone",    N_("Tone") },
-      { "rfc2833", N_("RFC2833") },
-      { "q931",    N_("Q.931") },
-      { NULL,      NULL }
-    };
-
-  static const char *roles[][2] =
-    { { "none",         N_("Disable H.239 Extended Video") },
-      { "content",      N_("Allow H.239 per Content Role Mask") },
-      { "presentation", N_("Force H.239 Presentation Role") },
-      { "live",         N_("Force H.239 Live Role") },
-      { NULL,           NULL }
-    };
-  for (int i=0 ; capabilities[i][0] ; ++i)
-    capabilities_choices.push_back (boost::make_tuple (capabilities[i][0],
-                                                       gettext (capabilities[i][1])));
-  for (int i=0 ; roles[i][0] ; ++i)
-    roles_choices.push_back (boost::make_tuple (roles[i][0],
-                                                gettext (roles[i][1])));
-
-  /* Add Misc Settings */
-  entry =
-    gm_pw_entry_new (container, _("Forward _URI"),
-                     self->priv->h323_settings, "forward-host",
-                     _("The host where calls should be forwarded if call forwarding is enabled"),
-                     false);
-  g_object_set (entry, "regex", BASIC_URI_REGEX, NULL);
-  if (!g_strcmp0 (gtk_entry_get_text (GTK_ENTRY (entry)), ""))
-    gtk_entry_set_text (GTK_ENTRY (entry), "h323:");
-
-  /* Packing widget */
-  gm_pw_subsection_new (container, _("Advanced Settings"));
-
-  /* The toggles */
-  gm_pw_toggle_new (container, _("Enable H.245 _tunneling"),
-                    self->priv->h323_settings, "enable-h245-tunneling",
-                    _("This enables H.245 Tunneling mode. In H.245 Tunneling mode H.245 messages are encapsulated into the H.225 channel (port 1720). This saves one TCP connection during calls. H.245 Tunneling was introduced in H.323v2."));
-
-  gm_pw_toggle_new (container, _("Enable _early H.245"),
-                    self->priv->h323_settings, "enable-early-h245",
-                    _("This enables H.245 early in the setup"));
-
-  gm_pw_toggle_new (container, _("Enable fast _connect procedure"), self->priv->h323_settings,
-                    "enable-fast-connect", _("Connection will be established in Fast Connect (Fast Start) mode. Fast Connect is a way to start calls faster that was introduced in H.323v2."));
-
-  gm_pw_toggle_new (container, _("Enable H.239 control"), self->priv->h323_settings,
-                    "enable-h239", _("This enables H.239 capability for additional video roles."));
-
-  gm_pw_string_option_menu_new (container, NULL,
-                                roles_choices,
-                                self->priv->h323_settings, "video-role",
-                                _("Select the H.239 Video Role"));
-
-  /* Packing widget */
-  gm_pw_subsection_new (container, _("DTMF Mode"));
-
-  gm_pw_string_option_menu_new (container, _("_Send DTMF as"),
-                                capabilities_choices,
-                                self->priv->h323_settings, "dtmf-mode",
-                                _("Select the mode for DTMFs sending"));
 }
 
 
@@ -1759,11 +1674,6 @@ preferences_window_new (GmApplication *app)
   container = gm_pw_window_subsection_new (self,
                                            _("SIP"));
   gm_pw_init_sip_page (self, container);
-  gtk_widget_show_all (GTK_WIDGET (container));
-
-  container = gm_pw_window_subsection_new (self,
-                                           _("H.323"));
-  gm_pw_init_h323_page (self, container);
   gtk_widget_show_all (GTK_WIDGET (container));
 
   container = gm_pw_window_subsection_new (self, _("Audio"));

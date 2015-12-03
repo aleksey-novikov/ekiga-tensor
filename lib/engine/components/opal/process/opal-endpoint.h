@@ -43,11 +43,6 @@
 
 #include <ptlib.h>
 
-#ifdef HAVE_H323
-#include <h323/h323.h>
-#include "h323-endpoint.h"
-#endif
-
 #include <sip/sip.h>
 
 #include "opal-call.h"
@@ -66,11 +61,6 @@ namespace Opal {
   namespace SIP {
     class EndPoint;
   }
-#ifdef HAVE_H323
-  namespace H323 {
-    class EndPoint;
-  }
-#endif
 
   /* This is the OPAL endpoint. We do not want it to directly
    * use the CallCore, CallManager's and other engine implementations.
@@ -102,9 +92,6 @@ public:
     void SetStunServer (const std::string & server);
 
     Sip::EndPoint& GetSipEndPoint ();
-#ifdef HAVE_H323
-    H323::EndPoint& GetH323EndPoint ();
-#endif
 
     bool IsReady ();
 
@@ -167,9 +154,6 @@ private:
 
     /* The various related endpoints */
     Sip::EndPoint *sip_endpoint;
-#ifdef HAVE_H323
-    H323::EndPoint *h323_endpoint;
-#endif
     /* Make sure the CallCore is destroyed after the EndPoint */
     boost::shared_ptr<Ekiga::CallCore> call_core;
     Ekiga::ServiceCore& core;

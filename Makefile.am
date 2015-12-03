@@ -1,12 +1,6 @@
-SUBDIRS = man sounds pixmaps lib src plugins po
+SUBDIRS = sounds pixmaps lib src po
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
-
-### Don't execute make in the help subdirectory if BULD_DOC is set
-if HAVE_GNOME_DOC_UTILS
-SUBDIRS += help
-endif
-
 
 ### Intltool on the desktop, schemas and appdata files
 @INTLTOOL_DESKTOP_RULE@
@@ -33,13 +27,10 @@ appdata_in_files = ekiga.appdata.xml.in
 EXTRA_DIST = \
 	$(appdata_in_files)		\
 	$(DESKTOP_FILE)			\
-	doc/using_dbus.html		\
-	gnome-doc-utils.make	\
 	README					\
 	LICENSE         	    \
 	$(gsettings_SCHEMAS) 	\
-	$(SCHEMAS_FILE) 		\
-	$(WIN32_DIST)
+	$(SCHEMAS_FILE)
 
 Applicationsdir = $(datadir)/applications
 Applications_DATA = $(DESKTOP_FILE)

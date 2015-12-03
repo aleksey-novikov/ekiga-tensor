@@ -29,37 +29,6 @@ appdata_in_files = ekiga.appdata.xml.in
 @INTLTOOL_XML_RULE@
 
 
-### Win32 files
-WIN32_DIST = \
-	win32/ico/ekiga.ico					\
-	win32/ico/ekiga-uninstall.ico				\
-        win32/directx/Amvideo.h                                 \
-        win32/directx/control.h                                 \
-        win32/directx/ddraw.h                                   \
-        win32/directx/dshow.h                                   \
-        win32/directx/dsound.h                                  \
-        win32/directx/dxerr9.h                                  \
-        win32/directx/ksuuids.h                                 \
-        win32/directx/mingw_dshow_port.h                        \
-        win32/directx/strmif.h                                  \
-        win32/directx/uuids.h                                   \
-        win32/diff/README                                       \
-        win32/diff/ekiga_sticonmenu1.patch                      \
-        win32/diff/ekiga_sticonmenu2.patch                      \
-	win32/ekiga-rc.rc					\
-	win32/Makefile						\
-	win32/nsisinstaller/ekiga.nsi				\
-	win32/nsisinstaller/language_files/hungarian.nsh	\
-	win32/nsisinstaller/language_files/english.nsh		\
-	win32/nsisinstaller/language_files/dutch.nsh		\
-	win32/nsisinstaller/language_files/french.nsh		\
-	win32/nsisinstaller/language_files/german.nsh		\
-	win32/nsisinstaller/language_files/polish.nsh		\
-	win32/nsisinstaller/language_files/romanian.nsh		\
-	win32/nsisinstaller/language_files/russian.nsh		\
-	win32/nsisinstaller/langmacros.nsh
-
-
 ### Extra dist
 EXTRA_DIST = \
 	$(appdata_in_files)		\

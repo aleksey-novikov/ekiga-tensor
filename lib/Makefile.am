@@ -21,7 +21,6 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/engine/addressbook \
 	-I$(top_srcdir)/lib/engine/audioinput \
 	-I$(top_srcdir)/lib/engine/audiooutput \
-	-I$(top_srcdir)/lib/engine/chat \
 	-I$(top_srcdir)/lib/engine/framework \
 	-I$(top_srcdir)/lib/engine/friend-or-foe \
 	-I$(top_srcdir)/lib/engine/gui/gtk-core \
@@ -31,8 +30,6 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/engine/plugin \
 	-I$(top_srcdir)/lib/engine/presence \
 	-I$(top_srcdir)/lib/engine/protocol \
-	-I$(top_srcdir)/lib/engine/videoinput \
-	-I$(top_srcdir)/lib/engine/videooutput \
 	-I$(top_srcdir)/lib/engine/components/call-history \
 	-I$(top_srcdir)/lib/engine/components/echo \
 	-I$(top_srcdir)/lib/engine/components/foe-list \
@@ -125,7 +122,6 @@ libekiga_la_SOURCES += \
 	gui/gm-sidebar.h \
 	gui/gm-sidebar.c
 endif
-
 ##
 # Sources of the main engine code
 ##
@@ -205,20 +201,6 @@ libekiga_la_SOURCES += \
 	engine/action/actor.cpp
 
 ##
-#  Sources of the addressbook stack
-##
-
-libekiga_la_SOURCES += \
-	engine/addressbook/contact.h \
-	engine/addressbook/book.h \
-	engine/addressbook/book-impl.h \
-	engine/addressbook/source.h \
-	engine/addressbook/source-impl.h \
-	engine/addressbook/contact-core.h \
-	engine/addressbook/contact-core.cpp
-
-
-##
 # Sources of the friend-or-foe stack
 ##
 
@@ -258,26 +240,6 @@ libekiga_la_SOURCES += \
 	engine/protocol/call-core.cpp \
 	engine/protocol/codec-description.h \
 	engine/protocol/codec-description.cpp
-
-##
-# Sources of the video output stack
-##
-
-libekiga_la_SOURCES += \
-	engine/videooutput/videooutput-info.h \
-	engine/videooutput/videooutput-manager.h \
-	engine/videooutput/videooutput-core.h \
-	engine/videooutput/videooutput-core.cpp
-
-##
-# Sources of the video input stack
-##
-
-libekiga_la_SOURCES += \
-	engine/videoinput/videoinput-manager.h \
-	engine/videoinput/videoinput-info.h \
-	engine/videoinput/videoinput-core.h \
-	engine/videoinput/videoinput-core.cpp
 
 ##
 # Sources of the audio output stack
@@ -388,15 +350,6 @@ libekiga_la_SOURCES += \
 	engine/components/opal/process/sip-endpoint.h \
 	engine/components/opal/process/sip-endpoint.cpp
 
-if HAVE_H323
-libekiga_la_SOURCES += \
-	engine/components/opal/h323-call-manager.h \
-	engine/components/opal/h323-call-manager.cpp \
-	engine/components/opal/process/h323-endpoint.h \
-	engine/components/opal/process/h323-endpoint.cpp
-endif
-
-
 libekiga_la_LDFLAGS += $(OPAL_LIBS)
 
 ##
@@ -429,16 +382,6 @@ libekiga_la_SOURCES += \
 	engine/components/gmconf-personal-details/gmconf-personal-details.cpp \
 	engine/components/gmconf-personal-details/gmconf-personal-details.h
 
-
-##
-# Sources of the moving logo component
-##
-
-libekiga_la_SOURCES += \
-	engine/components/mlogo-videoinput/videoinput-manager-mlogo.h \
-	engine/components/mlogo-videoinput/videoinput-manager-mlogo.cpp \
-	engine/components/mlogo-videoinput/videoinput-main-mlogo.h \
-	engine/components/mlogo-videoinput/videoinput-main-mlogo.cpp
 
 ##
 # Sources of the null audio input component
@@ -474,21 +417,6 @@ AM_CPPFLAGS += $(GUDEV_CFLAGS)
 libekiga_la_LDFLAGS += $(GUDEV_LIBS)
 endif
 
-
-##
-# Sources of the Clutter video output component
-##
-
-AM_CPPFLAGS += $(CLUTTER_CFLAGS) $(CLUTTER_GTK_CFLAGS) $(CLUTTER_GST_CFLAGS) \
-	-I$(top_srcdir)/lib/engine/components/clutter-gst-videooutput
-
-libekiga_la_SOURCES += \
-	engine/components/clutter-gst-videooutput/videooutput-manager-clutter-gst.cpp   \
-	engine/components/clutter-gst-videooutput/videooutput-manager-clutter-gst.h     \
-	engine/components/clutter-gst-videooutput/videooutput-main-clutter-gst.cpp      \
-	engine/components/clutter-gst-videooutput/videooutput-main-clutter-gst.h
-
-libekiga_la_LDFLAGS += $(CLUTTER_LIBS) $(CLUTTER_GTK_LIBS) $(CLUTTER_GST_LIBS)
 
 ##
 #  Sources of the foe list component

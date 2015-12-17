@@ -1,4 +1,4 @@
-/* Ekiga -- A VoIP and Video-Conferencing application
+/* Ekiga -- A VoIP application
  * Copyright (C) 2012, Xunta de Galicia <ocfloss@xunta.es>
  *
  * Author: Victor Jaquez, Igalia S.L., AGASOL. <vjaquez@igalia.com>

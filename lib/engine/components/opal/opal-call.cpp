@@ -214,7 +214,7 @@ Opal::Call::toggle_stream_pause (StreamType type)
   PSafePtr<OpalConnection> connection = GetConnection ();
   if (connection != NULL) {
 
-    stream = connection->GetMediaStream ((type == Audio) ? OpalMediaType::Audio () : OpalMediaType::Video (), false);
+    stream = connection->GetMediaStream (OpalMediaType::Audio (), false);
     if (stream != NULL) {
 
       stream_name = std::string ((const char *) stream->GetMediaFormat ().GetEncodingName ());
@@ -331,30 +331,11 @@ Opal::Call::get_statistics ()
     statistics.remote_jitter = re_a_statistics.m_averageJitter;
   }
 
-  stream = connection->GetMediaStream (OpalMediaType::Video (), false);  // transmission
-  if (stream) {
-    tr_v_statistics.Update (*stream);
-    statistics.transmitted_video_bandwidth  = tr_v_statistics.GetBitRate () / 1024;
-    // GetFrameRate is the average frame rate on the last second
-    statistics.transmitted_fps = tr_v_statistics.GetFrameRate ();
-  }
-
-  stream = connection->GetMediaStream (OpalMediaType::Video (), true);  // reception
-  if (stream) {
-    re_v_statistics.Update (*stream);
-    statistics.received_video_bandwidth  = re_v_statistics.GetBitRate () / 1024;
-    statistics.received_fps = re_v_statistics.GetFrameRate ();
-  }
-
   for (PINDEX i = 0 ; KnownCodecs[i][0] ; i++) {
     if (tr_a_statistics.m_mediaFormat == KnownCodecs[i][0])
       statistics.transmitted_audio_codec = gettext (KnownCodecs[i][1]);
     if (re_a_statistics.m_mediaFormat == KnownCodecs[i][0])
       statistics.received_audio_codec = gettext (KnownCodecs[i][1]);
-    if (tr_v_statistics.m_mediaFormat == KnownCodecs[i][0])
-      statistics.transmitted_video_codec = gettext (KnownCodecs[i][1]);
-    if (re_v_statistics.m_mediaFormat == KnownCodecs[i][0])
-      statistics.received_video_codec = gettext (KnownCodecs[i][1]);
   }
 
   // 100 * number of lost packets / by number of packets, on the last second
@@ -623,7 +604,7 @@ Opal::Call::OnHold (OpalConnection & /*connection*/,
 void
 Opal::Call::OnOpenMediaStream (OpalMediaStream & stream)
 {
-  StreamType type = (stream.GetMediaFormat().GetMediaType() == OpalMediaType::Audio ()) ? Audio : Video;
+  StreamType type = Audio;
   bool is_transmitting = false;
   std::string stream_name;
 
@@ -632,17 +613,13 @@ Opal::Call::OnOpenMediaStream (OpalMediaStream & stream)
   is_transmitting = !stream.IsSource ();
 
   Ekiga::Runtime::run_in_main (boost::bind (boost::ref (stream_opened), this->shared_from_this (), stream_name, type, is_transmitting));
-
-  if (type == Ekiga::Call::Video)
-    add_action (Ekiga::ActionPtr (new Ekiga::Action ("transmit-video", _("Transmit Video"),
-                                                     boost::bind (&Call::toggle_stream_pause, this, Ekiga::Call::Video))));
 }
 
 
 void
 Opal::Call::OnClosedMediaStream (OpalMediaStream & stream)
 {
-  StreamType type = (stream.GetMediaFormat().GetMediaType() == OpalMediaType::Audio ()) ? Audio : Video;
+  StreamType type = Audio;
   bool is_transmitting = false;
   std::string stream_name;
 

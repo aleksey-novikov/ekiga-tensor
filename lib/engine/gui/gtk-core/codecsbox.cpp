@@ -60,7 +60,6 @@ struct _CodecsBoxPrivate
   Ekiga::Call::StreamType type;
   GtkWidget *codecs_list;
   boost::shared_ptr<Ekiga::Settings> audio_settings;
-  boost::shared_ptr<Ekiga::Settings> video_settings;
   boost::shared_ptr<Ekiga::CallCore> call_core;
   GmApplication *app;
 };
@@ -127,8 +126,7 @@ codecs_box_set_codecs (CodecsBox *self,
        itr != list.end ();
        itr++) {
 
-    if ((self->priv->type == Ekiga::Call::Audio && (*itr).audio)
-        || (self->priv->type == Ekiga::Call::Video && !(*itr).audio)) {
+    if (self->priv->type == Ekiga::Call::Audio && (*itr).audio)) {
 
       gtk_list_store_append (GTK_LIST_STORE (model), &iter);
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,
@@ -185,8 +183,6 @@ codec_toggled_cb (G_GNUC_UNUSED GtkCellRendererToggle *cell,
   list = codecs_box_to_list (self);
   if (self->priv->type == Ekiga::Call::Audio)
     self->priv->audio_settings->set_string_list ("media-list", list);
-  else if (self->priv->type == Ekiga::Call::Video)
-    self->priv->video_settings->set_string_list ("media-list", list);
 }
 
 
@@ -240,8 +236,6 @@ codec_moved_cb (GtkWidget *widget,
   list = codecs_box_to_list (self);
   if (self->priv->type == Ekiga::Call::Audio)
     self->priv->audio_settings->set_string_list ("media-list", list);
-  else if (self->priv->type == Ekiga::Call::Video)
-    self->priv->video_settings->set_string_list ("media-list", list);
 }
 
 
@@ -461,8 +455,6 @@ codecs_box_set_property (GObject *obj,
 
   if (self->priv->type == Ekiga::Call::Audio)
     list = self->priv->audio_settings->get_string_list ("media-list");
-  else if (self->priv->type == Ekiga::Call::Video)
-    list = self->priv->video_settings->get_string_list ("media-list");
 }
 
 
@@ -481,7 +473,6 @@ codecs_box_new_with_type (GmApplication *app,
   self->priv->call_core = core.get<Ekiga::CallCore> ("call-core");
   self->priv->type = type;
   self->priv->audio_settings = boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (AUDIO_CODECS_SCHEMA));
-  self->priv->video_settings = boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (VIDEO_CODECS_SCHEMA));
   self->priv->codecs_list = gtk_tree_view_new ();
 
   codecs_box_build (self);

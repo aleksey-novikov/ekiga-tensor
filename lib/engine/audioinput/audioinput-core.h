@@ -98,7 +98,7 @@ namespace Ekiga
    * The audio input core can also be used in a preview mode, where it starts a separate
    * thread (represented by the AudioPreviewManager), which grabs frames from the audio
    * input core and passes them to the audio output core. This can be used for audio device
-   * testing. Note that, contrary to the video preview, the audio preview does not support
+   * testing. Note that the audio preview does not support
    * direct switching between the preview and the streaming mode, which must tus be
    * be prevented by the UI.
    */
@@ -197,7 +197,7 @@ namespace Ekiga
       /*** AudioInput Stream and Preview Management ***/
 
       /** Start the preview mode
-       * Contrary to the video input core this can only be done if
+       * This can only be done if
        * the streaming mode NOT active (responsability of the UI).
        * @param channels the number of channels (1 or 2).
        * @param samplerate the samplerate.
@@ -218,7 +218,7 @@ namespace Ekiga
       void set_stream_buffer_size (unsigned buffer_size, unsigned num_buffers);
 
       /** Start the stream mode
-       * Contrary to the video input core this can only be done if
+       * This can only be done if
        * preview is NOT active (responsability of the UI)
        * @param channels the number of channels (1 or 2).
        * @param samplerate the samplerate.
@@ -233,8 +233,7 @@ namespace Ekiga
 
       /** Get one audio buffer from the current manager.
        * This function will block until the buffer is completely filled.
-       * Requires the stream or the preview (when being called from the
-       * VideoPreviewManager) to be started.
+       * Requires the stream to be started.
        * In case the device returns an error reading the frame, get_frame_data()
        * falls back to the fallback device and reads the frame from there. Thus
        * get_frame_data() always returns a frame.

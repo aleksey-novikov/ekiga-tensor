@@ -245,7 +245,7 @@ get_ekiga_client_proxy ()
                                     EKIGA_DBUS_INTERFACE);
 }
 
-/** Tell to a remote instance of Ekiga to connect to a remote SIP or H.323 
+/** Tell to a remote instance of Ekiga to connect to a remote SIP 
  * address.
  * You will typically use this function when claim_ownership failed.
  */

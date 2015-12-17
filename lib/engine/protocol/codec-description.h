@@ -106,10 +106,6 @@ namespace Ekiga
       */
       bool audio;
 
-      /** video is true if it reprensents an video codec
-      */
-      bool video;
-
       /** protocols is a list of protocols supported by the codec
       */
       std::list<std::string> protocols;
@@ -172,12 +168,6 @@ namespace Ekiga
        * @return the list of audio CodecDescription
        */
       CodecList get_audio_list ();
-
-
-      /** Return the list of video codecs descriptions in the current CodecList
-       * @return the list of video CodecDescription
-       */
-      CodecList get_video_list ();
 
 
       /** Return the list of codecs descriptions under their str form

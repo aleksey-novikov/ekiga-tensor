@@ -54,7 +54,6 @@
 #include "engine.h"
 
 #include "account-core.h"
-#include "videoinput-core.h"
 #include "audioinput-core.h"
 #include "audiooutput-core.h"
 
@@ -116,7 +115,6 @@ struct _EkigaWindowPrivate
   /* GSettings */
   boost::shared_ptr<Ekiga::Settings> user_interface_settings;
   boost::shared_ptr<Ekiga::Settings> sound_events_settings;
-  boost::shared_ptr<Ekiga::Settings> video_devices_settings;
   boost::shared_ptr<Ekiga::Settings> contacts_settings;
 };
 
@@ -124,7 +122,6 @@ struct _EkigaWindowPrivate
 enum {
   CHANNEL_FIRST,
   CHANNEL_AUDIO,
-  CHANNEL_VIDEO,
   CHANNEL_LAST
 };
 
@@ -624,9 +621,6 @@ ekiga_window_init_menu (EkigaWindow *mw)
   gtk_builder_add_from_string (mw->priv->builder, win_menu, -1, NULL);
 
   g_action_map_add_action (G_ACTION_MAP (g_application_get_default ()),
-                           g_settings_create_action (mw->priv->video_devices_settings->get_g_settings (),
-                                                     "enable-preview"));
-  g_action_map_add_action (G_ACTION_MAP (g_application_get_default ()),
                            g_settings_create_action (mw->priv->user_interface_settings->get_g_settings (),
                                                      "panel-section"));
 
@@ -799,8 +793,6 @@ ekiga_window_init (EkigaWindow *mw)
     boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (USER_INTERFACE ".main-window"));
   mw->priv->sound_events_settings =
     boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (SOUND_EVENTS_SCHEMA));
-  mw->priv->video_devices_settings =
-    boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (VIDEO_DEVICES_SCHEMA));
   mw->priv->contacts_settings =
     boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (CONTACTS_SCHEMA));
 }

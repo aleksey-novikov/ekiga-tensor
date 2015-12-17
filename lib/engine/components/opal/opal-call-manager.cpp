@@ -50,8 +50,6 @@ Opal::CallManager::CallManager (Ekiga::ServiceCore& _core,
   /* Setup things */
   Ekiga::SettingsCallback setup_cb = boost::bind (&Opal::CallManager::setup, this, _1);
   audio_codecs_settings = Ekiga::SettingsPtr (new Ekiga::Settings (AUDIO_CODECS_SCHEMA, setup_cb));
-  video_codecs_settings = Ekiga::SettingsPtr (new Ekiga::Settings (VIDEO_CODECS_SCHEMA, setup_cb));
-  video_devices_settings = Ekiga::SettingsPtr (new Ekiga::Settings (VIDEO_DEVICES_SCHEMA, setup_cb));
   ports_settings = Ekiga::SettingsPtr (new Ekiga::Settings (PORTS_SCHEMA, setup_cb));
   protocols_settings = Ekiga::SettingsPtr (new Ekiga::Settings (PROTOCOLS_SCHEMA, setup_cb));
   call_options_settings = Ekiga::SettingsPtr (new Ekiga::Settings (CALL_OPTIONS_SCHEMA, setup_cb));
@@ -185,52 +183,10 @@ void Opal::CallManager::setup (const std::string & setting)
   if (setting.empty () || setting == "auto-answer")
     set_auto_answer (call_options_settings->get_bool ("auto-answer"));
 
-  if (setting.empty () || setting == "maximum-video-tx-bitrate") {
-
-    Opal::EndPoint::VideoOptions options;
-    endpoint.GetVideoOptions (options);
-    options.maximum_transmitted_bitrate = video_codecs_settings->get_int ("maximum-video-tx-bitrate");
-    endpoint.SetVideoOptions (options);
-  }
-
-  if (setting.empty () || setting == "temporal-spatial-tradeoff") {
-
-    Opal::EndPoint::VideoOptions options;
-    endpoint.GetVideoOptions (options);
-    options.temporal_spatial_tradeoff = video_codecs_settings->get_int ("temporal-spatial-tradeoff");
-    endpoint.SetVideoOptions (options);
-  }
-
-  if (setting.empty () || setting == "size") {
-
-    Opal::EndPoint::VideoOptions options;
-    endpoint.GetVideoOptions (options);
-    options.size = video_devices_settings->get_enum ("size");
-    endpoint.SetVideoOptions (options);
-  }
-
-  if (setting.empty () || setting == "max-frame-rate") {
-
-    Opal::EndPoint::VideoOptions options;
-    endpoint.GetVideoOptions (options);
-    options.maximum_frame_rate = video_codecs_settings->get_int ("max-frame-rate");
-    endpoint.SetVideoOptions (options);
-  }
-
-  if (setting.empty () || setting == "maximum-video-bitrate") {
-
-    Opal::EndPoint::VideoOptions options;
-    endpoint.GetVideoOptions (options);
-    options.maximum_bitrate = video_codecs_settings->get_int ("maximum-video-bitrate");
-    endpoint.SetVideoOptions (options);
-  }
-
   if (setting.empty () || setting == "media-list") {
 
     std::list<std::string> config_codecs = audio_codecs_settings->get_string_list ("media-list");
-    std::list<std::string> video_codecs = video_codecs_settings->get_string_list ("media-list");
 
-    config_codecs.insert (config_codecs.end(), video_codecs.begin(), video_codecs.end());
     // This will add all supported codecs that are not present in the configuration
     // at the end of the list.
     Opal::CodecList all_codecs;

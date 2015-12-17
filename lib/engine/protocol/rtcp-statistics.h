@@ -45,10 +45,6 @@ public:
         received_audio_bandwidth (0),
         jitter (-1),
         remote_jitter (-1),
-        transmitted_video_bandwidth (0),
-        received_video_bandwidth (0),
-        received_fps (0),
-        transmitted_fps (0),
         lost_packets (0),
         remote_lost_packets (0) {};
 
@@ -59,14 +55,6 @@ public:
     unsigned received_audio_bandwidth; // in kbits/s
     int jitter; // in ms (-1 is N/A, as given by opal)
     int remote_jitter; // in ms (-1 is N/A, as given by opal)
-
-    /* Video */
-    std::string transmitted_video_codec;
-    unsigned transmitted_video_bandwidth; // in kbits/s
-    std::string received_video_codec;
-    unsigned received_video_bandwidth; // in kbits/s
-    unsigned received_fps;
-    unsigned transmitted_fps;
 
     /* Total */
     unsigned lost_packets;        // as a percentage

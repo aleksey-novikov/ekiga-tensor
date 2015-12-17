@@ -95,29 +95,6 @@ public:
 
     bool IsReady ();
 
-
-    /**/
-    struct VideoOptions
-      {
-        VideoOptions ()
-          : size (0),
-          maximum_frame_rate (0),
-          temporal_spatial_tradeoff (0),
-          maximum_bitrate (0),
-          maximum_transmitted_bitrate (0),
-          extended_video_roles (0) {};
-
-        unsigned size;
-        unsigned maximum_frame_rate;
-        unsigned temporal_spatial_tradeoff;
-        unsigned maximum_bitrate;
-        unsigned maximum_transmitted_bitrate;
-        unsigned extended_video_roles;
-      };
-
-    void SetVideoOptions (const VideoOptions & options);
-    void GetVideoOptions (VideoOptions & options) const;
-
     boost::signals2::signal<void(void)> ready;
 
 private:
@@ -130,12 +107,6 @@ private:
     void HandleSTUNResult ();
 
     void ReportSTUNError (const std::string error);
-
-    PBoolean CreateVideoOutputDevice (const OpalConnection & connection,
-                                      const OpalMediaFormat & media_fmt,
-                                      PBoolean preview,
-                                      PVideoOutputDevice * & device,
-                                      PBoolean & auto_delete);
 
     OpalConnection::AnswerCallResponse OnAnswerCall (OpalConnection & connection,
                                                      const PString & caller);

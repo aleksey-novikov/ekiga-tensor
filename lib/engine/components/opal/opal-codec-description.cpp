@@ -52,7 +52,6 @@ CodecDescription::CodecDescription (const OpalMediaFormat & _format,
   else
     rate = _format.GetClockRate ();
   audio = (_format.GetMediaType () == OpalMediaType::Audio ());
-  video = (_format.GetMediaType () == OpalMediaType::Video ());
   if (_format.IsValidForProtocol ("SIP"))
     protocols.push_back ("SIP");
   protocols.sort ();
@@ -141,12 +140,11 @@ CodecList::GetAllowedFormats (OpalMediaFormatList & formats)
   // Purge blacklisted codecs
   formats -= black_list;
 
-  // Only keep audio and video codecs
+  // Only keep audio codecs
   for (int i = 0 ; i < formats.GetSize () ; i++) {
-    if (formats[i].GetMediaType () != OpalMediaType::Audio ()
-        && formats[i].GetMediaType () != OpalMediaType::Video ())
+    if (formats[i].GetMediaType () != OpalMediaType::Audio ())
       formats -= formats[i];
   }
 
-  PTRACE(4, "Ekiga\tAll available audio & video media formats: " << setfill (',') << formats);
+  PTRACE(4, "Ekiga\tAll available audio media formats: " << setfill (',') << formats);
 }

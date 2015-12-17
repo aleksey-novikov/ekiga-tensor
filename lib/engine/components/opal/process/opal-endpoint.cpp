@@ -45,8 +45,6 @@
 
 #include "call-core.h"
 #include "opal-codec-description.h"
-#include "videoinput-info.h"
-
 #include "call-manager.h"
 
 #include "sip-endpoint.h"
@@ -118,8 +116,6 @@ Opal::EndPoint::EndPoint (Ekiga::ServiceCore& _core) : core(_core)
   PIPSocket::SetDefaultIpAddressFamilyV4();
 #endif
   PIPSocket::SetSuppressCanonicalName (true);  // avoid long delays
-  SetAutoStartTransmitVideo (true);
-  SetAutoStartReceiveVideo (true);
   SetUDPPorts (5000, 5100);
   SetTCPPorts (30000, 30100);
   SetRtpIpPorts (5000, 5100);
@@ -129,19 +125,6 @@ Opal::EndPoint::EndPoint (Ekiga::ServiceCore& _core) : core(_core)
   stun_enabled = false;
   isReady = false;
   autoAnswer = false;
-
-  // Create video devices
-  PVideoDevice::OpenArgs video = GetVideoOutputDevice();
-  video.deviceName = "EKIGAOUT";
-  SetVideoOutputDevice (video);
-
-  video = GetVideoOutputDevice();
-  video.deviceName = "EKIGAIN";
-  SetVideoPreviewDevice (video);
-
-  video = GetVideoInputDevice();
-  video.deviceName = "EKIGA";
-  SetVideoInputDevice (video);
 
   // Media formats
   SetMediaFormatOrder (PStringArray ());
@@ -329,144 +312,6 @@ bool Opal::EndPoint::IsReady ()
 }
 
 
-void Opal::EndPoint::SetVideoOptions (const Opal::EndPoint::VideoOptions & options)
-{
-  OpalMediaFormatList media_formats_list;
-  OpalMediaFormat::GetAllRegisteredMediaFormats (media_formats_list);
-
-  int maximum_frame_rate = std::min (std::max ((signed) options.maximum_frame_rate, 1), 30);
-  int maximum_bitrate = (options.maximum_bitrate > 0 ? options.maximum_bitrate : 16384);
-  int maximum_transmitted_bitrate = (options.maximum_transmitted_bitrate > 0 ? options.maximum_transmitted_bitrate : 256);
-  int temporal_spatial_tradeoff = (options.temporal_spatial_tradeoff > 0 ? options.temporal_spatial_tradeoff : 12);
-  // Configure all mediaOptions of all Video MediaFormats
-  for (int i = 0 ; i < media_formats_list.GetSize () ; i++) {
-
-    OpalMediaFormat media_format = media_formats_list [i];
-    if (media_format.GetMediaType() == OpalMediaType::Video ()) {
-
-      media_format.SetOptionInteger (OpalVideoFormat::FrameWidthOption (), Ekiga::VideoSizes [options.size].width);
-      media_format.SetOptionInteger (OpalVideoFormat::FrameHeightOption (), Ekiga::VideoSizes [options.size].height);
-      media_format.SetOptionInteger (OpalVideoFormat::FrameTimeOption (), (int) (media_format.GetClockRate () / maximum_frame_rate));
-      media_format.SetOptionInteger (OpalVideoFormat::MaxBitRateOption (), maximum_bitrate * 1000);
-      media_format.SetOptionInteger (OpalVideoFormat::TargetBitRateOption (), maximum_transmitted_bitrate * 1000);
-      media_format.SetOptionInteger (OpalVideoFormat::MinRxFrameWidthOption(), GM_QSIF_WIDTH);
-      media_format.SetOptionInteger (OpalVideoFormat::MinRxFrameHeightOption(), GM_QSIF_HEIGHT);
-      media_format.SetOptionInteger (OpalVideoFormat::MaxRxFrameWidthOption(), GM_1080P_WIDTH);
-      media_format.SetOptionInteger (OpalVideoFormat::MaxRxFrameHeightOption(), GM_1080P_HEIGHT);
-      media_format.AddOption(new OpalMediaOptionUnsigned (OpalVideoFormat::TemporalSpatialTradeOffOption (), true, OpalMediaOption::NoMerge, temporal_spatial_tradeoff));
-      media_format.SetOptionInteger (OpalVideoFormat::TemporalSpatialTradeOffOption(), temporal_spatial_tradeoff);
-
-      if (media_format.GetName() != "YUV420P" &&
-          media_format.GetName() != "RGB32" &&
-          media_format.GetName() != "RGB24")
-        media_format.SetOptionInteger (OpalVideoFormat::RateControlPeriodOption(), 300);
-
-      switch (options.extended_video_roles) {
-      case 0 :
-        media_format.SetOptionInteger(OpalVideoFormat::ContentRoleMaskOption(), 0);
-        break;
-
-      case 2 : // Force Presentation (slides)
-        media_format.SetOptionInteger(OpalVideoFormat::ContentRoleMaskOption(),
-                                      OpalVideoFormat::ContentRoleBit(OpalVideoFormat::ePresentation));
-        break;
-
-      case 3 : // Force Live (main)
-        media_format.SetOptionInteger(OpalVideoFormat::ContentRoleMaskOption(),
-                                      OpalVideoFormat::ContentRoleBit(OpalVideoFormat::eMainRole));
-        break;
-
-        default :
-          break;
-      }
-
-      OpalMediaFormat::SetRegisteredMediaFormat(media_format);
-    }
-  }
-
-  // Adjust setting for all sessions of all connections of all calls
-  for (PSafePtr<OpalCall> call = activeCalls;
-       call != NULL;
-       ++call) {
-
-    for (int i = 0;
-         i < 2;
-         i++) {
-
-      PSafePtr<OpalRTPConnection> connection = PSafePtrCast<OpalConnection, OpalRTPConnection> (call->GetConnection (i));
-      if (connection) {
-
-        OpalMediaStreamPtr stream = connection->GetMediaStream (OpalMediaType::Video (), false);
-        if (stream != NULL) {
-
-          OpalMediaFormat mediaFormat = stream->GetMediaFormat ();
-          mediaFormat.SetOptionInteger (OpalVideoFormat::TemporalSpatialTradeOffOption(),
-                                        temporal_spatial_tradeoff);
-          mediaFormat.SetOptionInteger (OpalVideoFormat::TargetBitRateOption (),
-                                        maximum_transmitted_bitrate * 1000);
-          mediaFormat.ToNormalisedOptions();
-          stream->UpdateMediaFormat (mediaFormat);
-        }
-      }
-    }
-  }
-
-  PTRACE (4, "Opal::EndPoint\tVideo Max Bitrate: " << maximum_bitrate);
-  PTRACE (4, "Opal::EndPoint\tVideo Max Tx Bitrate: " << maximum_transmitted_bitrate);
-  PTRACE (4, "Opal::EndPoint\tVideo Temporal Spatial Tradeoff: " << temporal_spatial_tradeoff);
-  PTRACE (4, "Opal::EndPoint\tVideo Size: " << options.size);
-  PTRACE (4, "Opal::EndPoint\tVideo Max Frame Rate: " << maximum_frame_rate);
-}
-
-
-void Opal::EndPoint::GetVideoOptions (Opal::EndPoint::VideoOptions & options) const
-{
-  OpalMediaFormatList media_formats_list;
-  OpalMediaFormat::GetAllRegisteredMediaFormats (media_formats_list);
-
-  for (int i = 0 ; i < media_formats_list.GetSize () ; i++) {
-
-    OpalMediaFormat media_format = media_formats_list [i];
-    if (media_format.GetMediaType () == OpalMediaType::Video ()) {
-
-      int j;
-      for (j = 0; j < NB_VIDEO_SIZES; j++) {
-
-        if (Ekiga::VideoSizes [j].width == media_format.GetOptionInteger (OpalVideoFormat::FrameWidthOption ())
-            && Ekiga::VideoSizes [j].height == media_format.GetOptionInteger (OpalVideoFormat::FrameHeightOption ()))
-          break;
-      }
-      if (j >= NB_VIDEO_SIZES)
-        g_error ("Cannot find video size");
-      options.size = j;
-
-      options.maximum_frame_rate = (int) (media_format.GetClockRate () / media_format.GetFrameTime ());
-      options.maximum_bitrate = (int) (media_format.GetOptionInteger (OpalVideoFormat::MaxBitRateOption ()) / 1000);
-      options.maximum_transmitted_bitrate = (int) (media_format.GetOptionInteger (OpalVideoFormat::TargetBitRateOption ()) / 1000);
-      options.temporal_spatial_tradeoff = media_format.GetOptionInteger (OpalVideoFormat::TemporalSpatialTradeOffOption ());
-
-      int evr = media_format.GetOptionInteger (OpalVideoFormat::OpalVideoFormat::ContentRoleMaskOption ());
-      switch (evr) {
-      case 0: // eNoRole
-        options.extended_video_roles = 0;
-        break;
-      case 1: // ePresentation
-        options.extended_video_roles = 2;
-        break;
-      case 2: // eMainRole
-        options.extended_video_roles = 3;
-        break;
-      default:
-        options.extended_video_roles = 1;
-        break;
-      }
-
-      break;
-    }
-  }
-}
-
-
 OpalCall *Opal::EndPoint::CreateCall (void *uri)
 {
   boost::shared_ptr<Opal::Call> call = Opal::Call::create (*this, uri ? (const char*) uri : std::string (), noAnswerDelay);
@@ -553,39 +398,6 @@ Opal::EndPoint::ReportSTUNError (const std::string error)
   // notice we're in for an infinite loop if nobody ever reports to the user!
   if (!call_core->errors (error))
     Ekiga::Runtime::run_in_main (boost::bind (&Opal::EndPoint::ReportSTUNError, this, error), 10);
-}
-
-
-PBoolean
-Opal::EndPoint::CreateVideoOutputDevice (const OpalConnection & connection,
-                                         const OpalMediaFormat & media_fmt,
-                                         PBoolean preview,
-                                         PVideoOutputDevice * & device,
-                                         PBoolean & auto_delete)
-{
-  PVideoDevice::OpenArgs videoArgs;
-  PString title;
-
-  videoArgs = preview ?
-    GetVideoPreviewDevice() : GetVideoOutputDevice();
-
-  if (!preview) {
-    unsigned openChannelCount = 0;
-    OpalMediaStreamPtr mediaStream;
-
-    while ((mediaStream = connection.GetMediaStream(OpalMediaType::Video(),
-                                                    preview, mediaStream)) != NULL)
-      ++openChannelCount;
-
-    videoArgs.deviceName += psprintf(" ID=%u", openChannelCount);
-  }
-
-  media_fmt.AdjustVideoArgs(videoArgs);
-
-  auto_delete = true;
-  device = PVideoOutputDevice::CreateOpenedDevice (videoArgs, false);
-
-  return device != NULL;
 }
 
 

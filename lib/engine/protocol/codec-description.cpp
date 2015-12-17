@@ -161,23 +161,6 @@ CodecList::get_audio_list ()
 }
 
 
-CodecList
-CodecList::get_video_list ()
-{
-  CodecList result;
-
-  for (iterator it = begin ();
-       it != end ();
-       it++) {
-
-    if ((*it).video)
-      result.push_back (*it);
-  }
-
-  return result;
-}
-
-
 std::list<std::string>
 CodecList::slist ()
 {

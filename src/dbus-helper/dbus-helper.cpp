@@ -45,7 +45,7 @@
  *
  * "GetSupportedProtocols"
  * in    : nil
- * out   : array of strings (supported protocols, example: "SIP" and "H.323")
+ * out   : array of strings (supported protocols, example: "SIP")
  *
  */
 

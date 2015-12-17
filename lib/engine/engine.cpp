@@ -49,8 +49,6 @@
 #include "call-core.h"
 #include "friend-or-foe.h"
 #include "foe-list.h"
-#include "videooutput-core.h"
-#include "videoinput-core.h"
 #include "audioinput-core.h"
 #include "audiooutput-core.h"
 #include "hal-core.h"
@@ -59,13 +57,10 @@
 #include "gtk-core-main.h"
 #include "gmconf-personal-details.h"
 
-#include "videooutput-main-clutter-gst.h"
 
-#include "videoinput-main-mlogo.h"
 #include "audioinput-main-null.h"
 #include "audiooutput-main-null.h"
 
-#include "videoinput-main-ptlib.h"
 #include "audioinput-main-ptlib.h"
 #include "audiooutput-main-ptlib.h"
 
@@ -101,8 +96,6 @@ engine_init (Ekiga::ServiceCore& core,
   boost::shared_ptr<Ekiga::AccountCore> account_core (new Ekiga::AccountCore);
   boost::shared_ptr<Ekiga::ContactCore> contact_core (new Ekiga::ContactCore);
   boost::shared_ptr<Ekiga::CallCore> call_core (new Ekiga::CallCore (friend_or_foe, notification_core));
-  boost::shared_ptr<Ekiga::VideoOutputCore> videooutput_core (new Ekiga::VideoOutputCore);
-  boost::shared_ptr<Ekiga::VideoInputCore> videoinput_core (new Ekiga::VideoInputCore (core, videooutput_core));
   boost::shared_ptr<Ekiga::AudioOutputCore> audiooutput_core (new Ekiga::AudioOutputCore (core));
   boost::shared_ptr<Ekiga::AudioInputCore> audioinput_core (new Ekiga::AudioInputCore(core));
   boost::shared_ptr<Ekiga::HalCore> hal_core (new Ekiga::HalCore);
@@ -112,8 +105,6 @@ engine_init (Ekiga::ServiceCore& core,
   core.add (contact_core);
   core.add (friend_or_foe);
   core.add (foe_list);
-  core.add (videoinput_core);
-  core.add (videooutput_core);
   core.add (audioinput_core);
   core.add (audiooutput_core);
   core.add (hal_core);
@@ -121,14 +112,6 @@ engine_init (Ekiga::ServiceCore& core,
   core.add (account_core);
   core.add (details);
   core.add (presence_core);
-
-  if (!videoinput_mlogo_init (core, &argc, &argv)) {
-    return;
-  }
-
-  if (!videooutput_clutter_gst_init (core, &argc, &argv)) {
-    return;
-  }
 
   //
   instance.Start (core);
@@ -139,8 +122,6 @@ engine_init (Ekiga::ServiceCore& core,
 
   audioinput_null_init (kickstart);
   audiooutput_null_init (kickstart);
-
-  videoinput_ptlib_init (kickstart);
 
   audioinput_ptlib_init (kickstart);
   audiooutput_ptlib_init (kickstart);
@@ -177,13 +158,10 @@ engine_init (Ekiga::ServiceCore& core,
      code in question to do it itself
    */
 
-  videoinput_core->setup ("any");
   audioinput_core->setup ();
   audiooutput_core->setup ();
 
 
-  hal_core->videoinput_device_added.connect (boost::bind (&Ekiga::VideoInputCore::add_device, boost::ref (*videoinput_core), _1, _2, _3, _4));
-  hal_core->videoinput_device_removed.connect (boost::bind (&Ekiga::VideoInputCore::remove_device, boost::ref (*videoinput_core), _1, _2, _3, _4));
   hal_core->audiooutput_device_added.connect (boost::bind (&Ekiga::AudioOutputCore::add_device, boost::ref (*audiooutput_core), _1, _2, _3));
   hal_core->audiooutput_device_removed.connect (boost::bind (&Ekiga::AudioOutputCore::remove_device, boost::ref (*audiooutput_core), _1, _2, _3));
   hal_core->audioinput_device_added.connect (boost::bind (&Ekiga::AudioInputCore::add_device, boost::ref (*audioinput_core), _1, _2, _3));

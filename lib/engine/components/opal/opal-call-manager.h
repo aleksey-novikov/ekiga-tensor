@@ -130,8 +130,6 @@ protected:
 private:
 
     Ekiga::SettingsPtr audio_codecs_settings;
-    Ekiga::SettingsPtr video_codecs_settings;
-    Ekiga::SettingsPtr video_devices_settings;
     Ekiga::SettingsPtr protocols_settings;
     Ekiga::SettingsPtr ports_settings;
     Ekiga::SettingsPtr call_options_settings;

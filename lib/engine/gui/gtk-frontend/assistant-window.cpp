@@ -145,7 +145,7 @@ create_info_page (AssistantWindow *assistant)
 {
   GtkWidget *label;
 
-  label = gtk_label_new (_("You usually need a SIP or H323 account in order to use Ekiga.\n"
+  label = gtk_label_new (_("You usually need a SIP account in order to use Ekiga.\n"
                            "Many services allow you creating such accounts.\n\n"
                            "We suggest that you use a free ekiga.im account, "
                            "which allows you to be called by any person with a SIP account.\n\n"

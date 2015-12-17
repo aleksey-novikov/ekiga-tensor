@@ -67,20 +67,19 @@ namespace Opal
     friend class Account;
 public:
 
-    /* The Opal::Bank is implemented using the H.323 and SIP
-     * EndPoints from OPAL.
+    /* The Opal::Bank is implemented using the SIP EndPoints from OPAL.
      *
      * We pass them as arguments instead of using the Opal::CallManager
      * to prevent useless references to the CallManager. We are using
      * shared_ptr's, they control the destruction order of objects, which
      * is not what Opal was designed for.
      *
-     * We can safely rely on the H.323 & SIP EndPoints as long as:
+     * We can safely rely on the SIP EndPoints as long as:
      *   1) The Opal::Bank and its Opal::Accounts are destroyed
      *      before the Opal EndPoints.
      *   2) They are destroyed before the Opal::CallManager.
      *
-     * However, the SIP & H.323 EndPoints have a null_deleter. That means
+     * However, the SIP EndPoints have a null_deleter. That means
      * that Opal is taking care of deleting them. They are not deleted when
      * the last object having a reference to them is deleted.
      */

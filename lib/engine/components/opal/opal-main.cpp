@@ -42,8 +42,6 @@
 #include "presence-core.h"
 #include "audioinput-core.h"
 #include "audiooutput-core.h"
-#include "videoinput-core.h"
-#include "videooutput-core.h"
 
 #include "sip-call-manager.h"
 
@@ -70,21 +68,19 @@ public:
     boost::shared_ptr<Ekiga::CallCore> call_core = core.get<Ekiga::CallCore> ("call-core");
     boost::shared_ptr<Ekiga::AccountCore> account_core = core.get<Ekiga::AccountCore> ("account-core");
     boost::shared_ptr<Ekiga::AudioInputCore> audioinput_core = core.get<Ekiga::AudioInputCore> ("audioinput-core");
-    boost::shared_ptr<Ekiga::VideoInputCore> videoinput_core = core.get<Ekiga::VideoInputCore> ("videoinput-core");
     boost::shared_ptr<Ekiga::AudioOutputCore> audiooutput_core = core.get<Ekiga::AudioOutputCore> ("audiooutput-core");
-    boost::shared_ptr<Ekiga::VideoOutputCore> videooutput_core = core.get<Ekiga::VideoOutputCore> ("videooutput-core");
     boost::shared_ptr<Ekiga::PersonalDetails> personal_details = core.get<Ekiga::PersonalDetails> ("personal-details");
     boost::shared_ptr<Bank> account_store = core.get<Bank> ("opal-account-store");
 
     if (contact_core && presence_core && call_core
-        && account_core && audioinput_core && videoinput_core
-        && audiooutput_core && videooutput_core && personal_details
+        && account_core && audioinput_core
+        && audiooutput_core personal_details
         && !account_store) {
 
       Opal::EndPoint& endpoint = GnomeMeeting::Process ()->GetEndPoint ();
       Opal::Sip::EndPoint& sip_endpoint = endpoint.GetSipEndPoint ();
 
-      // We create our various CallManagers: SIP, H.323
+      // We create our various CallManagers: SIP
       boost::shared_ptr<Opal::Sip::CallManager> sip_call_manager (new Opal::Sip::CallManager (core, endpoint, sip_endpoint));
       contact_core->push_back (Ekiga::URIActionProviderPtr (sip_call_manager));
       presence_core->push_back (Ekiga::URIActionProviderPtr (sip_call_manager));
@@ -93,7 +89,7 @@ public:
 
       // We create the Bank
       // It must be created last. That way, it will handle the Opal::EndPoint
-      // "ready" signal after the SIP and H.323 EndPoints. Otherwise, accounts
+      // "ready" signal after the SIP EndPoints. Otherwise, accounts
       // registration could not work when STUN is used.
       boost::shared_ptr<Bank> bank = Opal::Bank::create (core,
                                                          endpoint,

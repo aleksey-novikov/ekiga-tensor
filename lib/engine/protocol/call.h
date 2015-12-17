@@ -65,7 +65,7 @@ namespace Ekiga
 
   public:
 
-      enum StreamType { Audio, Video };
+      enum StreamType { Audio };
 
       /*
        * Call Management

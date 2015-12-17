@@ -63,9 +63,6 @@ void HalCore::add_manager (HalManager &manager)
   managers.insert (&manager);
   manager_added (manager);
 
-  manager.videoinput_device_added.connect (boost::bind (&HalCore::on_videoinput_device_added, this, _1, _2, _3, &manager));
-  manager.videoinput_device_removed.connect (boost::bind (&HalCore::on_videoinput_device_removed, this, _1, _2, _3, &manager));
-
   manager.audioinput_device_added.connect (boost::bind (&HalCore::on_audioinput_device_added, this, _1, _2, &manager));
   manager.audioinput_device_removed.connect (boost::bind (&HalCore::on_audioinput_device_removed, this, _1, _2, &manager));
 
@@ -85,14 +82,6 @@ void HalCore::visit_managers (boost::function1<bool, HalManager &> visitor) cons
        iter != managers.end () && go_on;
        iter++)
       go_on = visitor (*(*iter));
-}
-
-void HalCore::on_videoinput_device_added (std::string source, std::string device, unsigned capabilities, HalManager* manager) {
-  videoinput_device_added (source, device, capabilities, manager);
-}
-
-void HalCore::on_videoinput_device_removed (std::string source, std::string device, unsigned capabilities, HalManager* manager) {
-  videoinput_device_removed (source, device, capabilities, manager);
 }
 
 void HalCore::on_audioinput_device_added (std::string source, std::string device, HalManager* manager) {

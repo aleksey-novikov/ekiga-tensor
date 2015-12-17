@@ -69,20 +69,6 @@ namespace Ekiga
 
       /*** API to act on HAL events ***/
 
-      /** This signal is emitted when a video input device is added to the system.
-       * @param source the video input framework (e.g. video4linux, etc.).
-       * @param device the device name.
-       * @param capabilities source-dependent device capabilites (e.g. V4L1 or V4L2 for video4linux).
-       */
-      boost::signals2::signal<void(std::string, std::string, unsigned)> videoinput_device_added;
-
-      /** This signal is emitted when a video input device is removed from the system.
-       * @param source the video input framework (e.g. video4linux, etc.).
-       * @param device the device name.
-       * @param capabilities source-dependent device capabilites (e.g. V4L1 or V4L2 for video4linux).
-       */
-      boost::signals2::signal<void(std::string, std::string, unsigned)> videoinput_device_removed;
-
       /** This signal is emitted when an audio input device is added to the system.
        * @param source the audio input framework (e.g. alsa, oss, etc.).
        * @param device the device name.

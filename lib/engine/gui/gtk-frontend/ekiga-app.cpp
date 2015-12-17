@@ -59,7 +59,6 @@
 #include "personal-details.h"
 #include "audioinput-core.h"
 #include "audiooutput-core.h"
-#include "videoinput-core.h"
 #include "call-core.h"
 #include "engine.h"
 #include "runtime.h"
@@ -102,8 +101,6 @@ struct _GmApplicationPrivate
   GtkWidget *ekiga_window;
   GtkWidget *chat_window;
   GtkWidget *call_window;
-
-  boost::shared_ptr<Ekiga::Settings> video_devices_settings;
 
 #ifdef HAVE_DBUS
   EkigaDBusComponent *dbus_component;
@@ -156,10 +153,6 @@ static void help_activated (GSimpleAction *action,
 static void window_activated (GSimpleAction *action,
                               GVariant *parameter,
                               gpointer app);
-
-static void video_preview_changed (GSettings *settings,
-                                   const gchar *key,
-                                   gpointer data);
 
 static GActionEntry app_entries[] =
 {
@@ -341,29 +334,6 @@ window_activated (GSimpleAction *action,
 }
 
 
-static void
-video_preview_changed (GSettings *settings,
-                       const gchar *key,
-                       gpointer data)
-{
-  g_return_if_fail (GM_IS_APPLICATION (data));
-
-  GmApplication *self = GM_APPLICATION (data);
-  boost::shared_ptr<Ekiga::VideoInputCore> video_input_core =
-    self->priv->core.get<Ekiga::VideoInputCore> ("videoinput-core");
-
-  if (g_settings_get_boolean (settings, key)) {
-    gm_application_show_call_window (self);
-    video_input_core->start_preview ();
-  }
-  else {
-    video_input_core->stop_preview ();
-    g_return_if_fail (self->priv->call_window);
-    gtk_window_close (GTK_WINDOW (self->priv->call_window));
-  }
-}
-
-
 /* Public api */
 void
 ekiga_main (int argc,
@@ -447,7 +417,7 @@ gm_application_startup (GApplication *app)
   /* initialize platform-specific code */
   gm_platform_init ();
 #ifdef WIN32
-  // plugins (i.e. the audio/video ptlib/opal codecs) are searched in ./plugins
+  // plugins (i.e. the audio ptlib/opal codecs) are searched in ./plugins
   chdir (win32_datadir ());
 #endif
 
@@ -520,15 +490,6 @@ gm_application_startup (GApplication *app)
   app_menu = G_MENU_MODEL (gtk_builder_get_object (self->priv->builder, "appmenu"));
   gtk_application_set_app_menu (GTK_APPLICATION (self), app_menu);
 
-  self->priv->video_devices_settings =
-    boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (VIDEO_DEVICES_SCHEMA));
-
-  // Not sure if we should do this or not.
-  self->priv->video_devices_settings->set_bool ("enable-preview", false);
-
-  g_signal_connect (self->priv->video_devices_settings->get_g_settings (),
-                    "changed::enable-preview",
-                    G_CALLBACK (video_preview_changed), self);
   self->priv->call_window = NULL;
 
   // We add DBUS specific actions, based on the Engine actions
@@ -548,11 +509,6 @@ gm_application_shutdown (GApplication *app)
   GmApplication *self = GM_APPLICATION (app);
 
   g_return_if_fail (self);
-  {
-    boost::shared_ptr<Ekiga::VideoInputCore> video_input_core =
-      self->priv->core.get<Ekiga::VideoInputCore> ("videoinput-core");
-    video_input_core->stop_preview ();
-  }
 
   self->priv->fof_menu.reset ();
   self->priv->banks_menu.clear ();
@@ -844,8 +800,8 @@ along with this program; if not, write to the Free Software Foundation, \
 Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA."),
 N_("Ekiga is licensed under the GPL license and as a special exception, \
 you have permission to link or otherwise combine this program with the \
-programs OPAL, OpenH323 and PWLIB, and distribute the combination, \
-without applying the requirements of the GNU GPL to the OPAL, OpenH323 \
+programs OPAL and PWLIB, and distribute the combination, \
+without applying the requirements of the GNU GPL to the OPAL \
 and PWLIB programs, as long as you do follow the requirements of the \
 GNU GPL for all the rest of the software thus combined.")
   };
@@ -859,7 +815,7 @@ GNU GPL for all the rest of the software thus combined.")
     translator_credits = "No translators, English by\n"
         "Damien Sandras <dsandras@seconix.com>";
 
-  const gchar *comments =  _("Ekiga is full-featured SIP and H.323 compatible VoIP, IP-Telephony and Videoconferencing application that allows you to make audio and video calls to remote users with SIP and H.323 hardware or software.");
+  const gchar *comments =  _("Ekiga is full-featured SIP compatible VoIP and IP-Telephony application that allows you to make audio calls to remote users with SIP hardware or software.");
 
   license_trans = g_strconcat (_(license[0]), "\n\n", _(license[1]), "\n\n",
                                _(license[2]), "\n\n", NULL);

@@ -73,14 +73,12 @@ struct _PreferencesWindowPrivate
   GtkWidget *audio_player;
   GtkWidget *sound_events_output;
   GtkWidget *audio_recorder;
-  GtkWidget *video_device;
   GtkWidget *iface;
   GtkWidget *fsbutton;
   GtkWidget *stack;
 
   GmApplication *app;
 
-  boost::shared_ptr<Ekiga::VideoInputCore> videoinput_core;
   boost::shared_ptr<Ekiga::AudioInputCore> audioinput_core;
   boost::shared_ptr<Ekiga::AudioOutputCore> audiooutput_core;
   boost::shared_ptr<Ekiga::Settings> protocols_settings;
@@ -92,9 +90,6 @@ struct _PreferencesWindowPrivate
   boost::shared_ptr<Ekiga::Settings> sound_events_settings;
   boost::shared_ptr<Ekiga::Settings> audio_devices_settings;
   boost::shared_ptr<Ekiga::Settings> audio_codecs_settings;
-  boost::shared_ptr<Ekiga::Settings> video_devices_settings;
-  boost::shared_ptr<Ekiga::Settings> video_codecs_settings;
-  boost::shared_ptr<Ekiga::Settings> video_display_settings;
   boost::shared_ptr<Ekiga::Settings> contacts_settings;
   Ekiga::scoped_connections connections;
 };
@@ -108,12 +103,6 @@ _PreferencesWindowPrivate::_PreferencesWindowPrivate ()
     boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (AUDIO_DEVICES_SCHEMA));
   audio_codecs_settings =
     boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (AUDIO_CODECS_SCHEMA));
-  video_devices_settings =
-    boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (VIDEO_DEVICES_SCHEMA));
-  video_codecs_settings =
-    boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (VIDEO_CODECS_SCHEMA));
-  video_display_settings =
-    boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (VIDEO_DISPLAY_SCHEMA));
   personal_data_settings =
     boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (PERSONAL_DATA_SCHEMA));
   protocols_settings =
@@ -213,15 +202,6 @@ static void gm_pw_init_sip_page (PreferencesWindow *self,
  * 		  container widget where to attach the generated page.
  */
 static void gm_pw_init_audio_page (PreferencesWindow *self,
-                                   GtkWidget *container);
-
-
-/* DESCRIPTION  : /
- * BEHAVIOR     : Builds the video settings page.
- * PRE          : A valid pointer to the preferences window GMObject, and to the
- * 		  container widget where to attach the generated page.
- */
-static void gm_pw_init_video_page (PreferencesWindow *self,
                                    GtkWidget *container);
 
 
@@ -537,14 +517,6 @@ gm_pw_init_general_page (PreferencesWindow *self,
                     self->priv->contacts_settings, "show-offline-contacts",
                     _("Show offline contacts in the roster"), false);
 
-  gm_pw_toggle_new (container, _("Place windows displaying video _above other windows"),
-                    self->priv->video_display_settings, "stay-on-top",
-                    _("Place windows displaying video above other windows during calls"), false);
-
-  gm_pw_toggle_new (container, _("Enable _Picture-In-Picture mode"),
-                    self->priv->video_display_settings, "enable-pip",
-                    _("This allows the local video stream to be displayed incrusted in the remote video stream. This is only effective when sending and receiving video"), false);
-
   /* Network Settings */
   gm_pw_subsection_new (container, _("Network Settings"));
   gm_pw_spin_new (container, _("Type of Service (TOS)"), NULL,
@@ -803,109 +775,6 @@ gm_pw_init_audio_page (PreferencesWindow *self,
 }
 
 
-static void
-gm_pw_init_video_page (PreferencesWindow *self,
-                       GtkWidget *container)
-{
-  GtkWidget *codecs_list = NULL;
-  PStringArray devs;
-
-  std::vector <std::string> devices;
-
-  Choices video_size_options;
-  Choices video_input_formats;
-
-  unsigned int i;
-  unsigned int pos = 0;
-
-  // FIXME: Probably should come from the core itself
-  static const char* VideoSizesDescription[NB_VIDEO_SIZES][2] = {
-      { "qcif",  N_("Small")         },
-      { "sif",   N_("Medium")        },
-      { "cif",   N_("Medium")        },
-      { "4sif",  N_("480p 4:3 HD")   },
-      { "4cif",  N_("DVD")           },
-      { "720p",  N_("720p HD")       },
-      { "1080p", N_("1080p Full HD") }
-  };
-
-  // FIXME: Probably should come from the core itself
-  static const char* VideoInputFormatDescription[][2] = {
-      { "pal",   N_("PAL (Europe)")   },
-      { "ntsc",  N_("NTSC (America)") },
-      { "secam", N_("SECAM (France)") },
-      { "auto",  N_("Auto")           },
-      { NULL, NULL }
-    };
-
-  for (i=0; i< NB_VIDEO_SIZES; i++) {
-    gchar *value = g_strdup_printf ("%s (%dx%d)",
-                                    gettext (VideoSizesDescription[i][1]),
-                                    Ekiga::VideoSizes[i].width,
-                                    Ekiga::VideoSizes[i].height);
-    video_size_options.push_back (boost::make_tuple (VideoSizesDescription[i][0], value));
-    g_free (value);
-  }
-
-  for (i=0; VideoInputFormatDescription[i][0]; i++) {
-    video_input_formats.push_back (boost::make_tuple (VideoInputFormatDescription[i][0],
-                                                      VideoInputFormatDescription[i][1]));
-  }
-
-  /* Packing widgets */
-  GTK_GRID_LAST_ROW (container, pos);
-  codecs_list = codecs_box_new_with_type (self->priv->app, Ekiga::Call::Video);
-  gtk_grid_attach (GTK_GRID (container), codecs_list, 0, pos-1, 3, 1);
-
-  /* Here we add the video codecs options */
-  gm_pw_subsection_new (container, _("Settings"));
-
-  /* Translators: the full sentence is Keep a minimum video quality of X % */
-  gm_pw_scale_new (container, _("Picture Quality"), _("Frame Rate"),
-                   self->priv->video_codecs_settings, "temporal-spatial-tradeoff",
-                   _("Choose if you want to guarantee a minimum image quality (possibly leading to dropped frames in order not to surpass the bitrate limit) or if you prefer to keep the frame rate"),
-                   0.0, 32.0, 1.0);
-
-  /* Translators: the full sentence is Maximum video bitrate of x kbits/s. */
-  gm_pw_spin_new (container, _("Use a maximum video _bitrate of"), _("kbits/s"),
-                  self->priv->video_codecs_settings, "maximum-video-tx-bitrate",
-                  _("The maximum video bitrate in kbits/s. The video quality and the effective frame rate will be dynamically adjusted to keep the bitrate at the given value."),
-                  16.0, 10240.0, 1.0);
-
-
-  /* The video devices related options */
-  gm_pw_subsection_new (container, _("Devices"));
-
-  /* The video device */
-  self->priv->videoinput_core->get_devices (devices);
-  self->priv->video_device =
-    gm_pw_string_option_menu_new (container, _("Input Device"),
-                                  gm_pw_get_device_choices (devices),
-                                  self->priv->video_devices_settings, "input-device", _("Select the video input device to use. If an error occurs when using this device a test picture will be transmitted."));
-
-  gm_pw_string_option_menu_new (container, _("Size"),
-                                video_size_options,
-                                self->priv->video_devices_settings,
-                                "size",
-                                _("Select the transmitted video size"));
-
-  gm_pw_string_option_menu_new (container, _("Format"),
-                                video_input_formats,
-                                self->priv->video_devices_settings,
-                                "format",
-                                _("Select the format for video cameras (does not apply to most USB cameras)"));
-
-  gm_pw_spin_new (container, _("Channel"), NULL,
-                  self->priv->video_devices_settings, "channel",
-                  _("The video channel number to use (to select camera, tv or other sources)"), 0.0, 10.0, 1.0);
-
-  /* That button will refresh the device list */
-  gm_pw_add_update_button (container, _("_Detect Devices"),
-                           G_CALLBACK (refresh_devices_list_cb),
-                           _("Click here to refresh the device list"), self);
-}
-
-
 GtkWidget *
 gm_pw_entry_new (GtkWidget *subsection,
                  const gchar *label_txt,
@@ -1019,7 +888,7 @@ gm_pw_string_option_menu_update (GtkWidget *option_menu,
                    option_menu, "active-id",
                    G_SETTINGS_BIND_DEFAULT);
 
-  // Force the corresponding AudioInputCore/AudioOutputCore/VideoInputCore
+  // Force the corresponding AudioInputCore/AudioOutputCore
   // to select the most appropriate device if we removed the currently used
   // device
   if (gtk_combo_box_get_active (GTK_COMBO_BOX (option_menu)) == -1)
@@ -1066,7 +935,7 @@ gm_pw_string_option_menu_remove (GtkWidget *option_menu,
   }
   gtk_combo_box_text_remove (GTK_COMBO_BOX_TEXT (option_menu), pos);
 
-  // Force the corresponding AudioInputCore/AudioOutputCore/VideoInputCore
+  // Force the corresponding AudioInputCore/AudioOutputCore
   // to select the most appropriate device if we removed the currently used
   // device
   if (gtk_combo_box_get_active (GTK_COMBO_BOX (option_menu)) == -1)
@@ -1309,13 +1178,6 @@ gm_prefs_window_update_devices_list (PreferencesWindow *self)
                                    gm_pw_get_device_choices (devices),
                                    self->priv->audio_devices_settings,
                                    "input-device");
-
-  /* The Video player */
-  self->priv->videoinput_core->get_devices (devices);
-  gm_pw_string_option_menu_update (self->priv->video_device,
-                                   gm_pw_get_device_choices (devices),
-                                   self->priv->video_devices_settings,
-                                   "input-device");
 }
 
 
@@ -1512,26 +1374,6 @@ sound_event_toggled_cb (G_GNUC_UNUSED GtkCellRendererToggle *cell,
 }
 
 
-void on_videoinput_device_added_cb (const Ekiga::VideoInputDevice & device,
-                                    PreferencesWindow *self)
-{
-  g_return_if_fail (self != NULL);
-
-  gm_pw_string_option_menu_add (self->priv->video_device,
-                                boost::make_tuple (device.GetString (), device.GetString ()),
-                                self->priv->video_devices_settings, "input-device");
-}
-
-void on_videoinput_device_removed_cb (const Ekiga::VideoInputDevice & device,
-                                      bool,
-                                      PreferencesWindow *self)
-{
-  g_return_if_fail (self != NULL);
-
-  gm_pw_string_option_menu_remove (self->priv->video_device, device.GetString(),
-                                   self->priv->video_devices_settings, "input-device");
-}
-
 void on_audioinput_device_added_cb (const Ekiga::AudioInputDevice & device,
                                     PreferencesWindow *self)
 {
@@ -1633,7 +1475,6 @@ preferences_window_new (GmApplication *app)
   self->priv = new PreferencesWindowPrivate ();
   self->priv->audioinput_core = core.get<Ekiga::AudioInputCore> ("audioinput-core");
   self->priv->audiooutput_core = core.get<Ekiga::AudioOutputCore> ("audiooutput-core");
-  self->priv->videoinput_core = core.get<Ekiga::VideoInputCore> ("videoinput-core");
   self->priv->app = app;
 
   headerbar = gtk_header_bar_new ();
@@ -1680,23 +1521,8 @@ preferences_window_new (GmApplication *app)
   gm_pw_init_audio_page (self, container);
   gtk_widget_show_all (GTK_WIDGET (container));
 
-  container = gm_pw_window_subsection_new (self, _("Video"));
-  gm_pw_init_video_page (self, container);
-  gtk_widget_show_all (GTK_WIDGET (container));
-
 
   /* Boost Signals */
-  conn =
-    self->priv->videoinput_core->device_added.connect (boost::bind (&on_videoinput_device_added_cb,
-                                                                    _1,
-                                                                    self));
-  self->priv->connections.add (conn);
-  conn = self->priv->videoinput_core->device_removed.connect (boost::bind (&on_videoinput_device_removed_cb,
-                                                                           _1,
-                                                                           _2,
-                                                                           self));
-  self->priv->connections.add (conn);
-
   conn =
     self->priv->audioinput_core->device_added.connect (boost::bind (&on_audioinput_device_added_cb,
                                                                     _1,

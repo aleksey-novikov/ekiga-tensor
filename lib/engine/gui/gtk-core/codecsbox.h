@@ -48,7 +48,7 @@
 
 /** This implements a CodecsBox for the Ekiga Engine.
  * The codecs list is loaded from the GmConf configuration engine,
- * using the /apps/ekiga/codecs/audio/list or /apps/ekiga/codecs/video/list
+ * using the /apps/ekiga/codecs/audio/list
  * following the type of codecs. The key is supposed to contain
  * all codecs supported by the Engine. The key value is formated so that it
  * respects the output of an Ekiga::CodecDescription.
@@ -75,7 +75,7 @@ struct _CodecsBoxClass
 
 
 /** Create a new CodecsBox.
- * @param type is a valid Ekiga::Call::StreamType (Audio or Video supported).
+ * @param type is a valid Ekiga::Call::StreamType (Audio supported).
  */
 GtkWidget *codecs_box_new_with_type (GmApplication *app,
                                      Ekiga::Call::StreamType type);

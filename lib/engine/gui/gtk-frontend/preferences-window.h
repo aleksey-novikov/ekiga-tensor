@@ -45,7 +45,6 @@
 
 #include "audioinput-core.h"
 #include "audiooutput-core.h"
-#include "videoinput-core.h"
 
 #include "gmwindow.h"
 

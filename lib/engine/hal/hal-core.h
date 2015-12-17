@@ -119,9 +119,6 @@ namespace Ekiga
 
       /** See hal-manager.h for the API
        */
-      boost::signals2::signal<void(const std::string &, const std::string &, unsigned, HalManager*)> videoinput_device_added;
-      boost::signals2::signal<void(const std::string &, const std::string &, unsigned, HalManager*)> videoinput_device_removed;
-
       boost::signals2::signal<void(const std::string &, const std::string &, HalManager*)> audioinput_device_added;
       boost::signals2::signal<void(const std::string &, const std::string &, HalManager*)> audioinput_device_removed;
 
@@ -132,9 +129,6 @@ namespace Ekiga
       boost::signals2::signal<void(const std::string &, const std::string &, HalManager*)> network_interface_down;
 
   private:
-
-      void on_videoinput_device_added (std::string source, std::string device, unsigned capabilities, HalManager* manager);
-      void on_videoinput_device_removed (std::string source, std::string device, unsigned capabilities, HalManager* manager);
 
       void on_audioinput_device_added (std::string source, std::string device, HalManager* manager);
       void on_audioinput_device_removed (std::string source, std::string device, HalManager* manager);

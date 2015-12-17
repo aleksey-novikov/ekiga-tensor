@@ -47,7 +47,6 @@
 
 #include "dialpad.h"
 
-#include "gmvideowidget.h"
 #include "gm-info-bar.h"
 #include "gactor-menu.h"
 #include "scoped-connections.h"
@@ -69,10 +68,8 @@
 
 #include "engine.h"
 #include "call-core.h"
-#include "videoinput-core.h"
 #include "audioinput-core.h"
 #include "audiooutput-core.h"
-#include "videooutput-manager.h"
 #include "rtcp-statistics.h"
 
 #define STAGE_WIDTH 640
@@ -95,8 +92,6 @@ enum {
 
 struct _EkigaCallWindowPrivate
 {
-  boost::shared_ptr<Ekiga::VideoInputCore> videoinput_core;
-  boost::shared_ptr<Ekiga::VideoOutputCore> videooutput_core;
   boost::shared_ptr<Ekiga::AudioInputCore> audioinput_core;
   boost::shared_ptr<Ekiga::AudioOutputCore> audiooutput_core;
   boost::shared_ptr<Ekiga::FriendOrFoe> friend_or_foe;
@@ -106,13 +101,10 @@ struct _EkigaCallWindowPrivate
   boost::shared_ptr<Ekiga::Call> current_call;
   CallingState calling_state;
 
-  GtkWidget *ext_video_win;
   GtkWidget *event_box;
   GtkWidget *spinner;
   GtkBuilder *builder;
 
-  GtkWidget *video_widget;
-  bool fullscreen;
   bool dead;
   bool bad_connection;
 
@@ -131,33 +123,25 @@ struct _EkigaCallWindowPrivate
 
   GtkWidget *info_bar;
 
-  /* Audio and video settings */
+  /* Audio settings */
   int settings[MAX_SETTINGS];
   GtkWidget *settings_range[MAX_SETTINGS];
 
-  std::string transmitted_video_codec;
   std::string transmitted_audio_codec;
-  std::string received_video_codec;
   std::string received_audio_codec;
 
   Ekiga::GActorMenuPtr call_menu;
 
   Ekiga::scoped_connections connections;
-  boost::shared_ptr<Ekiga::Settings> video_display_settings;
 };
 
 /* channel types */
 enum {
   CHANNEL_FIRST,
   CHANNEL_AUDIO,
-  CHANNEL_VIDEO,
   CHANNEL_LAST
 };
 
-
-static void show_extended_video_window_cb (G_GNUC_UNUSED GSimpleAction *action,
-                                           G_GNUC_UNUSED GVariant *parameter,
-                                           gpointer data);
 
 static void fullscreen_changed_cb (G_GNUC_UNUSED GSimpleAction *action,
                                    G_GNUC_UNUSED GVariant *parameter,
@@ -169,41 +153,6 @@ static void show_call_devices_settings_cb (G_GNUC_UNUSED GSimpleAction *action,
 
 static void call_devices_settings_changed_cb (GtkRange *range,
                                               gpointer data);
-
-static void on_videooutput_device_opened_cb (Ekiga::VideoOutputManager & /* manager */,
-                                             Ekiga::VideoOutputManager::VideoView type,
-                                             unsigned width,
-                                             unsigned height,
-                                             bool both_streams,
-                                             bool ext_stream,
-                                             gpointer self);
-
-static void on_videooutput_device_closed_cb (Ekiga::VideoOutputManager & /* manager */,
-                                             gpointer self);
-
-static void on_videooutput_device_error_cb (Ekiga::VideoOutputManager & /* manager */,
-                                            gpointer self);
-
-static void on_size_changed_cb (Ekiga::VideoOutputManager & /* manager */,
-                                Ekiga::VideoOutputManager::VideoView type,
-                                unsigned width,
-                                unsigned height,
-                                gpointer self);
-
-static void on_videoinput_device_opened_cb (Ekiga::VideoInputManager & /* manager */,
-                                            Ekiga::VideoInputDevice & /* device */,
-                                            Ekiga::VideoInputSettings & settings,
-                                            gpointer self);
-
-static void on_videoinput_device_closed_cb (Ekiga::VideoInputManager & /* manager */,
-                                            Ekiga::VideoInputDevice & /*device*/,
-                                            gpointer self);
-
-static void on_videoinput_device_error_cb (Ekiga::VideoInputManager & /* manager */,
-                                           Ekiga::VideoInputDevice & device,
-                                           Ekiga::VideoInputErrorCodes error_code,
-                                           gpointer self);
-
 
 static void on_audioinput_device_opened_cb (Ekiga::AudioInputManager & /* manager */,
                                             Ekiga::AudioInputDevice & /* device */,
@@ -312,66 +261,6 @@ static void ekiga_call_window_toggle_fullscreen (EkigaCallWindow *self);
 
 static void ekiga_call_window_init_gui (EkigaCallWindow *self);
 
-/**/
-static const char* win_menu =
-  "<?xml version='1.0'?>"
-  "<interface>"
-  "  <menu id='menubar'>"
-  "    <section>"
-  "      <item>"
-  "        <attribute name='label' translatable='yes'>Transmit Video</attribute>"
-  "        <attribute name='action'>win.transmit-video</attribute>"
-  "      </item>"
-  "    </section>"
-  "    <section>"
-  "      <item>"
-  "        <attribute name='label' translatable='yes'>_Picture-In-Picture Mode</attribute>"
-  "        <attribute name='action'>win.enable-pip</attribute>"
-  "      </item>"
-  "      <item>"
-  "        <attribute name='label' translatable='yes'>_Extended Video</attribute>"
-  "        <attribute name='action'>win.show-extended-video</attribute>"
-  "      </item>"
-  "    </section>"
-  "  </menu>"
-  "</interface>";
-
-static GActionEntry win_entries[] =
-{
-    { "show-extended-video",  show_extended_video_window_cb, NULL, NULL, NULL, 0 },
-    { "enable-fullscreen", fullscreen_changed_cb, NULL, NULL, NULL, 0 }
-};
-
-static GActionEntry video_settings_entries[] =
-{
-    { "call-devices-settings", show_call_devices_settings_cb, NULL, NULL, NULL, 0 },
-};
-
-/**/
-
-static void
-show_extended_video_window_cb (G_GNUC_UNUSED GSimpleAction *action,
-                               G_GNUC_UNUSED GVariant *parameter,
-                               gpointer data)
-{
-  g_return_if_fail (EKIGA_IS_CALL_WINDOW (data));
-  EkigaCallWindow *self = EKIGA_CALL_WINDOW (data);
-
-  if (self->priv->ext_video_win)
-    gtk_widget_show (GTK_WIDGET (self->priv->ext_video_win));
-}
-
-static void
-fullscreen_changed_cb (G_GNUC_UNUSED GSimpleAction *action,
-                       G_GNUC_UNUSED GVariant *parameter,
-                       gpointer data)
-{
-  g_return_if_fail (data);
-
-  ekiga_call_window_toggle_fullscreen (EKIGA_CALL_WINDOW (data));
-}
-
-
 static void
 show_call_devices_settings_cb (G_GNUC_UNUSED GSimpleAction *action,
                                G_GNUC_UNUSED GVariant *parameter,
@@ -396,196 +285,10 @@ call_devices_settings_changed_cb (G_GNUC_UNUSED GtkRange *range,
     }
   }
 
-  if (self->priv->settings[WHITENESS] != -1)
-    self->priv->videoinput_core->set_whiteness (self->priv->settings[WHITENESS]);
-  if (self->priv->settings[BRIGHTNESS] != -1)
-    self->priv->videoinput_core->set_brightness (self->priv->settings[BRIGHTNESS]);
-  if (self->priv->settings[COLOR] != -1)
-    self->priv->videoinput_core->set_colour (self->priv->settings[COLOR]);
-  if (self->priv->settings[CONTRAST] != -1)
-    self->priv->videoinput_core->set_contrast (self->priv->settings[CONTRAST]);
   if (self->priv->settings[SPEAKER_VOLUME] != -1)
     self->priv->audiooutput_core->set_volume (Ekiga::primary, self->priv->settings[SPEAKER_VOLUME]);
   if (self->priv->settings[MIC_VOLUME] != -1)
     self->priv->audioinput_core->set_volume (self->priv->settings[MIC_VOLUME]);
-}
-
-static void
-on_videooutput_device_opened_cb (Ekiga::VideoOutputManager & /* manager */,
-                                 Ekiga::VideoOutputManager::VideoView type,
-                                 unsigned width,
-                                 unsigned height,
-                                 G_GNUC_UNUSED bool both_streams,
-                                 G_GNUC_UNUSED bool ext_stream,
-                                 gpointer data)
-{
-  g_return_if_fail (EKIGA_IS_CALL_WINDOW (data));
-
-  EkigaCallWindow *self = EKIGA_CALL_WINDOW (data);
-  GtkWidget *video_widget = NULL;
-
-  if (type == Ekiga::VideoOutputManager::EXTENDED) {
-
-    if (!self->priv->ext_video_win) {
-      self->priv->ext_video_win =
-        gm_window_new_with_key (USER_INTERFACE ".video-settings-window");
-      video_widget = gm_video_widget_new ();
-      gtk_widget_set_size_request (video_widget, STAGE_WIDTH, STAGE_HEIGHT);
-      gtk_widget_show (video_widget);
-      gtk_container_add (GTK_CONTAINER (self->priv->ext_video_win), video_widget);
-
-      self->priv->videooutput_core->set_ext_display_info (gm_video_widget_get_stream (GM_VIDEO_WIDGET (video_widget),
-                                                                                    PRIMARY_STREAM));
-    }
-    gtk_widget_show (GTK_WIDGET (self->priv->ext_video_win));
-    gm_video_widget_set_stream_natural_size (GM_VIDEO_WIDGET (video_widget),
-                                             PRIMARY_STREAM, width, height);
-    gm_video_widget_set_stream_state (GM_VIDEO_WIDGET (video_widget),
-                                      PRIMARY_STREAM, STREAM_STATE_PLAYING);
-  }
-  else {
-    GM_STREAM_TYPE t =
-      (type == Ekiga::VideoOutputManager::REMOTE) ? PRIMARY_STREAM : SECONDARY_STREAM;
-
-    gtk_widget_show (GTK_WIDGET (self));
-    gm_video_widget_set_stream_natural_size (GM_VIDEO_WIDGET (self->priv->video_widget),
-                                             t, width, height);
-    gm_video_widget_set_stream_state (GM_VIDEO_WIDGET (self->priv->video_widget),
-                                      t, STREAM_STATE_PLAYING);
-
-  }
-}
-
-static void
-on_videooutput_device_closed_cb (Ekiga::VideoOutputManager & /* manager */,
-                                 gpointer data)
-{
-  g_return_if_fail (data);
-
-  EkigaCallWindow *self = EKIGA_CALL_WINDOW (data);
-  for (int i = 0 ; i < MAX_STREAM ; i++) {
-    GM_STREAM_TYPE type = (GM_STREAM_TYPE) i;
-    gm_video_widget_set_stream_state (GM_VIDEO_WIDGET (self->priv->video_widget),
-                                      type, STREAM_STATE_STOPPED);
-  }
-  if (self->priv->ext_video_win) {
-      self->priv->videooutput_core->set_ext_display_info (NULL);
-    gtk_widget_destroy (self->priv->ext_video_win);
-    self->priv->ext_video_win = NULL;
-  }
-}
-
-static void
-on_videooutput_device_error_cb (Ekiga::VideoOutputManager & /* manager */,
-                                gpointer data)
-{
-  EkigaCallWindow *self = EKIGA_CALL_WINDOW (data);
-
-  gm_info_bar_push_message (GM_INFO_BAR (self->priv->info_bar),
-                            GTK_MESSAGE_ERROR,
-                            _("There was an error opening or initializing the video output. Please verify that no other application is using the accelerated video output."));
-}
-
-
-static void
-on_size_changed_cb (Ekiga::VideoOutputManager & /* manager */,
-                    Ekiga::VideoOutputManager::VideoView type,
-                    unsigned width,
-                    unsigned height,
-                    gpointer data)
-{
-  EkigaCallWindow *self = EKIGA_CALL_WINDOW (data);
-  GM_STREAM_TYPE t =
-    (type == Ekiga::VideoOutputManager::REMOTE) ? PRIMARY_STREAM : SECONDARY_STREAM;
-
-  gm_video_widget_set_stream_natural_size (GM_VIDEO_WIDGET (self->priv->video_widget),
-                                           t, width, height);
-}
-
-static void
-on_videoinput_device_opened_cb (Ekiga::VideoInputManager & /* manager */,
-                                Ekiga::VideoInputDevice & /* device */,
-                                Ekiga::VideoInputSettings & settings,
-                                gpointer data)
-{
-  g_return_if_fail (EKIGA_IS_CALL_WINDOW (data));
-  EkigaCallWindow *self = EKIGA_CALL_WINDOW (data);
-
-  if (settings.modifyable) {
-    self->priv->settings[WHITENESS] = settings.whiteness;
-    self->priv->settings[BRIGHTNESS] = settings.brightness;
-    self->priv->settings[COLOR] = settings.colour;
-    self->priv->settings[CONTRAST] = settings.contrast;
-
-    g_action_map_add_action_entries (G_ACTION_MAP (g_application_get_default ()),
-                                     video_settings_entries, G_N_ELEMENTS (video_settings_entries),
-                                     self);
-  }
-}
-
-static void
-on_videoinput_device_closed_cb (Ekiga::VideoInputManager & /* manager */,
-                                Ekiga::VideoInputDevice & /*device*/,
-                                gpointer data)
-{
-  g_return_if_fail (EKIGA_IS_CALL_WINDOW (data));
-  EkigaCallWindow *self = EKIGA_CALL_WINDOW (data);
-
-  self->priv->settings[WHITENESS] = -1;
-  self->priv->settings[BRIGHTNESS] = -1;
-  self->priv->settings[COLOR] = -1;
-  self->priv->settings[CONTRAST] = -1;
-
-  ekiga_call_window_remove_action_entries (G_ACTION_MAP (g_application_get_default ()),
-                                           video_settings_entries);
-}
-
-static void
-on_videoinput_device_error_cb (Ekiga::VideoInputManager & /* manager */,
-                               Ekiga::VideoInputDevice & device,
-                               Ekiga::VideoInputErrorCodes error_code,
-                               gpointer data)
-{
-  EkigaCallWindow *self = EKIGA_CALL_WINDOW (data);
-  gchar *message = NULL;
-
-  switch (error_code) {
-
-  case Ekiga::VI_ERROR_DEVICE:
-    message = g_strdup_printf (_("There was an error while opening %s.\n\nIn case it is a pluggable device, it may be sufficient to reconnect it. If not, or if it still does not work, please check your permissions and make sure that the appropriate driver is loaded."), (const char *) device.name.c_str());
-    break;
-
-  case Ekiga::VI_ERROR_FORMAT:
-    message = g_strdup_printf (_("There was an error while opening %s.\n\nYour video driver doesn't support the requested video format."), (const char *) device.name.c_str());
-    break;
-
-  case Ekiga::VI_ERROR_CHANNEL:
-    message = g_strdup_printf (_("There was an error while opening %s.\n\nCould not open the chosen channel."), (const char *) device.name.c_str());
-    break;
-
-  case Ekiga::VI_ERROR_COLOUR:
-    message = g_strdup_printf (_("There was an error while opening %s.\n\nYour driver doesn't seem to support any of the color formats supported by Ekiga.\n Please check your kernel driver documentation in order to determine which Palette is supported."), (const char *) device.name.c_str());
-    break;
-
-  case Ekiga::VI_ERROR_FPS:
-    message = g_strdup_printf (_("There was an error while opening %s.\n\nError while setting the frame rate."), (const char *) device.name.c_str());
-    break;
-
-  case Ekiga::VI_ERROR_SCALE:
-    message = g_strdup_printf (_("There was an error while opening %s.\n\nError while setting the frame size."), (const char *) device.name.c_str());
-    break;
-
-  case Ekiga::VI_ERROR_NONE:
-  default:
-    message = g_strdup_printf (_("There was an error while opening %s."), (const char *) device.name.c_str());
-    break;
-  }
-
-  gm_info_bar_push_message (GM_INFO_BAR (self->priv->info_bar),
-                            GTK_MESSAGE_ERROR,
-                            message);
-
-  g_free (message);
 }
 
 
@@ -818,20 +521,12 @@ on_retrieved_call_cb (boost::shared_ptr<Ekiga::Call>  /*call*/,
 static void
 set_codec (EkigaCallWindowPrivate *priv,
            std::string name,
-           bool is_video,
            bool is_transmitting)
 {
-  if (is_video) {
-    if (is_transmitting)
-      priv->transmitted_video_codec = name;
-    else
-      priv->received_video_codec = name;
-  } else {
-    if (is_transmitting)
-      priv->transmitted_audio_codec = name;
-    else
-      priv->received_audio_codec = name;
-  }
+  if (is_transmitting)
+    priv->transmitted_audio_codec = name;
+  else
+    priv->received_audio_codec = name;
 }
 
 static void
@@ -842,9 +537,8 @@ on_stream_opened_cb (boost::shared_ptr<Ekiga::Call>  /* call */,
                      gpointer data)
 {
   EkigaCallWindow *self = EKIGA_CALL_WINDOW (data);
-  bool is_video = (type == Ekiga::Call::Video);
 
-  set_codec (self->priv, name, is_video, is_transmitting);
+  set_codec (self->priv, name, is_transmitting);
 }
 
 
@@ -856,9 +550,8 @@ on_stream_closed_cb (boost::shared_ptr<Ekiga::Call>  /* call */,
                      gpointer data)
 {
   EkigaCallWindow *self = EKIGA_CALL_WINDOW (data);
-  bool is_video = (type == Ekiga::Call::Video);
 
-  set_codec (self->priv, "", is_video, is_transmitting);
+  set_codec (self->priv, "", is_transmitting);
 }
 
 
@@ -917,11 +610,6 @@ ekiga_call_window_delete_event_cb (GtkWidget *widget,
 
   if (self->priv->calling_state != Standby && self->priv->current_call) {
     self->priv->current_call->hang_up ();
-  }
-  else {
-    settings = g_settings_new (VIDEO_DEVICES_SCHEMA);
-    g_settings_set_boolean (settings, "enable-preview", false);
-    g_clear_object (&settings);
   }
 
   /* Destroying the call window directly is not nice
@@ -1109,27 +797,8 @@ ekiga_call_window_update_stats (EkigaCallWindow *self,
                                 const RTCPStatistics & stats)
 {
   gchar *stats_msg = NULL;
-  gchar *re_video_msg = NULL;
-  gchar *tr_video_msg = NULL;
-  unsigned received_width, received_height, transmitted_width, transmitted_height = 0;
 
   g_return_if_fail (EKIGA_IS_CALL_WINDOW (self));
-
-  gm_video_widget_get_stream_natural_size (GM_VIDEO_WIDGET (self->priv->video_widget),
-                                           PRIMARY_STREAM, &received_width, &received_height);
-  gm_video_widget_get_stream_natural_size (GM_VIDEO_WIDGET (self->priv->video_widget),
-                                           SECONDARY_STREAM, &transmitted_width, &transmitted_height);
-  if (received_width != 0 && received_height != 0)
-    re_video_msg = g_strdup_printf (" - %s (%dx%d)",
-                                    stats.received_video_codec.c_str (), received_width, received_height);
-  else
-    re_video_msg = g_strdup ("");
-
-  if (transmitted_width != 0 && transmitted_height != 0)
-    tr_video_msg = g_strdup_printf (" - %s (%dx%d)",
-                                    stats.transmitted_video_codec.c_str (), transmitted_width, transmitted_height);
-  else
-    tr_video_msg = g_strdup ("");
 
   gchar *jitter, *remote_jitter;
   if (stats.jitter == -1)
@@ -1142,12 +811,10 @@ ekiga_call_window_update_stats (EkigaCallWindow *self,
     remote_jitter = g_strdup_printf (_("%d ms"), stats.remote_jitter);
 
   stats_msg =
-    g_strdup_printf (_("<b><u>Reception:</u></b> %s %s\nLost Packets: %d %%\nJitter: %s\nFramerate: %d fps\nBandwidth: %d kbits/s\n\n"
-                       "<b><u>Transmission:</u></b> %s %s\nRemote Lost Packets: %d %%\nRemote Jitter: %s\nFramerate: %d fps\nBandwidth: %d kbits/s\n\n"),
-                     stats.received_audio_codec.c_str (), re_video_msg, stats.lost_packets, jitter,
-                     stats.received_fps, stats.received_audio_bandwidth + stats.received_video_bandwidth,
-                     stats.transmitted_audio_codec.c_str (), tr_video_msg, stats.remote_lost_packets, remote_jitter,
-                     stats.transmitted_fps, stats.transmitted_audio_bandwidth + stats.transmitted_video_bandwidth);
+    g_strdup_printf (_("<b><u>Reception:</u></b> %s\nLost Packets: %d %%\nJitter: %s\nBandwidth: %d kbits/s\n\n"
+                       "<b><u>Transmission:</u></b> %s\nRemote Lost Packets: %d %%\nRemote Jitter: %s\nBandwidth: %d kbits/s\n\n"),
+                     stats.received_audio_codec.c_str (), stats.lost_packets, jitter, stats.received_audio_bandwidth,
+                     stats.transmitted_audio_codec.c_str (), stats.remote_lost_packets, remote_jitter, stats.transmitted_audio_bandwidth);
   gtk_widget_set_tooltip_markup (GTK_WIDGET (self->priv->event_box), stats_msg);
 
   if (!self->priv->bad_connection && (stats.jitter > 250 || stats.lost_packets > 2)) {
@@ -1161,8 +828,6 @@ ekiga_call_window_update_stats (EkigaCallWindow *self,
   g_free (jitter);
   g_free (remote_jitter);
   g_free (stats_msg);
-  g_free (re_video_msg);
-  g_free (tr_video_msg);
 }
 
 
@@ -1233,62 +898,12 @@ ekiga_call_window_init_menu (EkigaCallWindow *self)
   self->priv->builder = gtk_builder_new ();
   gtk_builder_add_from_string (self->priv->builder, win_menu, -1, NULL);
 
-  g_action_map_add_action (G_ACTION_MAP (g_application_get_default ()),
-                           g_settings_create_action (self->priv->video_display_settings->get_g_settings (),
-                                                     "enable-pip"));
-
   g_action_map_add_action_entries (G_ACTION_MAP (g_application_get_default ()),
                                    win_entries, G_N_ELEMENTS (win_entries),
                                    self);
 
   gtk_widget_insert_action_group (GTK_WIDGET (self), "win",
                                   G_ACTION_GROUP (g_application_get_default ()));
-}
-
-
-static void
-ekiga_call_window_init_clutter (EkigaCallWindow *self)
-{
-  gchar *filename = NULL;
-
-  self->priv->video_widget = gm_video_widget_new ();
-  gtk_widget_show (self->priv->video_widget);
-  gtk_widget_set_size_request (GTK_WIDGET (self->priv->video_widget),
-                               STAGE_WIDTH, STAGE_HEIGHT);
-  gtk_container_add (GTK_CONTAINER (self->priv->event_box), self->priv->video_widget);
-
-  filename = g_build_filename (DATA_DIR, "pixmaps", PACKAGE_NAME,
-                               PACKAGE_NAME "-full-icon.png", NULL);
-  gm_video_widget_set_logo (GM_VIDEO_WIDGET (self->priv->video_widget), filename);
-  g_free (filename);
-
-  self->priv->videooutput_core->set_display_info (gm_video_widget_get_stream (GM_VIDEO_WIDGET (self->priv->video_widget), SECONDARY_STREAM), gm_video_widget_get_stream (GM_VIDEO_WIDGET (self->priv->video_widget), PRIMARY_STREAM));
-}
-
-static void
-ekiga_call_window_toggle_fullscreen (EkigaCallWindow *self)
-{
-  g_return_if_fail (EKIGA_IS_CALL_WINDOW (self));
-
-  self->priv->fullscreen = !self->priv->fullscreen;
-
-  if (self->priv->fullscreen) {
-    gm_window_save (GM_WINDOW (self));
-    gtk_widget_hide (self->priv->call_panel_toolbar);
-    gtk_window_set_keep_above (GTK_WINDOW (self), true);  // awesome WM needs gtk_window_set_keep_above before gtk_window_fullscreen for fullscreen to work
-    gtk_window_maximize (GTK_WINDOW (self));
-    gtk_window_fullscreen (GTK_WINDOW (self));
-    gm_video_widget_set_fullscreen (GM_VIDEO_WIDGET (self->priv->video_widget), true);
-  }
-  else {
-    gtk_widget_show (self->priv->call_panel_toolbar);
-    gtk_window_unmaximize (GTK_WINDOW (self));
-    gtk_window_unfullscreen (GTK_WINDOW (self));
-    gtk_window_set_keep_above (GTK_WINDOW (self),
-                               self->priv->video_display_settings->get_bool ("stay-on-top"));
-    gm_window_restore (GM_WINDOW (self));
-    gm_video_widget_set_fullscreen (GM_VIDEO_WIDGET (self->priv->video_widget), false);
-  }
 }
 
 
@@ -1303,9 +918,6 @@ ekiga_call_window_init_gui (EkigaCallWindow *self)
   GtkWidget *image = NULL;
 
   GIcon *icon = NULL;
-
-  /* The extended video stream window */
-  self->priv->ext_video_win = NULL;
 
   /* The main table */
   event_box = gtk_event_box_new ();
@@ -1331,13 +943,6 @@ ekiga_call_window_init_gui (EkigaCallWindow *self)
   /* The info bar */
   self->priv->info_bar = gm_info_bar_new ();
   gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (self->priv->info_bar), FALSE, FALSE, 0);
-
-  /* The frame that contains the video */
-  self->priv->event_box = gtk_event_box_new ();
-  ekiga_call_window_init_clutter (self);
-  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (self->priv->event_box), TRUE, TRUE, 0);
-  gtk_widget_show_all (self->priv->event_box);
-
 
   /* FIXME:
    * All those actions should be call specific.
@@ -1419,7 +1024,7 @@ ekiga_call_window_init_gui (EkigaCallWindow *self)
   gtk_header_bar_pack_start (GTK_HEADER_BAR (self->priv->call_panel_toolbar),
                              self->priv->settings_button);
   gtk_widget_set_tooltip_text (GTK_WIDGET (self->priv->settings_button),
-                               _("Change audio and video settings"));
+                               _("Change audio settings"));
   gtk_widget_show (self->priv->settings_button);
 
   /* Call Accept */
@@ -1487,11 +1092,8 @@ ekiga_call_window_init (EkigaCallWindow *self)
   self->priv->destroy_timeout_id = 0;
   self->priv->timeout_id = 0;
   self->priv->calling_state = Standby;
-  self->priv->fullscreen = false;
   self->priv->dead = false;
   self->priv->bad_connection = false;
-  self->priv->video_display_settings =
-    boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (VIDEO_DISPLAY_SCHEMA));
 
   for (int i = 0 ; i < MAX_SETTINGS ; i++)
     self->priv->settings[i] = -1;
@@ -1505,8 +1107,6 @@ ekiga_call_window_finalize (GObject *gobject)
 {
   EkigaCallWindow *self = EKIGA_CALL_WINDOW (gobject);
 
-  if (self->priv->ext_video_win)
-    gtk_widget_destroy (self->priv->ext_video_win);
   if (self->priv->timeout_id > 0)
     g_source_remove (self->priv->timeout_id);
 
@@ -1562,51 +1162,14 @@ call_window_new (GmApplication *app)
                                           "hide_on_esc", false, NULL));
   Ekiga::ServiceCore& core = gm_application_get_core (app);
 
-  self->priv->videoinput_core = core.get<Ekiga::VideoInputCore> ("videoinput-core");
-  self->priv->videooutput_core = core.get<Ekiga::VideoOutputCore> ("videooutput-core");
   self->priv->audioinput_core = core.get<Ekiga::AudioInputCore> ("audioinput-core");
   self->priv->audiooutput_core = core.get<Ekiga::AudioOutputCore> ("audiooutput-core");
   self->priv->friend_or_foe = core.get<Ekiga::FriendOrFoe> ("friend-or-foe");
 
   ekiga_call_window_init_gui (self);
 
-  g_settings_bind (self->priv->video_display_settings->get_g_settings (),
-                   "stay-on-top",
-                   self,
-                   "stay_on_top",
-                   G_SETTINGS_BIND_DEFAULT);
-  g_settings_bind (self->priv->video_display_settings->get_g_settings (),
-                   "enable-pip",
-                   self->priv->video_widget,
-                   "secondary_stream_display",
-                   G_SETTINGS_BIND_DEFAULT);
-
-  /* Display Engine signals */
-  boost::signals2::connection conn;
-  conn = self->priv->videooutput_core->device_opened.connect (boost::bind (&on_videooutput_device_opened_cb, _1, _2, _3, _4, _5, _6, (gpointer) self));
-  self->priv->connections.add (conn);
-
-  conn = self->priv->videooutput_core->device_closed.connect (boost::bind (&on_videooutput_device_closed_cb, _1, (gpointer) self));
-  self->priv->connections.add (conn);
-
-  conn = self->priv->videooutput_core->device_error.connect (boost::bind (&on_videooutput_device_error_cb, _1, (gpointer) self));
-  self->priv->connections.add (conn);
-
-  conn = self->priv->videooutput_core->size_changed.connect (boost::bind (&on_size_changed_cb, _1, _2, _3, _4, (gpointer) self));
-  self->priv->connections.add (conn);
-
-
-  /* VideoInput Engine signals */
-  conn = self->priv->videoinput_core->device_opened.connect (boost::bind (&on_videoinput_device_opened_cb, _1, _2, _3, (gpointer) self));
-  self->priv->connections.add (conn);
-
-  conn = self->priv->videoinput_core->device_closed.connect (boost::bind (&on_videoinput_device_closed_cb, _1, _2, (gpointer) self));
-  self->priv->connections.add (conn);
-
-  conn = self->priv->videoinput_core->device_error.connect (boost::bind (&on_videoinput_device_error_cb, _1, _2, _3, (gpointer) self));
-  self->priv->connections.add (conn);
-
   /* AudioInput Engine signals */
+  boost::signals2::connection conn;
   conn = self->priv->audioinput_core->device_opened.connect (boost::bind (&on_audioinput_device_opened_cb, _1, _2, _3, (gpointer) self));
   self->priv->connections.add (conn);
 

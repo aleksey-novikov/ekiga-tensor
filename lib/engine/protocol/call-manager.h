@@ -174,7 +174,7 @@ namespace Ekiga
 
 
     /*
-     * AUDIO, VIDEO AND CODECS DETAILS
+     * AUDIO AND CODECS DETAILS
      */
 
     /** Enable the given codecs

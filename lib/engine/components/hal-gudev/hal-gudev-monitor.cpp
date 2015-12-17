@@ -74,7 +74,7 @@ GUDevMonitor::GUDevMonitor (boost::shared_ptr<Ekiga::AudioInputCore> _audioinput
                             boost::shared_ptr<Ekiga::AudioOutputCore> _audiooutput_core)
         : audioinput_core(_audioinput_core), audiooutput_core(_audiooutput_core)
 {
-  const gchar* subsystems[] = { "video4linux", "sound", NULL};
+  const gchar* subsystems[] = { "sound", NULL};
   client = g_udev_client_new (subsystems);
 
   _audioinput_core->get_devices (audio_input_devices);
@@ -104,30 +104,7 @@ GUDevMonitor::device_change (GUdevDevice* device,
   gboolean remove = g_str_equal (action, "remove");
 
   const char* subsystem = g_udev_device_get_subsystem (device);
-  if (g_str_equal (subsystem, "video4linux")) {
-
-    // first check the api version
-    v4l_version = g_udev_device_get_property_as_int (device, "ID_V4L_VERSION");
-
-    if (v4l_version == 1 || v4l_version == 2) {
-
-      // then check it can actually capture
-      const char* caps = g_udev_device_get_property (device, "ID_V4L_CAPABILITIES");
-      if (caps != NULL && g_strstr_len (caps, -1, ":capture:") != NULL) {
-
-        // we're almost good!
-        const char* name = g_udev_device_get_property (device, "ID_V4L_PRODUCT");
-
-        if (name != NULL) {
-          if (add)
-            videoinput_device_added ("video4linux", name, v4l_version);
-          else if (remove)
-            videoinput_device_removed ("video4linux", name, v4l_version);
-        }
-      }
-    }
-  }
-  else if (g_str_equal (subsystem, "sound")) {
+  if (g_str_equal (subsystem, "sound")) {
     // Audio device detected
     std::vector<std::string> new_audio_input_devices;
     std::vector<std::string> new_audio_output_devices;

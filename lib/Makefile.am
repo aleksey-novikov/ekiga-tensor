@@ -36,7 +36,6 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/engine/components/glib-notify \
 	-I$(top_srcdir)/lib/engine/components/gmconf-personal-details \
 	-I$(top_srcdir)/lib/engine/components/hal-gudev \
-	-I$(top_srcdir)/lib/engine/components/mlogo-videoinput \
 	-I$(top_srcdir)/lib/engine/components/null-audioinput \
 	-I$(top_srcdir)/lib/engine/components/null-audiooutput \
 	-I$(top_srcdir)/lib/engine/components/opal \
@@ -88,8 +87,6 @@ libekiga_la_SOURCES += \
 # (those should probably be moved elsewhere like engine/gui/gtk-core/ )
 ##
 libekiga_la_SOURCES += \
-	gui/gmvideowidget.c \
-	gui/gmvideowidget.h \
 	gui/dialpad.h \
 	gui/dialpad.c \
 	gui/gm-smileys.h \
@@ -299,10 +296,6 @@ libekiga_la_SOURCES += \
 	engine/components/ptlib/audioinput-manager-ptlib.cpp \
 	engine/components/ptlib/audioinput-main-ptlib.h \
 	engine/components/ptlib/audioinput-main-ptlib.cpp \
-	engine/components/ptlib/videoinput-manager-ptlib.h \
-	engine/components/ptlib/videoinput-manager-ptlib.cpp \
-	engine/components/ptlib/videoinput-main-ptlib.h \
-	engine/components/ptlib/videoinput-main-ptlib.cpp \
 	engine/components/ptlib/audiooutput-manager-ptlib.h \
 	engine/components/ptlib/audiooutput-manager-ptlib.cpp \
 	engine/components/ptlib/audiooutput-main-ptlib.h \
@@ -331,10 +324,6 @@ libekiga_la_SOURCES += \
 	engine/components/opal/opal-main.cpp \
 	engine/components/opal/opal-audio.h \
 	engine/components/opal/opal-audio.cpp \
-	engine/components/opal/opal-videoinput.h \
-	engine/components/opal/opal-videoinput.cpp \
-	engine/components/opal/opal-videooutput.h \
-	engine/components/opal/opal-videooutput.cpp \
 	engine/components/opal/opal-plugins-hook.h \
 	engine/components/opal/opal-plugins-hook.cpp \
 	engine/components/opal/opal-presentity.h \

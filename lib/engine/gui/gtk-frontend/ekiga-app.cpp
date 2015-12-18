@@ -46,7 +46,6 @@
 #include "contact-core.h"
 #include "presence-core.h"
 #include "addressbook-window.h"
-#include "assistant-window.h"
 #include "preferences-window.h"
 #include "call-window.h"
 #include "ekiga-window.h"
@@ -377,7 +376,6 @@ ekiga_main (int argc,
   boost::shared_ptr<Ekiga::Settings> general_settings (new Ekiga::Settings (GENERAL_SCHEMA));
   const int schema_version = MAJOR_VERSION * 1000 + MINOR_VERSION * 10 + BUILD_NUMBER;
   if (general_settings->get_int ("version") < schema_version) {
-    gm_application_show_assistant_window (app);
     general_settings->set_int ("version", schema_version);
   }
 
@@ -865,20 +863,4 @@ gm_application_show_addressbook_window (GmApplication *self)
 
 
   gtk_window_present (GTK_WINDOW (addressbook_window_new (self)));
-}
-
-
-void
-gm_application_show_assistant_window (GmApplication *self)
-{
-  GtkWindow *parent = NULL;
-  GtkWindow *window = NULL;
-
-  g_return_if_fail (GM_IS_APPLICATION (self));
-
-  parent = gtk_application_get_active_window (GTK_APPLICATION (self));
-
-  window = GTK_WINDOW (assistant_window_new (self));
-  gtk_window_set_transient_for (GTK_WINDOW (window), GTK_WINDOW (parent));
-  gtk_window_present (window);
 }

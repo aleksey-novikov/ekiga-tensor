@@ -87,8 +87,6 @@ void gm_application_show_addressbook_window (GmApplication *app);
 
 void gm_application_show_accounts_window (GmApplication *app);
 
-void gm_application_show_assistant_window (GmApplication *app);
-
 /* GObject boilerplate */
 #define GM_TYPE_APPLICATION (gm_application_get_type ())
 

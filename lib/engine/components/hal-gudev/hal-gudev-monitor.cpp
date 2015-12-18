@@ -99,7 +99,6 @@ GUDevMonitor::device_change (GUdevDevice* device,
   //g_print ("%s\n", __PRETTY_FUNCTION__);
   //print_gudev_device (device);
 #endif
-  gint v4l_version = 0;
   gboolean add = g_str_equal (action, "add");
   gboolean remove = g_str_equal (action, "remove");
 

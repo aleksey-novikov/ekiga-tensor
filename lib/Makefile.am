@@ -420,8 +420,6 @@ libekiga_la_SOURCES += \
 ##
 
 libekiga_la_SOURCES += \
-	engine/gui/gtk-frontend/addressbook-window.h \
-	engine/gui/gtk-frontend/addressbook-window.cpp \
 	engine/gui/gtk-frontend/book-view-gtk.h \
 	engine/gui/gtk-frontend/book-view-gtk.cpp \
 	engine/gui/gtk-frontend/call-window.h \

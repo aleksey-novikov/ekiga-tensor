@@ -45,7 +45,6 @@
 #include "account-core.h"
 #include "contact-core.h"
 #include "presence-core.h"
-#include "addressbook-window.h"
 #include "preferences-window.h"
 #include "call-window.h"
 #include "ekiga-window.h"
@@ -155,7 +154,6 @@ static void window_activated (GSimpleAction *action,
 static GActionEntry app_entries[] =
 {
     { "preferences", window_activated, NULL, NULL, NULL, 0 },
-    { "addressbook", window_activated, NULL, NULL, NULL, 0 },
     { "help", help_activated, NULL, NULL, NULL, 0 },
     { "about", about_activated, NULL, NULL, NULL, 0 },
     { "quit", quit_activated, NULL, NULL, NULL, 0 }
@@ -326,9 +324,6 @@ window_activated (GSimpleAction *action,
 
   if (!g_strcmp0 (g_action_get_name (G_ACTION (action)), "preferences"))
     gm_application_show_preferences_window (self);
-
-  else if (!g_strcmp0 (g_action_get_name (G_ACTION (action)), "addressbook"))
-    gm_application_show_addressbook_window (self);
 }
 
 
@@ -449,12 +444,6 @@ gm_application_startup (GApplication *app)
                                "      <item>"
                                "        <attribute name=\"label\" translatable=\"yes\">Edit _Blacklist</attribute>"
                                "        <attribute name=\"action\">app.blacklist-edit</attribute>"
-                               "      </item>"
-                               "    </section>"
-                               "    <section>"
-                               "      <item>"
-                               "        <attribute name=\"label\" translatable=\"yes\">Address _Book</attribute>"
-                               "        <attribute name=\"action\">app.addressbook</attribute>"
                                "      </item>"
                                "    </section>"
                                "    <section>"
@@ -853,14 +842,4 @@ gm_application_show_preferences_window (GmApplication *self)
   window = GTK_WINDOW (preferences_window_new (self));
   gtk_window_set_transient_for (GTK_WINDOW (window), GTK_WINDOW (parent));
   gtk_window_present (window);
-}
-
-
-void
-gm_application_show_addressbook_window (GmApplication *self)
-{
-  g_return_if_fail (GM_IS_APPLICATION (self));
-
-
-  gtk_window_present (GTK_WINDOW (addressbook_window_new (self)));
 }

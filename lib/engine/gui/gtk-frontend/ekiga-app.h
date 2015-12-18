@@ -83,8 +83,6 @@ void gm_application_show_about (GmApplication *app);
 
 void gm_application_show_preferences_window (GmApplication *app);
 
-void gm_application_show_addressbook_window (GmApplication *app);
-
 void gm_application_show_accounts_window (GmApplication *app);
 
 /* GObject boilerplate */

@@ -102,6 +102,8 @@ public:
      */
     void publish (const Ekiga::PersonalDetails& details);
 
+    void edit_account ();
+
     void new_account ();
 
 

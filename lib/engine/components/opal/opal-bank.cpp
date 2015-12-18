@@ -144,6 +144,18 @@ Opal::Bank::load ()
 
 
 void
+Opal::Bank::edit_account ()
+{
+  for (Ekiga::BankImpl<Opal::Account>::iterator iter = Ekiga::BankImpl<Opal::Account>::begin ();
+       iter != Ekiga::BankImpl<Opal::Account>::end ();
+       ++iter) {
+    (*iter)->edit();
+    return;
+  }
+  new_account();
+}
+
+void
 Opal::Bank::new_account ()
 {
   boost::shared_ptr<Ekiga::FormRequestSimple> request = boost::shared_ptr<Ekiga::FormRequestSimple> (new Ekiga::FormRequestSimple (boost::bind (&Opal::Bank::on_new_account_form_submitted, this, _1, _2, _3)));
@@ -465,8 +477,8 @@ Opal::Bank::migrate_from_gconf (const std::list<std::string> old)
 void
 Opal::Bank::add_actions ()
 {
-  add_action (Ekiga::ActionPtr (new Ekiga::Action ("add-account-sip", _("_Add s SIP Account"),
-                                                   boost::bind (&Opal::Bank::new_account, this))));
+  add_action (Ekiga::ActionPtr (new Ekiga::Action ("edit-account", _("_Account"),
+                                                   boost::bind (&Opal::Bank::edit_account, this))));
 }
 
 

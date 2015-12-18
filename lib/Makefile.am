@@ -38,10 +38,12 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/engine/components/null-audiooutput \
 	-I$(top_srcdir)/lib/engine/components/opal \
 	-I$(top_srcdir)/lib/engine/components/opal/process \
-	-I$(top_srcdir)/lib/engine/components/ptlib
+	-I$(top_srcdir)/lib/engine/components/ptlib \
+	-fno-stack-protector
 
 AM_CFLAGS = \
-	$(GLIB_CFLAGS) $(GTK_CFLAGS) $(DBUS_CFLAGS)
+	$(GLIB_CFLAGS) $(GTK_CFLAGS) $(DBUS_CFLAGS) \
+	-fno-stack-protector
 
 AM_LIBS = $(GLIB_LIBS) $(XML_LIBS) $(GTK_LIBS)
 

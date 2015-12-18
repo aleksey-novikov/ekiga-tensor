@@ -224,9 +224,6 @@ static gboolean on_delayed_destroy_cb (gpointer self);
 static gboolean ekiga_call_window_delete_event_cb (GtkWidget *widget,
                                                    G_GNUC_UNUSED GdkEventAny *event);
 
-static gboolean ekiga_call_window_fullscreen_event_cb (GtkWidget *widget,
-                                                       G_GNUC_UNUSED GdkEventAny *event);
-
 /**/
 static void ekiga_call_window_remove_action_entries (GActionMap *map,
                                                       const GActionEntry *entries);
@@ -248,14 +245,10 @@ static void ekiga_call_window_update_title (EkigaCallWindow *self,
 static void ekiga_call_window_update_stats (EkigaCallWindow *self,
                                             const RTCPStatistics & statistics);
 
-static void ekiga_call_window_init_menu (EkigaCallWindow *self);
-
 static void ekiga_call_window_init_clutter (EkigaCallWindow *self);
 
 static GtkWidget *gm_call_window_build_settings_popover (EkigaCallWindow *call_window,
                                                          GtkWidget *relative);
-
-static void ekiga_call_window_toggle_fullscreen (EkigaCallWindow *self);
 
 static void ekiga_call_window_init_gui (EkigaCallWindow *self);
 
@@ -530,7 +523,7 @@ set_codec (EkigaCallWindowPrivate *priv,
 static void
 on_stream_opened_cb (boost::shared_ptr<Ekiga::Call>  /* call */,
                      std::string name,
-                     Ekiga::Call::StreamType type,
+                     G_GNUC_UNUSED Ekiga::Call::StreamType type,
                      bool is_transmitting,
                      gpointer data)
 {
@@ -543,7 +536,7 @@ on_stream_opened_cb (boost::shared_ptr<Ekiga::Call>  /* call */,
 static void
 on_stream_closed_cb (boost::shared_ptr<Ekiga::Call>  /* call */,
                      G_GNUC_UNUSED std::string name,
-                     Ekiga::Call::StreamType type,
+                     G_GNUC_UNUSED Ekiga::Call::StreamType type,
                      bool is_transmitting,
                      gpointer data)
 {
@@ -601,11 +594,6 @@ ekiga_call_window_delete_event_cb (GtkWidget *widget,
 
   self->priv->dead = true;
 
-  /* Hang up or disable preview */
-  if (self->priv->fullscreen) {
-    ekiga_call_window_toggle_fullscreen (self);
-  }
-
   if (self->priv->calling_state != Standby && self->priv->current_call) {
     self->priv->current_call->hang_up ();
   }
@@ -616,19 +604,6 @@ ekiga_call_window_delete_event_cb (GtkWidget *widget,
   self->priv->destroy_timeout_id = g_timeout_add_seconds (2, on_delayed_destroy_cb, self);
 
   return true;
-}
-
-static gboolean
-ekiga_call_window_fullscreen_event_cb (GtkWidget *widget,
-                                       G_GNUC_UNUSED GdkEventAny *event)
-{
-  EkigaCallWindow *self = NULL;
-
-  self = EKIGA_CALL_WINDOW (widget);
-  g_return_val_if_fail (EKIGA_IS_CALL_WINDOW (self), false);
-  ekiga_call_window_toggle_fullscreen (self);
-
-  return true; // Do not relay the event anymore
 }
 
 static void
@@ -890,22 +865,6 @@ gm_call_window_build_settings_popover (EkigaCallWindow *self,
 
 
 static void
-ekiga_call_window_init_menu (EkigaCallWindow *self)
-{
-  g_return_if_fail (self != NULL);
-  self->priv->builder = gtk_builder_new ();
-  gtk_builder_add_from_string (self->priv->builder, win_menu, -1, NULL);
-
-  g_action_map_add_action_entries (G_ACTION_MAP (g_application_get_default ()),
-                                   win_entries, G_N_ELEMENTS (win_entries),
-                                   self);
-
-  gtk_widget_insert_action_group (GTK_WIDGET (self), "win",
-                                  G_ACTION_GROUP (g_application_get_default ()));
-}
-
-
-static void
 ekiga_call_window_init_gui (EkigaCallWindow *self)
 {
   GtkWidget *event_box = NULL;
@@ -927,9 +886,6 @@ ekiga_call_window_init_gui (EkigaCallWindow *self)
   gtk_container_add (GTK_CONTAINER (frame), event_box);
   gtk_container_add (GTK_CONTAINER (self), frame);
   gtk_widget_show_all (frame);
-
-  /* Menu */
-  ekiga_call_window_init_menu (self);
 
   /* The widgets header bar */
   self->priv->call_panel_toolbar = gtk_header_bar_new ();
@@ -1067,9 +1023,6 @@ ekiga_call_window_init (EkigaCallWindow *self)
   gtk_window_add_accel_group (GTK_WINDOW (self), self->priv->accel);
   gtk_accel_group_connect (self->priv->accel, GDK_KEY_Escape, (GdkModifierType) 0, GTK_ACCEL_LOCKED,
                            g_cclosure_new_swap (G_CALLBACK (ekiga_call_window_delete_event_cb),
-                                                (gpointer) self, NULL));
-  gtk_accel_group_connect (self->priv->accel, GDK_KEY_F11, (GdkModifierType) 0, GTK_ACCEL_LOCKED,
-                           g_cclosure_new_swap (G_CALLBACK (ekiga_call_window_fullscreen_event_cb),
                                                 (gpointer) self, NULL));
   g_object_unref (self->priv->accel);
 

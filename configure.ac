@@ -459,6 +459,10 @@ echo ""
 echo "================ Final configuration ==================="
 echo "          Installing into prefix  :  $prefix"
 echo ""
+if test "x${gm_platform}" = "xlinux" ; then
+echo "                   GUDev support  :  $GUDEV"
+fi
+echo ""
 if test "x${gm_platform}" != "xmingw" ; then
 echo "                    DBUS support  :  $DBUS"
 echo "            DBUS service support  :  $DBUS_SERVICE"

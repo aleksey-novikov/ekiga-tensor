@@ -196,6 +196,19 @@ libekiga_la_SOURCES += \
 	engine/action/actor.cpp
 
 ##
+#  Sources of the addressbook stack
+##
+
+libekiga_la_SOURCES += \
+	engine/addressbook/contact.h \
+	engine/addressbook/book.h \
+	engine/addressbook/book-impl.h \
+	engine/addressbook/source.h \
+	engine/addressbook/source-impl.h \
+	engine/addressbook/contact-core.h \
+	engine/addressbook/contact-core.cpp
+
+##
 # Sources of the notification stack
 ##
 

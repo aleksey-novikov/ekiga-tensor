@@ -99,7 +99,6 @@ struct _GmApplicationPrivate
 
   GtkBuilder *builder;
   GtkWidget *ekiga_window;
-  GtkWidget *chat_window;
   GtkWidget *call_window;
 
 #ifdef HAVE_DBUS
@@ -840,26 +839,6 @@ GNU GPL for all the rest of the software thus combined.")
 
   g_free (license_trans);
   g_free (filename);
-}
-
-
-void
-gm_application_show_chat_window (GmApplication *self)
-{
-  g_return_if_fail (GM_IS_APPLICATION (self));
-
-  // FIXME: We should move the chat window to a build & destroy scheme
-  // but unread-alert prevents this
-  gtk_window_present (GTK_WINDOW (self->priv->chat_window));
-}
-
-
-GtkWidget *
-gm_application_get_chat_window (GmApplication *self)
-{
-  g_return_val_if_fail (GM_IS_APPLICATION (self), NULL);
-
-  return self->priv->chat_window;
 }
 
 

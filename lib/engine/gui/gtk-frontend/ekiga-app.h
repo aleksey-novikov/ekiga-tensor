@@ -81,10 +81,6 @@ gboolean gm_application_show_help (GmApplication *app,
 
 void gm_application_show_about (GmApplication *app);
 
-void gm_application_show_chat_window (GmApplication *app);
-
-GtkWidget *gm_application_get_chat_window (GmApplication *app);
-
 void gm_application_show_preferences_window (GmApplication *app);
 
 void gm_application_show_addressbook_window (GmApplication *app);

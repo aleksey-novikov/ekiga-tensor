@@ -58,18 +58,16 @@ struct _StatusIconPrivate
 {
   GmApplication *app;
 
-  gboolean has_message;
-
   Ekiga::scoped_connections connections;
 
   int blink_id;
   std::string status;
-  bool unread_messages;
+  bool missed_calls;
   bool blinking;
 
   gchar *blink_image;
 
-  GtkWidget* chat_window;
+  GtkWidget *ekiga_window;
 };
 
 static GObjectClass *parent_class = NULL;
@@ -100,8 +98,8 @@ status_icon_clicked_cb (G_GNUC_UNUSED GtkWidget* widget,
                         gpointer data);
 
 static void
-unread_count_cb (GtkWidget *widget,
-		 guint messages,
+missed_count_cb (GtkWidget *widget,
+		 guint calls,
 		 gpointer data);
 
 static gboolean
@@ -270,16 +268,16 @@ statusicon_activated_cb (G_GNUC_UNUSED GtkStatusIcon *icon,
 {
   StatusIcon *self = STATUSICON (data);
 
-  // No unread messages => signal the gtk+ frontend
+  // No missed calls => signal the gtk+ frontend
   // (should hide/present the main window)
-  if (!self->priv->unread_messages) {
+  if (!self->priv->missed_calls) {
 
     g_signal_emit (self, signals, 0, NULL);
   }
   else {
 
-    // Unread messages => show chat window
-    gtk_window_present (GTK_WINDOW (self->priv->chat_window));
+    // Missed calls => show main window and call history tab (FIXME)
+    g_signal_emit (self, signals, 0, NULL);
   }
 
   // Remove warnings from statusicon
@@ -309,31 +307,31 @@ status_icon_clicked_cb (G_GNUC_UNUSED GtkWidget* widget,
 }
 
 static void
-unread_count_cb (G_GNUC_UNUSED GtkWidget *widget,
-		 guint messages,
+missed_count_cb (G_GNUC_UNUSED GtkWidget *widget,
+		 guint calls,
 		 gpointer data)
 {
   StatusIcon *self = STATUSICON (data);
 
   gchar *message = NULL;
 
-  if (messages > 0)
-    statusicon_start_blinking (self, "im-message");
+  if (calls > 0)
+    statusicon_start_blinking (self, "im-message"); // FIXME
   else
     statusicon_stop_blinking (self);
 
-  if (messages > 0) {
+  if (calls > 0) {
 
-    message = g_strdup_printf (ngettext ("You have %d message",
-					 "You have %d messages",
-					 messages), messages);
+    message = g_strdup_printf (ngettext ("You have %d call",
+					 "You have %d calls",
+					 calls), calls);
     gtk_status_icon_set_tooltip_text (GTK_STATUS_ICON (self), message);
     g_free (message);
   }
   else
     gtk_status_icon_set_tooltip_text (GTK_STATUS_ICON (self), NULL);
 
-  self->priv->unread_messages = (messages > 0);
+  self->priv->missed_calls = (calls > 0);
 }
 
 
@@ -453,7 +451,7 @@ statusicon_on_notification_added (boost::shared_ptr<Ekiga::Notification> notific
                                   gpointer data)
 {
   StatusIcon *self = STATUSICON (data);
-  GdkPixbuf* pixbuf = gtk_widget_render_icon_pixbuf (self->priv->chat_window,
+  GdkPixbuf* pixbuf = gtk_widget_render_icon_pixbuf (self->priv->ekiga_window,
 						     GTK_STOCK_DIALOG_WARNING,
 						     GTK_ICON_SIZE_MENU);
 
@@ -540,11 +538,10 @@ status_icon_new (GmApplication *app)
   self = STATUSICON (g_object_new (STATUSICON_TYPE, NULL));
   self->priv = new StatusIconPrivate;
 
-  self->priv->has_message = FALSE;
   self->priv->blink_id = -1;
   self->priv->blinking = false;
   self->priv->blink_image = NULL;
-  self->priv->unread_messages = false;
+  self->priv->missed_calls = false;
   self->priv->app = app;
 
   boost::shared_ptr<Ekiga::PersonalDetails> details =
@@ -554,7 +551,7 @@ status_icon_new (GmApplication *app)
   boost::shared_ptr<Ekiga::NotificationCore> notification_core =
     core.get<Ekiga::NotificationCore> ("notification-core");
 
-  self->priv->chat_window = gm_application_get_chat_window (app);
+  self->priv->ekiga_window = gm_application_get_ekiga_window (app);
 
   statusicon_set_status (self, details->get_presence ());
   notification_core->notification_added.connect (boost::bind (statusicon_on_notification_added,
@@ -575,9 +572,10 @@ status_icon_new (GmApplication *app)
   g_signal_connect (self, "activate",
                     G_CALLBACK (statusicon_activated_cb), self);
 
-  if (self->priv->chat_window)
-    g_signal_connect (self->priv->chat_window, "unread-count",
-                      G_CALLBACK (unread_count_cb), self);
+  // FIXME (ekiga_window has no signal now)
+  if (self->priv->ekiga_window)
+    g_signal_connect (self->priv->ekiga_window, "missed-count",
+                      G_CALLBACK (missed_count_cb), self);
 
   g_signal_connect (self, "clicked",
                     G_CALLBACK (status_icon_clicked_cb), self);

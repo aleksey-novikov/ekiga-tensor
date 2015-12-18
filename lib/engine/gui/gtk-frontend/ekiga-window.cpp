@@ -41,7 +41,6 @@
 #include "ekiga-window.h"
 
 #include "dialpad.h"
-#include "statusmenu.h"
 #include "gm-entry.h"
 
 #include "gm-info-bar.h"
@@ -99,10 +98,6 @@ struct _EkigaWindowPrivate
 
   GtkWidget* roster_view;
   GtkWidget* call_history_view;
-
-  /* Status Toolbar */
-  GtkWidget *status_toolbar;
-  GtkWidget *status_option_menu;
 
   GtkWidget *info_bar;
 
@@ -630,25 +625,6 @@ ekiga_window_init_menu (EkigaWindow *mw)
 
 
 static void
-ekiga_window_init_status_toolbar (EkigaWindow *mw)
-{
-  g_return_if_fail (EKIGA_IS_WINDOW (mw));
-
-  /* The main horizontal toolbar */
-  mw->priv->status_toolbar = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-  mw->priv->status_option_menu = status_menu_new (gm_application_get_core (mw->priv->app));
-  status_menu_set_parent_window (STATUS_MENU (mw->priv->status_option_menu),
-                                 GTK_WINDOW (mw));
-  gtk_box_pack_start (GTK_BOX (mw->priv->status_toolbar),
-                      mw->priv->status_option_menu, TRUE, TRUE, 0);
-  gtk_widget_set_margin_start (mw->priv->status_option_menu, 0);
-  gtk_widget_set_margin_end (mw->priv->status_option_menu, 0);
-
-  gtk_widget_show_all (mw->priv->status_toolbar);
-}
-
-
-static void
 ekiga_window_init_contact_list (EkigaWindow *mw)
 {
   mw->priv->roster_view = roster_view_gtk_new (mw->priv->presence_core,
@@ -750,12 +726,6 @@ ekiga_window_init_gui (EkigaWindow *mw)
 
   /* The actions toolbar */
   ekiga_window_init_actions_toolbar (mw);
-
-  /* The status toolbar */
-  ekiga_window_init_status_toolbar (mw);
-  gtk_widget_show_all (mw->priv->status_toolbar);
-  gtk_box_pack_start (GTK_BOX (window_vbox), mw->priv->status_toolbar,
-                      false, false, 0);
 
   /* The stack pages */
   ekiga_window_init_contact_list (mw);

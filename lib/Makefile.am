@@ -414,8 +414,6 @@ libekiga_la_SOURCES += \
 	engine/gui/gtk-frontend/preferences-window.h \
 	engine/gui/gtk-frontend/statusicon.cpp \
 	engine/gui/gtk-frontend/statusicon.h \
-	engine/gui/gtk-frontend/statusmenu.h \
-	engine/gui/gtk-frontend/statusmenu.cpp \
 	engine/gui/gtk-frontend/ekiga-window.h \
 	engine/gui/gtk-frontend/ekiga-window.cpp \
 	engine/gui/gtk-frontend/ekiga-app.h \

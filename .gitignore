@@ -25,11 +25,12 @@ configure
 compile
 m4/
 
+INSTALL
 Doxyfile
 Session.vim
 depcomp
-ekiga.desktop
-ekiga.desktop.in
+org.gnome.ekiga.desktop
+org.gnome.ekiga.desktop.in
 ekiga.convert
 org.gnome.ekiga.gschema.valid
 org.gnome.ekiga.gschema.xml

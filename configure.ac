@@ -261,6 +261,33 @@ AM_CONDITIONAL(HAVE_DBUS, test "x$found_dbus" = "xyes")
 AM_CONDITIONAL(INSTALL_DBUS_SERVICE, test "x$DBUS_SERVICE" = "xenabled")
 
 
+dnl ###############################
+dnl    GStreamer Plugins Support
+dnl ###############################
+GSTREAMER="disabled"
+
+AC_ARG_ENABLE(gstreamer, AS_HELP_STRING([--enable-gstreamer],[enable experimental GStreamer support (default is disabled)]),
+[if test "x$enableval" = "xyes"; then
+  enable_gstreamer=yes
+fi],)
+
+if test "x$enable_gstreamer" = "xyes"; then
+  found_gstreamer=yes
+  PKG_CHECK_MODULES([GSTREAMER], [gstreamer-plugins-base-0.10 >= 0.10.21.3 gstreamer-interfaces-0.10])
+
+  if test "x$found_gstreamer" = "xno"; then
+    AC_MSG_ERROR([Could not find GStreamer libraries])
+  fi
+  GSTREAMER_LIBS="$GSTREAMER_LIBS -lgstapp-0.10"
+  AC_SUBST(GSTREAMER_CFLAGS)
+  AC_SUBST(GSTREAMER_LIBS)
+  GSTREAMER="enabled"
+  AC_DEFINE(HAVE_GSTREAMER,1,[GStreamer support])
+fi
+
+AM_CONDITIONAL(HAVE_GSTREAMER, test "x$found_gstreamer" = "xyes")
+
+
 dnl ###########################################################################
 dnl PTLib + OPAL Headers and Libraries
 dnl ###########################################################################
@@ -420,6 +447,7 @@ src/Makefile
 pixmaps/Makefile
 sounds/Makefile
 plugins/Makefile
+plugins/gstreamer/Makefile
 ])
 AC_OUTPUT
 
@@ -435,6 +463,9 @@ if test "x${gm_platform}" != "xmingw" ; then
 echo "                    DBUS support  :  $DBUS"
 echo "            DBUS service support  :  $DBUS_SERVICE"
 fi
+echo ""
+echo "The following features are experimental -- you've been warned:"
+echo "               GStreamer support  :  $GSTREAMER"
 echo ""
 echo "                         OS Type  :  $target_os"
 echo "                    Machine Type  :  $target_cpu"

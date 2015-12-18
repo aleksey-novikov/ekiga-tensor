@@ -74,7 +74,7 @@ namespace Ekiga
 			  bool advanced,
                           bool in_header_bar) = 0;
 
-    typedef enum { STANDARD, PHONE_NUMBER, URI, EKIGA_URI, PASSWORD, NUMBER } FormTextType;
+    typedef enum { STANDARD, PHONE_NUMBER, URI, PASSWORD, NUMBER } FormTextType;
     virtual void text (const std::string name,
 		       const std::string description,
 		       const std::string value,

@@ -998,10 +998,6 @@ FormDialog::text (const std::string name,
       entry = gm_entry_new (BASIC_URI_REGEX);
       gtk_entry_set_input_purpose (GTK_ENTRY (entry), GTK_INPUT_PURPOSE_URL);
       break;
-    case EKIGA_URI:
-      entry = gm_entry_new (EKIGA_URI_REGEX);
-      gtk_entry_set_input_purpose (GTK_ENTRY (entry), GTK_INPUT_PURPOSE_URL);
-      break;
     case STANDARD:
     default:
       entry = gm_entry_new (NULL);

@@ -351,11 +351,6 @@ ekiga_main (int argc,
 
     boost::shared_ptr<Ekiga::AccountCore> account_core = app->priv->core.get<Ekiga::AccountCore> ("account-core");
     app->priv->conns.add (account_core->questions.connect (boost::bind (&on_handle_questions_cb, _1, app)));
-
-    boost::shared_ptr<Ekiga::FriendOrFoe> friend_or_foe = app->priv->core.get<Ekiga::FriendOrFoe> ("friend-or-foe");
-    app->priv->conns.add (friend_or_foe->questions.connect (boost::bind (&on_handle_questions_cb, _1, app)));
-    // Persistent FriendOrFoe menu
-    app->priv->fof_menu = Ekiga::GActorMenuPtr (new Ekiga::GActorMenu (*friend_or_foe));
   }
 
   /* Create the main application window */
@@ -439,12 +434,6 @@ gm_application_startup (GApplication *app)
                                "<interface>"
                                "  <menu id=\"appmenu\">"
                                "    <section id=\"banks\">"
-                               "    </section>"
-                               "    <section>"
-                               "      <item>"
-                               "        <attribute name=\"label\" translatable=\"yes\">Edit _Blacklist</attribute>"
-                               "        <attribute name=\"action\">app.blacklist-edit</attribute>"
-                               "      </item>"
                                "    </section>"
                                "    <section>"
                                "      <item>"

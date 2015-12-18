@@ -47,8 +47,6 @@
 #include "account-core.h"
 #include "contact-core.h"
 #include "call-core.h"
-#include "friend-or-foe.h"
-#include "foe-list.h"
 #include "audioinput-core.h"
 #include "audiooutput-core.h"
 #include "hal-core.h"
@@ -91,11 +89,9 @@ engine_init (Ekiga::ServiceCore& core,
   boost::shared_ptr<Ekiga::NotificationCore> notification_core(new Ekiga::NotificationCore);
   core.add (notification_core);
 
-  boost::shared_ptr<Ekiga::FriendOrFoe> friend_or_foe (new Ekiga::FriendOrFoe);
-  boost::shared_ptr<Ekiga::FoeList> foe_list (new Ekiga::FoeList (friend_or_foe));
   boost::shared_ptr<Ekiga::AccountCore> account_core (new Ekiga::AccountCore);
   boost::shared_ptr<Ekiga::ContactCore> contact_core (new Ekiga::ContactCore);
-  boost::shared_ptr<Ekiga::CallCore> call_core (new Ekiga::CallCore (friend_or_foe, notification_core));
+  boost::shared_ptr<Ekiga::CallCore> call_core (new Ekiga::CallCore (notification_core));
   boost::shared_ptr<Ekiga::AudioOutputCore> audiooutput_core (new Ekiga::AudioOutputCore (core));
   boost::shared_ptr<Ekiga::AudioInputCore> audioinput_core (new Ekiga::AudioInputCore(core));
   boost::shared_ptr<Ekiga::HalCore> hal_core (new Ekiga::HalCore);
@@ -103,8 +99,6 @@ engine_init (Ekiga::ServiceCore& core,
   boost::shared_ptr<Ekiga::PresenceCore> presence_core(new Ekiga::PresenceCore (details));
 
   core.add (contact_core);
-  core.add (friend_or_foe);
-  core.add (foe_list);
   core.add (audioinput_core);
   core.add (audiooutput_core);
   core.add (hal_core);
@@ -166,9 +160,6 @@ engine_init (Ekiga::ServiceCore& core,
   hal_core->audiooutput_device_removed.connect (boost::bind (&Ekiga::AudioOutputCore::remove_device, boost::ref (*audiooutput_core), _1, _2, _3));
   hal_core->audioinput_device_added.connect (boost::bind (&Ekiga::AudioInputCore::add_device, boost::ref (*audioinput_core), _1, _2, _3));
   hal_core->audioinput_device_removed.connect (boost::bind (&Ekiga::AudioInputCore::remove_device, boost::ref (*audioinput_core), _1, _2, _3));
-
-  /* FIXME: does it really belong here? */
-  friend_or_foe->add_helper (foe_list);
 
 #if DEBUG_STARTUP
   std::cout << "Here is what ekiga is made of for this run :" << std::endl;

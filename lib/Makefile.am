@@ -22,7 +22,6 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/engine/audioinput \
 	-I$(top_srcdir)/lib/engine/audiooutput \
 	-I$(top_srcdir)/lib/engine/framework \
-	-I$(top_srcdir)/lib/engine/friend-or-foe \
 	-I$(top_srcdir)/lib/engine/gui/gtk-core \
 	-I$(top_srcdir)/lib/engine/gui/gtk-frontend \
 	-I$(top_srcdir)/lib/engine/hal \
@@ -32,7 +31,6 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/lib/engine/protocol \
 	-I$(top_srcdir)/lib/engine/components/call-history \
 	-I$(top_srcdir)/lib/engine/components/echo \
-	-I$(top_srcdir)/lib/engine/components/foe-list \
 	-I$(top_srcdir)/lib/engine/components/glib-notify \
 	-I$(top_srcdir)/lib/engine/components/gmconf-personal-details \
 	-I$(top_srcdir)/lib/engine/components/hal-gudev \
@@ -196,14 +194,6 @@ libekiga_la_SOURCES += \
 	engine/action/action-provider.cpp \
 	engine/action/actor.h \
 	engine/action/actor.cpp
-
-##
-# Sources of the friend-or-foe stack
-##
-
-libekiga_la_SOURCES += \
-	engine/friend-or-foe/friend-or-foe.h \
-	engine/friend-or-foe/friend-or-foe.cpp
 
 ##
 # Sources of the notification stack
@@ -405,14 +395,6 @@ libekiga_la_SOURCES += \
 AM_CPPFLAGS += $(GUDEV_CFLAGS)
 libekiga_la_LDFLAGS += $(GUDEV_LIBS)
 endif
-
-
-##
-#  Sources of the foe list component
-##
-libekiga_la_SOURCES += \
-	engine/components/foe-list/foe-list.h \
-	engine/components/foe-list/foe-list.cpp
 
 
 ##

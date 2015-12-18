@@ -94,7 +94,6 @@ struct _EkigaCallWindowPrivate
 {
   boost::shared_ptr<Ekiga::AudioInputCore> audioinput_core;
   boost::shared_ptr<Ekiga::AudioOutputCore> audiooutput_core;
-  boost::shared_ptr<Ekiga::FriendOrFoe> friend_or_foe;
 
   GtkAccelGroup *accel;
 
@@ -109,7 +108,6 @@ struct _EkigaCallWindowPrivate
   bool bad_connection;
 
   GtkWidget *call_panel_toolbar;
-  GtkWidget *blacklist_button;
 
   GtkWidget *input_signal;
   GtkWidget *output_signal;
@@ -1000,19 +998,6 @@ ekiga_call_window_init_gui (EkigaCallWindow *self)
                                _("Transfer the current call"));
   gtk_widget_show (button);
 
-  /* Blacklist */
-  button = gtk_button_new ();
-  icon = g_themed_icon_new ("edit-delete-symbolic");
-  image = gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_BUTTON);
-  g_object_unref (icon);
-  gtk_button_set_image (GTK_BUTTON (button), image);
-  gtk_button_set_always_show_image (GTK_BUTTON (button), TRUE);
-  gtk_actionable_set_detailed_action_name (GTK_ACTIONABLE (button), "win.blacklist-add");
-  gtk_header_bar_pack_start (GTK_HEADER_BAR (self->priv->call_panel_toolbar), button);
-  gtk_widget_set_tooltip_text (GTK_WIDGET (button),
-                               _("Add remote party to the blacklist"));
-  gtk_widget_show (button);
-
   /* Devices settings */
   self->priv->settings_button = gtk_button_new ();
   icon = g_themed_icon_new ("emblem-system-symbolic");
@@ -1164,7 +1149,6 @@ call_window_new (GmApplication *app)
 
   self->priv->audioinput_core = core.get<Ekiga::AudioInputCore> ("audioinput-core");
   self->priv->audiooutput_core = core.get<Ekiga::AudioOutputCore> ("audiooutput-core");
-  self->priv->friend_or_foe = core.get<Ekiga::FriendOrFoe> ("friend-or-foe");
 
   ekiga_call_window_init_gui (self);
 

@@ -40,7 +40,6 @@
 #include "chain-of-responsibility.h"
 #include "services.h"
 #include "dynamic-object-store.h"
-#include "friend-or-foe/friend-or-foe.h"
 #include "call.h"
 #include "call-manager.h"
 #include "contact-core.h"
@@ -77,8 +76,7 @@ namespace Ekiga
   public:
       /** The constructor
        */
-      CallCore (boost::shared_ptr<Ekiga::FriendOrFoe> iff,
-                boost::shared_ptr<Ekiga::NotificationCore> notification_core);
+      CallCore (boost::shared_ptr<Ekiga::NotificationCore> notification_core);
       ~CallCore ();
 
 
@@ -195,7 +193,6 @@ namespace Ekiga
       void on_setup_call (const boost::shared_ptr<Call> call);
       void on_missed_call (const boost::shared_ptr<Call> call);
 
-      boost::shared_ptr<Ekiga::FriendOrFoe> iff;
       boost::weak_ptr<Ekiga::NotificationCore> notification_core;
 
       DynamicObjectStore<Ekiga::Call> calls;

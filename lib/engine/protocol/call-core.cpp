@@ -50,8 +50,7 @@
 
 using namespace Ekiga;
 
-CallCore::CallCore (boost::shared_ptr<Ekiga::FriendOrFoe> _iff,
-                    boost::shared_ptr<Ekiga::NotificationCore> _notification_core) : iff(_iff), notification_core(_notification_core)
+CallCore::CallCore (boost::shared_ptr<Ekiga::NotificationCore> _notification_core) : notification_core(_notification_core)
 {
 }
 
@@ -186,14 +185,6 @@ void CallCore::add_call (const boost::shared_ptr<Call> & call)
 
 void CallCore::on_setup_call (const boost::shared_ptr<Call> call)
 {
-  Ekiga::FriendOrFoe::Identification id = iff->decide ("call", call->get_remote_uri ());
-
-  // Reject call
-  if (id == Ekiga::FriendOrFoe::Foe) {
-    call->hang_up ();
-    return;
-  }
-
   setup_call (call);
 }
 

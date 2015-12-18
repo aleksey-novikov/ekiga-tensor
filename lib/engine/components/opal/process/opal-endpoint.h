@@ -58,7 +58,7 @@ namespace Opal {
 
   class Account;
   class CallManager;
-  namespace SIP {
+  namespace Sip {
     class EndPoint;
   }
 

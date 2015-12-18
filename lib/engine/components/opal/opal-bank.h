@@ -50,6 +50,8 @@
 #include "cluster-impl.h"
 #include "bank-impl.h"
 
+#include "opal-account.h"
+
 namespace Opal
 {
   /**

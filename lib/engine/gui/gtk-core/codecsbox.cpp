@@ -126,7 +126,7 @@ codecs_box_set_codecs (CodecsBox *self,
        itr != list.end ();
        itr++) {
 
-    if (self->priv->type == Ekiga::Call::Audio && (*itr).audio)) {
+    if (self->priv->type == Ekiga::Call::Audio && (*itr).audio) {
 
       gtk_list_store_append (GTK_LIST_STORE (model), &iter);
       gtk_list_store_set (GTK_LIST_STORE (model), &iter,

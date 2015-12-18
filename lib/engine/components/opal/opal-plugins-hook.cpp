@@ -114,7 +114,7 @@ struct opal_audio_worker:
 struct opal_plugins_hook_workers
 {
   opal_plugins_hook_workers (Ekiga::ServiceCore& core):
-    audio(core),
+    audio(core)
   {}
 
   opal_audio_worker audio;

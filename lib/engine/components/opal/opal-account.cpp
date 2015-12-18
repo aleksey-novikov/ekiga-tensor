@@ -208,38 +208,6 @@ Opal::Account::Account (Opal::Bank & _bank,
   add_action (Ekiga::ActionPtr (new Ekiga::Action ("disable-account", _("_Disable"),
                                                    boost::bind (&Opal::Account::disable, this), is_enabled ())));
 
-  if (type == DiamondCard) {
-
-    std::stringstream str;
-    std::stringstream url;
-    str << "https://www.diamondcard.us/exec/voip-login?accId=" << get_username () << "&pinCode=" << get_password () << "&spo=ekiga";
-
-    url.str ("");
-    url << str.str () << "&act=rch";
-    bank.add_action (Ekiga::ActionPtr (new Ekiga::Action ("recharge-account", _("Recharge the Ekiga Call Out account"),
-                                                          boost::bind (&Opal::Account::on_consult, this, url.str ()))));
-    add_action (Ekiga::ActionPtr (new Ekiga::Action ("recharge-account", _("Recharge the Ekiga Call Out account"),
-                                                     boost::bind (&Opal::Account::on_consult, this, url.str ()))));
-    url.str ("");
-    url << str.str () << "&act=bh";
-    bank.add_action (Ekiga::ActionPtr (new Ekiga::Action ("balance-account", _("Consult the Ekiga Call Out balance history"),
-                                                          boost::bind (&Opal::Account::on_consult, this, url.str ()))));
-    add_action (Ekiga::ActionPtr (new Ekiga::Action ("balance-account", _("Consult the Ekiga Call Out balance history"),
-                                                     boost::bind (&Opal::Account::on_consult, this, url.str ()))));
-    url.str ("");
-    url << str.str () << "&act=ch";
-    bank.add_action (Ekiga::ActionPtr (new Ekiga::Action ("history-account", _("Consult the Ekiga Call Out call history"),
-                                                          boost::bind (&Opal::Account::on_consult, this, url.str ()))));
-    add_action (Ekiga::ActionPtr (new Ekiga::Action ("history-account", _("Consult the Ekiga Call Out call history"),
-                                                     boost::bind (&Opal::Account::on_consult, this, url.str ()))));
-
-    bank.disable_action ("add-account-diamondcard");
-  }
-  else if (type == Ekiga) {
-
-    bank.disable_action ("add-account-ekiga");
-  }
-
   if (sip_endpoint)
     instance_id = sip_endpoint->GetInstanceID ().AsString ();
 }
@@ -618,17 +586,6 @@ Opal::Account::remove ()
     return;
   }
 
-  if (type == DiamondCard) {
-
-    bank.remove_action ("recharge-account");
-    bank.remove_action ("balance-account");
-    bank.remove_action ("history-account");
-    bank.enable_action ("add-account-diamondcard");
-  }
-  else if (type == Ekiga) {
-    bank.enable_action ("add-account-ekiga");
-  }
-
   xmlUnlinkNode (node);
   xmlFreeNode (node);
 
@@ -691,13 +648,8 @@ Opal::Account::on_edit_form_submitted (bool submitted,
   if (!submitted)
     return false;
 
-  std::string new_name, new_host;
-  if (type == Opal::Account::Ekiga || type == Opal::Account::DiamondCard)
-    new_name = result.hidden ("name");
-  else {
-    new_name = result.text ("name");
-    new_host = result.text ("host");
-  }
+  std::string new_name = result.text ("name");
+  std::string new_host = result.text ("host");
 
   std::string new_outbound_proxy = result.text ("outbound_proxy");
   std::string new_user = result.text ("user");
@@ -709,22 +661,14 @@ Opal::Account::on_edit_form_submitted (bool submitted,
     new_user = new_user.substr (0, pos);  // remove trailing @ekiga.net
     new_host = new_user.substr (pos);
   }
-  std::string new_authentication_user;
-  if (type == Account::Ekiga || type == Account::DiamondCard)
-    new_authentication_user = new_user;
-  else if (get_protocol_name () == "SIP")
-    new_authentication_user = result.text ("authentication_user");
+  std::string new_authentication_user = result.text ("authentication_user");
   if (new_authentication_user.empty ())
     new_authentication_user = new_user;
   std::string new_password = result.text ("password");
   bool new_enabled = result.boolean ("enabled");
   bool should_enable = false;
   bool should_disable = false;
-  unsigned new_timeout;
-  if (type == Opal::Account::Ekiga || type == Opal::Account::DiamondCard)
-    new_timeout = atoi (result.hidden ("timeout").c_str ());
-  else
-    new_timeout = atoi (result.text ("timeout").c_str ());
+  unsigned new_timeout = atoi (result.text ("timeout").c_str ());
 
   if (new_name.empty ())
     error = _("You did not supply a name for that account.");

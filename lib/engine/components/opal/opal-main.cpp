@@ -74,7 +74,7 @@ public:
 
     if (contact_core && presence_core && call_core
         && account_core && audioinput_core
-        && audiooutput_core personal_details
+        && audiooutput_core && personal_details
         && !account_store) {
 
       Opal::EndPoint& endpoint = GnomeMeeting::Process ()->GetEndPoint ();

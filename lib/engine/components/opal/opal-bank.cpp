@@ -200,21 +200,17 @@ Opal::Bank::on_new_account_form_submitted (bool submitted,
 
   // This should only happen with Ekiga.net accounts
   if (!new_user.compare (0, 4, "sip:")) {
-    g_warn_if_fail (acc_type == Opal::Account::Ekiga);
     new_user = new_user.substr (4, string::npos);  // remove leading sip:
   }
   std::size_t pos = new_user.find_first_of ("@");
   if (pos != std::string::npos) {
-    g_warn_if_fail (acc_type == Opal::Account::Ekiga);
     new_user = new_user.substr (0, pos);  // remove trailing @ekiga.net
   }
   if (!new_authentication_user.compare (0, 4, "sip:")) {
-    g_warn_if_fail (acc_type == Opal::Account::Ekiga);
     new_authentication_user = new_authentication_user.substr (4, string::npos);  // remove leading sip:
   }
   pos = new_authentication_user.find_first_of ("@");
   if (pos != std::string::npos) {
-    g_warn_if_fail (acc_type == Opal::Account::Ekiga);
     new_authentication_user = new_authentication_user.substr (0, pos);  // remove trailing @ekiga.net
   }
 

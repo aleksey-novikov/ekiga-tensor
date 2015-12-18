@@ -102,9 +102,7 @@ public:
      */
     void publish (const Ekiga::PersonalDetails& details);
 
-    void new_account (Account::Type acc_type,
-                      std::string username = "",
-                      std::string password = "");
+    void new_account ();
 
 
     /** Find the account with the given address of record in the Bank
@@ -146,8 +144,7 @@ private:
 
     bool on_new_account_form_submitted (bool submitted,
                                         Ekiga::Form& form,
-                                        std::string& error,
-                                        Account::Type acc_type);
+                                        std::string& error);
 
     void add (Account::Type acc_type,
               std::string name,

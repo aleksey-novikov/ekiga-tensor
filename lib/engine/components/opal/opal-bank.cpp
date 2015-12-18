@@ -144,34 +144,26 @@ Opal::Bank::load ()
 
 
 void
-Opal::Bank::new_account (Account::Type acc_type,
-                         std::string username,
-                         std::string password)
+Opal::Bank::new_account ()
 {
-  boost::shared_ptr<Ekiga::FormRequestSimple> request = boost::shared_ptr<Ekiga::FormRequestSimple> (new Ekiga::FormRequestSimple (boost::bind (&Opal::Bank::on_new_account_form_submitted, this, _1, _2, _3, acc_type)));
+  boost::shared_ptr<Ekiga::FormRequestSimple> request = boost::shared_ptr<Ekiga::FormRequestSimple> (new Ekiga::FormRequestSimple (boost::bind (&Opal::Bank::on_new_account_form_submitted, this, _1, _2, _3)));
 
   request->title (_("Add Account"));
 
-  switch (acc_type) {
-
-  case Opal::Account::SIP:
-  default:
-    request->text ("name", _("_Name"), std::string (), _("My SIP Account"),
-                   Ekiga::FormVisitor::STANDARD, false, false);
-    request->text ("host", _("_Registrar"), std::string (), _("ekiga.net"),
-                   Ekiga::FormVisitor::STANDARD, false, false);
-    request->text ("user", _("_User"), username, _("jon"),
-                   Ekiga::FormVisitor::STANDARD, false, false);
-    request->text ("authentication_user", _("_Login"), std::string (), _("jon.doe"),
-                   Ekiga::FormVisitor::STANDARD, true, true);
-    request->text ("password", _("_Password"), password, _("1234"),
-                   Ekiga::FormVisitor::PASSWORD, false, false);
-    request->text ("outbound_proxy", _("Outbound _Proxy"), "", _("proxy.company.com"),
-                   Ekiga::FormVisitor::STANDARD, true, true);
-    request->text ("timeout", _("_Timeout"), "3600", "3600",
-                   Ekiga::FormVisitor::NUMBER, true, false);
-    break;
-  }
+  request->text ("name", _("_Name"), std::string (), _("My SIP Account"),
+                 Ekiga::FormVisitor::STANDARD, false, false);
+  request->text ("host", _("_Registrar"), std::string (), _("ekiga.net"),
+                 Ekiga::FormVisitor::STANDARD, false, false);
+  request->text ("user", _("_User"), "", _("jon"),
+                 Ekiga::FormVisitor::STANDARD, false, false);
+  request->text ("authentication_user", _("_Login"), std::string (), _("jon.doe"),
+                 Ekiga::FormVisitor::STANDARD, true, true);
+  request->text ("password", _("_Password"), "", _("1234"),
+                 Ekiga::FormVisitor::PASSWORD, false, false);
+  request->text ("outbound_proxy", _("Outbound _Proxy"), "", _("proxy.company.com"),
+                 Ekiga::FormVisitor::STANDARD, true, true);
+  request->text ("timeout", _("_Timeout"), "3600", "3600",
+                 Ekiga::FormVisitor::NUMBER, true, false);
   request->boolean ("enabled", _("_Enable account"), true);
 
   questions (request);
@@ -181,18 +173,17 @@ Opal::Bank::new_account (Account::Type acc_type,
 bool
 Opal::Bank::on_new_account_form_submitted (bool submitted,
                                            Ekiga::Form& result,
-                                           G_GNUC_UNUSED std::string& error,
-                                           Account::Type acc_type)
+                                           G_GNUC_UNUSED std::string& error)
 {
   if (!submitted)
     return false;
 
-  boost::shared_ptr<Ekiga::FormRequestSimple> request = boost::shared_ptr<Ekiga::FormRequestSimple> (new Ekiga::FormRequestSimple (boost::bind (&Opal::Bank::on_new_account_form_submitted, this, _1, _2, _3, acc_type)));
+  boost::shared_ptr<Ekiga::FormRequestSimple> request = boost::shared_ptr<Ekiga::FormRequestSimple> (new Ekiga::FormRequestSimple (boost::bind (&Opal::Bank::on_new_account_form_submitted, this, _1, _2, _3)));
 
   std::string new_name = result.text ("name");
   std::string new_host = result.text ("host");
   std::string new_user = result.text ("user");
-  std::string new_authentication_user = (acc_type == Opal::Account::SIP && ! result.text ("authentication_user").empty ()) ? result.text ("authentication_user") : new_user;
+  std::string new_authentication_user = (! result.text ("authentication_user").empty ()) ? result.text ("authentication_user") : new_user;
   std::string new_password = result.text ("password");
   std::string new_outbound_proxy = result.text ("outbound_proxy");
   bool new_enabled = result.boolean ("enabled");
@@ -216,7 +207,7 @@ Opal::Bank::on_new_account_form_submitted (bool submitted,
 
   result.visit (*request);
 
-  add (acc_type, new_name, new_host, new_outbound_proxy, new_user, new_authentication_user,
+  add (Opal::Account::SIP, new_name, new_host, new_outbound_proxy, new_user, new_authentication_user,
        new_password, new_enabled, new_timeout);
 
   return true;
@@ -474,9 +465,8 @@ Opal::Bank::migrate_from_gconf (const std::list<std::string> old)
 void
 Opal::Bank::add_actions ()
 {
-  add_action (Ekiga::ActionPtr (new Ekiga::Action ("add-account-sip", _("_Add a SIP Account"),
-                                                   boost::bind (&Opal::Bank::new_account, this,
-                                                                Opal::Account::SIP, "", ""))));
+  add_action (Ekiga::ActionPtr (new Ekiga::Action ("add-account-sip", _("_Add s SIP Account"),
+                                                   boost::bind (&Opal::Bank::new_account, this))));
 }
 
 

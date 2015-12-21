@@ -577,21 +577,6 @@ ekiga_window_init_actions_toolbar (EkigaWindow *mw)
 
 
 static void
-ekiga_window_init_menu (EkigaWindow *mw)
-{
-  mw->priv->builder = gtk_builder_new ();
-  gtk_builder_add_from_string (mw->priv->builder, win_menu, -1, NULL);
-
-  g_action_map_add_action (G_ACTION_MAP (g_application_get_default ()),
-                           g_settings_create_action (mw->priv->user_interface_settings->get_g_settings (),
-                                                     "panel-section"));
-
-  gtk_widget_insert_action_group (GTK_WIDGET (mw), "win",
-                                  G_ACTION_GROUP (g_application_get_default ()));
-}
-
-
-static void
 ekiga_window_init_dialpad (EkigaWindow *mw)
 {
   GtkWidget *dialpad = NULL;
@@ -677,9 +662,6 @@ ekiga_window_init_gui (EkigaWindow *mw)
   mw->priv->main_stack = gtk_stack_new ();
   gtk_stack_set_transition_type (GTK_STACK (mw->priv->main_stack),
                                  GTK_STACK_TRANSITION_TYPE_OVER_LEFT_RIGHT);
-
-  /* The main menu */
-  ekiga_window_init_menu (mw);
 
   /* The actions toolbar */
   ekiga_window_init_actions_toolbar (mw);

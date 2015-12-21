@@ -76,6 +76,14 @@ namespace Ekiga
     virtual const std::string get_name () const = 0;
 
 
+    /** Returns the username of the Ekiga::Account.
+     * This function is purely virtual and should be implemented by the
+     * Ekiga::Account descendant.
+     * @return The username of the Ekiga::Contact.
+     */
+    virtual const std::string get_username () const = 0;
+
+
     /** Returns the status of the Ekiga::Account.
      * This function is purely virtual and should be implemented by the
      * Ekiga::Account descendant.

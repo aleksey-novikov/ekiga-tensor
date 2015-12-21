@@ -672,13 +672,10 @@ ekiga_window_init_gui (EkigaWindow *mw)
   gtk_box_pack_start (GTK_BOX (window_vbox), mw->priv->main_stack,
                       true, true, 0);
 
+  gtk_window_set_type_hint (GTK_WINDOW (mw), GDK_WINDOW_TYPE_HINT_MENU);
+
   /* Realize */
   gtk_widget_realize (GTK_WIDGET (mw));
-
-  /* Update the widget when the user changes the configuration */
-  g_settings_bind (mw->priv->user_interface_settings->get_g_settings (),
-                   "panel-section", mw->priv->main_stack,
-                   "visible-child-name", G_SETTINGS_BIND_DEFAULT);
 }
 
 

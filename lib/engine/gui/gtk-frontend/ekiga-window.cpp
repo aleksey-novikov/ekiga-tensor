@@ -541,15 +541,13 @@ ekiga_window_uri_entry_new (EkigaWindow *mw)
                     G_CALLBACK (place_call_cb), mw);
   g_signal_connect (entry, "insert-text",
                     G_CALLBACK (insert_url_cb), mw);
-
   return entry;
 }
+
 
 static void
 ekiga_window_init_actions_toolbar (EkigaWindow *mw)
 {
-  GtkWidget *image = NULL;
-  GtkWidget *button = NULL;
   GtkWidget *switcher = NULL;
 
   g_return_if_fail (EKIGA_IS_WINDOW (mw));
@@ -565,22 +563,15 @@ ekiga_window_init_actions_toolbar (EkigaWindow *mw)
                                   G_MENU_MODEL (gtk_builder_get_object (mw->priv->builder, "winmenu")));
   gtk_header_bar_pack_start (GTK_HEADER_BAR (mw->priv->actions_toolbar), GTK_WIDGET (mw->priv->menu_button));
 
-  button = gtk_button_new ();
-  image = gtk_image_new_from_icon_name ("call-start-symbolic", GTK_ICON_SIZE_MENU);
-  gtk_button_set_image (GTK_BUTTON (button), image);
-  gtk_widget_set_tooltip_text (GTK_WIDGET (button),
-                               _("Call the selected contact"));
-  gtk_actionable_set_detailed_action_name (GTK_ACTIONABLE (button), "win.call");
-  gtk_header_bar_pack_start (GTK_HEADER_BAR (mw->priv->actions_toolbar), button);
-
   switcher = gtk_stack_switcher_new ();
   gtk_stack_switcher_set_stack (GTK_STACK_SWITCHER (switcher), GTK_STACK (mw->priv->main_stack));
-  gtk_header_bar_set_custom_title (GTK_HEADER_BAR (mw->priv->actions_toolbar), switcher);
-  gtk_widget_set_margin_end (GTK_WIDGET (switcher), 6);
+//  gtk_header_bar_set_custom_title (GTK_HEADER_BAR (mw->priv->actions_toolbar), switcher);
+  gtk_header_bar_pack_end (GTK_HEADER_BAR (mw->priv->actions_toolbar), switcher);
+//  gtk_widget_set_margin_end (GTK_WIDGET (switcher), 6);
 
   gtk_widget_show_all (mw->priv->actions_toolbar);
 
-  gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (mw->priv->actions_toolbar), TRUE);
+  gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (mw->priv->actions_toolbar), FALSE);
 }
 
 

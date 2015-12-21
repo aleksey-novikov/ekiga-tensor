@@ -138,6 +138,8 @@ static void url_changed_cb (GtkEditable *e,
 static void ekiga_window_append_call_url (EkigaWindow *mw,
                                                 const char *url);
 
+static void ekiga_window_trim_call_url (EkigaWindow *mw);
+
 
 
 /* DESCRIPTION  :  This callback is called when the user
@@ -469,6 +471,35 @@ ekiga_window_append_call_url (EkigaWindow *mw,
   gtk_editable_insert_text (entry, url, strlen (url), &pos);
   gtk_editable_select_region (entry, -1, -1);
   gtk_editable_set_position (entry, pos);
+}
+
+
+static void
+ekiga_window_trim_call_url (EkigaWindow *mw)
+{
+  int pos = -1;
+  GtkEditable *entry;
+
+  g_return_if_fail (EKIGA_IS_WINDOW (mw));
+
+  entry = GTK_EDITABLE (mw->priv->entry);
+
+  if (gtk_editable_get_selection_bounds (entry, NULL, NULL)) {
+    gtk_editable_delete_selection (entry);
+    return;
+  }
+
+  if (!gtk_widget_is_focus(GTK_WIDGET (entry)))
+    gtk_editable_set_position (entry, -1);
+
+  pos = gtk_editable_get_position (entry);
+  if (pos > 0) {
+    gtk_editable_select_region (entry, pos - 1, pos);
+    gtk_editable_delete_selection (entry);
+
+    gtk_editable_select_region (entry, -1, -1);
+    gtk_editable_set_position (entry, pos - 1);
+  }
 }
 
 

@@ -334,6 +334,34 @@
       <_summary>Automatic answer</_summary>
       <_description>If enabled, automatically answer incoming calls</_description>
     </key>
+    <key name="local-number-length" type="i">
+      <range min="3" max="5" />
+      <default>4</default>
+      <_summary>Local number length</_summary>
+      <_description>Dial number length for local calls</_description>
+    </key>
+    <key name="outer-number-length" type="i">
+      <range min="8" max="12" />
+      <default>10</default>
+      <_summary>Outer number length</_summary>
+      <_description>Dial number length for outer calls</_description>
+    </key>
+    <key name="nonlocal-number-prefix" type="s">
+      <default>'0'</default>
+      <_summary>Non-local number prefix</_summary>
+      <_description>Prefix automatically added when dialing</_description>
+    </key>
+    <key name="outer-number-prefix" type="s">
+      <default>'8'</default>
+      <_summary>Outer number prefix</_summary>
+      <_description>Prefix automatically added when dialing</_description>
+    </key>
+    <key name="dtmf-timeout" type="i">
+      <range min="100" max="1000" />
+      <default>300</default>
+      <_summary>Timeout between DTMFs (in mseconds)</_summary>
+      <_description>Timeout between DTMFs on transfer call (in mseconds)</_description>
+    </key>
   </schema>
   <schema gettext-domain="@GETTEXT_PACKAGE@" id="org.gnome.@PACKAGE_NAME@.codecs" path="/org/gnome/@PACKAGE_NAME@/codecs/">
     <child name="audio" schema="org.gnome.@PACKAGE_NAME@.codecs.audio"/>
@@ -528,6 +556,11 @@
       <_summary>Calls history</_summary>
       <_description>The history of the 100 last calls</_description>
     </key>
+    <key name="history-limit" type="i">
+      <default>7</default>
+      <_summary>History limit (days)</_summary>
+      <_description>Older entries are cleared on startup</_description>
+    </key>
     <key name="roster" type="s">
       <default>''</default>
     </key>
@@ -535,6 +568,38 @@
       <default>[]</default>
       <_summary>List of foes</_summary>
       <_description>List of persons the user does not want to hear about</_description>
+    </key>
+  </schema>
+  <schema gettext-domain="@GETTEXT_PACKAGE@" id="org.gnome.@PACKAGE_NAME@.queue" path="/org/gnome/@PACKAGE_NAME@/queue/">
+    <key name="enable" type="b">
+      <default>false</default>
+      <_summary>Enable queue</_summary>
+      <_description>Enable queue support</_description>
+    </key>
+    <key name="enable-enter-leave" type="b">
+      <default>false</default>
+      <_summary>Enable entering/leaving queue</_summary>
+      <_description>Enable entering and leaving queue support</_description>
+    </key>
+    <key name="enter" type="s">
+      <default>''</default>
+      <_summary>Enter queue number</_summary>
+      <_description>Number to dial to enter the queue</_description>
+    </key>
+    <key name="leave" type="s">
+      <default>''</default>
+      <_summary>Enter leave number</_summary>
+      <_description>Number to dial to leave the queue</_description>
+    </key>
+    <key name="pause" type="s">
+      <default>''</default>
+      <_summary>Enter pause number</_summary>
+      <_description>Number to dial to pause the queue</_description>
+    </key>
+    <key name="resume" type="s">
+      <default>''</default>
+      <_summary>Enter resume number</_summary>
+      <_description>Number to dial to resume the queue</_description>
     </key>
   </schema>
 </schemalist>

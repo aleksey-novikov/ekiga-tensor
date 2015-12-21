@@ -422,6 +422,13 @@ key_press_event_cb (EkigaWindow *mw,
       }
       i++;
     }
+  } else if (key->keyval == GDK_KEY_BackSpace) {
+    ekiga_window_trim_call_url (mw);
+    return true;
+
+  } else if (key->keyval == GDK_KEY_Return || key->keyval == GDK_KEY_KP_Enter) {
+    place_call_cb(NULL, mw);
+    return true;
   }
 
   return false;

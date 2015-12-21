@@ -915,7 +915,7 @@ Opal::Account::handle_registration_event (Ekiga::Account::RegistrationState stat
       state = state_;
       failed_registration_already_notified = false;
 
-      if (opal_presentity) {
+      if (opal_presentity && false) {
 
         opal_presentity->SetPresenceChangeNotifier (PCREATE_PresenceChangeNotifier (OnPresenceChange));
         opal_presentity->GetAttributes().Set(OpalPresentity::AuthNameKey, get_authentication_username ());
@@ -934,7 +934,7 @@ Opal::Account::handle_registration_event (Ekiga::Account::RegistrationState stat
           sip_endpoint->Subscribe (SIPSubscribe::MessageSummary, 3600, get_full_uri (get_aor ()));
       }
       boost::shared_ptr<Ekiga::PersonalDetails> details = personal_details.lock ();
-      if (details)
+      if (details && false)
         const_cast<Account*>(this)->publish (*details);
     }
     break;

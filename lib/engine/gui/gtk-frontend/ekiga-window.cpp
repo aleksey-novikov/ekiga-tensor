@@ -63,6 +63,8 @@
 
 #include "opal-bank.h"
 
+#include "uri.h"
+
 enum CallingState {Standby, Calling, Connected, Called};
 
 G_DEFINE_TYPE (EkigaWindow, ekiga_window, GM_TYPE_WINDOW);
@@ -103,6 +105,8 @@ struct _EkigaWindowPrivate
 
   Ekiga::scoped_connections connections;
 
+  std::string call_uri;
+
   /* GSettings */
   boost::shared_ptr<Ekiga::Settings> user_interface_settings;
   boost::shared_ptr<Ekiga::Settings> sound_events_settings;
@@ -133,8 +137,6 @@ static void url_changed_cb (GtkEditable *e,
 
 static void ekiga_window_append_call_url (EkigaWindow *mw,
                                                 const char *url);
-
-static const std::string ekiga_window_get_call_url (EkigaWindow *mw);
 
 
 
@@ -175,11 +177,24 @@ static void ekiga_window_init_actions_toolbar (EkigaWindow *mw);
 /*
  * Callbacks
  */
+static bool
+call_uri_helper_cb (Ekiga::AccountPtr acc,
+                              const gchar* text,
+                              EkigaWindow* mw)
+{
+  Opal::AccountPtr account = boost::dynamic_pointer_cast<Opal::Account>(acc);
+  if (account && account->is_active ()) {
+    mw->priv->call_uri = gm_make_uri (text, account->get_outbound_proxy());
+    return false;
+  }
+  return true;
+}
+
+
 static void
 place_call_cb (GtkWidget * /*widget*/,
                gpointer data)
 {
-  std::string uri;
   EkigaWindow *mw = NULL;
 
   g_return_if_fail (EKIGA_IS_WINDOW (data));
@@ -187,23 +202,23 @@ place_call_cb (GtkWidget * /*widget*/,
   mw = EKIGA_WINDOW (data);
 
   if (mw->priv->calling_state == Standby) {
+    const gchar* uri = gtk_entry_get_text (GTK_ENTRY (mw->priv->entry));
 
-    size_t pos;
+    if (!uri || !strlen(uri))
+      return;
 
-    // Check for empty uri
-    uri = ekiga_window_get_call_url (mw);
-    pos = uri.find (":");
-    if (pos != std::string::npos)
-      if (uri.substr (++pos).empty ())
-        return;
+    mw->priv->call_uri = "";
 
-    // Remove appended spaces
-    pos = uri.find_first_of (' ');
-    if (pos != std::string::npos)
-      uri = uri.substr (0, pos);
+    boost::shared_ptr<Opal::Bank> b = mw->priv->bank.lock ();
+    b->visit_accounts (boost::bind (&call_uri_helper_cb, _1, uri, mw));
+
+    gtk_entry_set_text (GTK_ENTRY (mw->priv->entry), "");
+
+    if (mw->priv->call_uri.empty())
+      return;
 
     // Dial
-    if (!mw->priv->call_core->dial (uri))
+    if (!mw->priv->call_core->dial (mw->priv->call_uri))
       gm_info_bar_push_message (GM_INFO_BAR (mw->priv->info_bar),
                                 GTK_MESSAGE_ERROR,
                                 _("Could not connect to remote host"));
@@ -430,20 +445,6 @@ ekiga_window_append_call_url (EkigaWindow *mw,
   gtk_editable_insert_text (entry, url, strlen (url), &pos);
   gtk_editable_select_region (entry, -1, -1);
   gtk_editable_set_position (entry, pos);
-}
-
-
-static const std::string
-ekiga_window_get_call_url (EkigaWindow *mw)
-{
-  g_return_val_if_fail (EKIGA_IS_WINDOW (mw), NULL);
-
-  const gchar* entry_text = gtk_entry_get_text (GTK_ENTRY (mw->priv->entry));
-
-  if (entry_text != NULL)
-    return entry_text;
-  else
-    return "";
 }
 
 

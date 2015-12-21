@@ -66,9 +66,6 @@ struct _EkigaDialpadClass
 GType      ekiga_dialpad_get_type         (void) G_GNUC_CONST;
 GtkWidget *ekiga_dialpad_new              (GtkAccelGroup *accel_group);
 
-guint      ekiga_dialpad_get_button_code  (EkigaDialpad *dialpad,
-                                           char          number);
-
 G_END_DECLS
 
 #endif  /* __EKIGA_DIALPAD_H__ */

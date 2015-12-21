@@ -41,26 +41,25 @@
 struct const_key_info
 {
   const char *number;
-  const char *letters;
-  const unsigned code;
+  const unsigned codes[3];
 };
 
 /* Translators: the following strings are letters that stand on mobile phone
  * keys.
  */
 static const struct const_key_info keys_info[] = {
-  { "1", "  ", GDK_KEY_KP_1 }, /* whitespaces for a better alignment */
-  { "2", N_("abc"), GDK_KEY_KP_2 },
-  { "3", N_("def"), GDK_KEY_KP_3 },
-  { "4", N_("ghi"), GDK_KEY_KP_4 },
-  { "5", N_("jkl"), GDK_KEY_KP_5 },
-  { "6", N_("mno"), GDK_KEY_KP_6 },
-  { "7", N_("pqrs"), GDK_KEY_KP_7 },
-  { "8", N_("tuv"), GDK_KEY_KP_8 },
-  { "9", N_("wxyz"), GDK_KEY_KP_9 },
-  { "*", "", GDK_KEY_KP_Multiply },
-  { "0", "", GDK_KEY_KP_0 },
-  { "#", "", GDK_KEY_numbersign }
+  { "1", { GDK_KEY_1, GDK_KEY_KP_1, GDK_KEY_VoidSymbol } },
+  { "2", { GDK_KEY_2, GDK_KEY_KP_2, GDK_KEY_VoidSymbol } },
+  { "3", { GDK_KEY_3, GDK_KEY_KP_3, GDK_KEY_VoidSymbol } },
+  { "4", { GDK_KEY_4, GDK_KEY_KP_4, GDK_KEY_VoidSymbol } },
+  { "5", { GDK_KEY_5, GDK_KEY_KP_5, GDK_KEY_VoidSymbol } },
+  { "6", { GDK_KEY_6, GDK_KEY_KP_6, GDK_KEY_VoidSymbol } },
+  { "7", { GDK_KEY_7, GDK_KEY_KP_7, GDK_KEY_VoidSymbol } },
+  { "8", { GDK_KEY_8, GDK_KEY_KP_8, GDK_KEY_VoidSymbol } },
+  { "9", { GDK_KEY_9, GDK_KEY_KP_9, GDK_KEY_VoidSymbol } },
+  { "*", { GDK_KEY_asterisk, GDK_KEY_KP_Multiply, GDK_KEY_VoidSymbol } },
+  { "0", { GDK_KEY_0, GDK_KEY_KP_0, GDK_KEY_VoidSymbol } },
+  { "#", { GDK_KEY_numbersign, GDK_KEY_VoidSymbol } }
 };
 
 struct _EkigaDialpadPrivate
@@ -170,23 +169,13 @@ ekiga_dialpad_init (EkigaDialpad *dialpad)
     gtk_container_set_border_width (GTK_CONTAINER (box), 6);
 
     label = gtk_label_new (NULL);
-    text = g_strdup_printf ("<b>%s</b>",
+    text = g_strdup_printf ("<span size=\"large\"><b>%s</b></span>",
                             _(keys_info [i].number));
     gtk_label_set_markup (GTK_LABEL (label), text);
+    gtk_misc_set_padding (GTK_MISC (label), 10, 5);
     gtk_box_pack_start (GTK_BOX (box), label, TRUE, FALSE, 0);
     gtk_widget_set_halign (label, GTK_ALIGN_CENTER);
     gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
-
-    if (strlen (keys_info [i].letters) > 0) {
-      label = gtk_label_new (NULL);
-      text = g_strdup_printf ("<span size=\"smaller\">%s</span>",
-                              _(keys_info [i].letters));
-      gtk_label_set_markup (GTK_LABEL (label), text);
-      g_free (text);
-      gtk_box_pack_start (GTK_BOX (box), label, FALSE, FALSE, 0);
-      gtk_widget_set_halign (label, GTK_ALIGN_CENTER);
-      gtk_widget_set_valign (label, GTK_ALIGN_END);
-    }
 
     button = gtk_button_new ();
     gtk_container_set_border_width (GTK_CONTAINER (button), 0);
@@ -222,11 +211,14 @@ ekiga_dialpad_constructor (GType                  type,
   if (dialpad->priv->accel_group != NULL) {
     unsigned i;
     for (i = 0; i < G_N_ELEMENTS (keys_info); i++) {
-      gtk_widget_add_accelerator (dialpad->priv->buttons[i],
-                                  "clicked",
-                                  dialpad->priv->accel_group,
-                                  keys_info[i].code,
-                                  (GdkModifierType) 0, (GtkAccelFlags) 0);
+      unsigned j;
+      for (j = 0; keys_info[i].codes[j] != GDK_KEY_VoidSymbol; j++) {
+        gtk_widget_add_accelerator (dialpad->priv->buttons[i],
+                                    "clicked",
+                                    dialpad->priv->accel_group,
+                                    keys_info[i].codes[j],
+                                    (GdkModifierType) 0, (GtkAccelFlags) 0);
+      }
     }
   }
 
@@ -276,17 +268,6 @@ ekiga_dialpad_class_init (EkigaDialpadClass *klass)
                           G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
 
   g_type_class_add_private (klass, sizeof (EkigaDialpadPrivate));
-}
-
-guint
-ekiga_dialpad_get_button_code (G_GNUC_UNUSED EkigaDialpad *dialpad,
-                               char          number)
-{
-  unsigned i;
-  for (i = 0; i < G_N_ELEMENTS (keys_info); i++)
-    if (keys_info[i].number[0] == number)
-      return keys_info[i].code;
-  return 0;
 }
 
 GtkWidget *ekiga_dialpad_new (GtkAccelGroup *accel_group)

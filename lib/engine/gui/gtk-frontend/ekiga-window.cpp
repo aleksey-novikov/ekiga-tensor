@@ -96,7 +96,6 @@ struct _EkigaWindowPrivate
   GtkWidget *preview_button;
   GtkWidget *menu_button;
 
-  GtkWidget* roster_view;
   GtkWidget* call_history_view;
 
   GtkWidget *info_bar;
@@ -163,16 +162,6 @@ static gboolean key_press_event_cb (EkigaWindow *mw,
 static void dialpad_button_clicked_cb (EkigaDialpad  *dialpad,
                                        const gchar *button_text,
                                        EkigaWindow *ekiga_window);
-
-
-/* DESCRIPTION  :  This callback is called when a contact is selected
- *                 in the roster or call history views.
- * BEHAVIOR     :  Updates the window menu with new actions.
- * PRE          :  A valid pointer to the main window GMObject.
- */
-static void actions_changed_cb (G_GNUC_UNUSED GtkWidget *widget,
-                                GMenuModel *model,
-                                gpointer data);
 
 
 /* DESCRIPTION  :  /
@@ -625,23 +614,6 @@ ekiga_window_init_menu (EkigaWindow *mw)
 
 
 static void
-ekiga_window_init_contact_list (EkigaWindow *mw)
-{
-  mw->priv->roster_view = roster_view_gtk_new (mw->priv->presence_core,
-                                               mw->priv->account_core);
-  gtk_stack_add_named (GTK_STACK (mw->priv->main_stack), mw->priv->roster_view, "contacts");
-  gtk_container_child_set (GTK_CONTAINER (mw->priv->main_stack),
-                           mw->priv->roster_view,
-                           "icon-name", "avatar-default-symbolic", NULL);
-
-  g_object_ref (mw->priv->roster_view);
-
-  g_signal_connect (mw->priv->roster_view, "actions-changed",
-                    G_CALLBACK (actions_changed_cb), mw);
-}
-
-
-static void
 ekiga_window_init_dialpad (EkigaWindow *mw)
 {
   GtkWidget *dialpad = NULL;
@@ -692,9 +664,6 @@ ekiga_window_init_history (EkigaWindow *mw)
     gtk_container_child_set (GTK_CONTAINER (mw->priv->main_stack),
                              mw->priv->call_history_view,
                              "icon-name", "document-open-recent-symbolic", NULL);
-
-    g_signal_connect (mw->priv->call_history_view, "actions-changed",
-                      G_CALLBACK (actions_changed_cb), mw);
   }
 }
 
@@ -728,7 +697,6 @@ ekiga_window_init_gui (EkigaWindow *mw)
   ekiga_window_init_actions_toolbar (mw);
 
   /* The stack pages */
-  ekiga_window_init_contact_list (mw);
   ekiga_window_init_dialpad (mw);
   ekiga_window_init_history (mw);
   gtk_widget_show_all (mw->priv->main_stack);
@@ -797,11 +765,6 @@ ekiga_window_dispose (GObject* gobject)
   if (mw->priv->builder) {
     g_object_unref (mw->priv->builder);
     mw->priv->builder = NULL;
-  }
-
-  if (mw->priv->roster_view) {
-    g_object_unref (mw->priv->roster_view);
-    mw->priv->roster_view = NULL;
   }
 
   G_OBJECT_CLASS (ekiga_window_parent_class)->dispose (gobject);

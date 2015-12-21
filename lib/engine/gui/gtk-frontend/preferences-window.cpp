@@ -91,6 +91,7 @@ struct _PreferencesWindowPrivate
   boost::shared_ptr<Ekiga::Settings> audio_devices_settings;
   boost::shared_ptr<Ekiga::Settings> audio_codecs_settings;
   boost::shared_ptr<Ekiga::Settings> contacts_settings;
+  boost::shared_ptr<Ekiga::Settings> queue_settings;
   Ekiga::scoped_connections connections;
 };
 
@@ -117,6 +118,8 @@ _PreferencesWindowPrivate::_PreferencesWindowPrivate ()
     boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (CALL_OPTIONS_SCHEMA));
   contacts_settings =
     boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (CONTACTS_SCHEMA));
+  queue_settings =
+    boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (QUEUE_SCHEMA));
 }
 
 G_DEFINE_TYPE (PreferencesWindow, preferences_window, GM_TYPE_WINDOW);
@@ -512,10 +515,18 @@ static void
 gm_pw_init_general_page (PreferencesWindow *self,
                          GtkWidget *container)
 {
+  GtkWidget *entry = NULL;
+
   /* Display */
   gm_pw_toggle_new (container, _("Show o_ffline contacts"),
                     self->priv->contacts_settings, "show-offline-contacts",
                     _("Show offline contacts in the roster"), false);
+
+  /* History Settings */
+  gm_pw_spin_new (container, _("History limit"), _("days"),
+                  self->priv->contacts_settings, "history-limit",
+                  _("Older entries are cleared on startup"),
+                  1.0, 100.0, 1.0);
 
   /* Network Settings */
   gm_pw_subsection_new (container, _("Network Settings"));
@@ -523,12 +534,57 @@ gm_pw_init_general_page (PreferencesWindow *self,
                   self->priv->protocols_settings, "rtp-tos-field",
                   _("The Type of Service (TOS) byte on outgoing RTP IP packets. This byte is used by the network to provide some level of Quality of Service (QoS). Default value 184 (0xB8) corresponds to Expedited Forwarding (EF) PHB as defined in RFC 3246."),
                   0.0, 255.0, 1.0);
+
+  /* Queue Settings */
+  gm_pw_subsection_new (container, _("Queue"));
+
+  gm_pw_toggle_new (container, _("Enable queue"),
+                    self->priv->queue_settings, "enable",
+                    _("Enable queue support"), false);
+
+  gm_pw_toggle_new (container, _("Enable entering/leaving queue"),
+                    self->priv->queue_settings, "enable-enter-leave",
+                    _("Enable entering and leaving queue support"), false);
+
+  entry =
+    gm_pw_entry_new (container, _("Enter queue number"),
+                     self->priv->queue_settings, "enter",
+                     _("Number to dial to enter the queue"),
+                     false);
+  gtk_widget_set_size_request (GTK_WIDGET (entry), 100, -1);
+  gtk_entry_set_max_length (GTK_ENTRY (entry), 15);
+
+  entry =
+    gm_pw_entry_new (container, _("Leave queue number"),
+                     self->priv->queue_settings, "leave",
+                     _("Number to dial to leave the queue"),
+                     false);
+  gtk_widget_set_size_request (GTK_WIDGET (entry), 100, -1);
+  gtk_entry_set_max_length (GTK_ENTRY (entry), 15);
+
+  entry =
+    gm_pw_entry_new (container, _("Pause queue number"),
+                     self->priv->queue_settings, "pause",
+                     _("Number to dial to pause the queue"),
+                     false);
+  gtk_widget_set_size_request (GTK_WIDGET (entry), 100, -1);
+  gtk_entry_set_max_length (GTK_ENTRY (entry), 15);
+
+  entry =
+    gm_pw_entry_new (container, _("Resume queue number"),
+                     self->priv->queue_settings, "resume",
+                     _("Number to dial to resume the queue"),
+                     false);
+  gtk_widget_set_size_request (GTK_WIDGET (entry), 100, -1);
+  gtk_entry_set_max_length (GTK_ENTRY (entry), 15);
 }
 
 static void
 gm_pw_init_call_options_page (PreferencesWindow *self,
                               GtkWidget *container)
 {
+  GtkWidget *entry = NULL;
+
   gm_pw_toggle_new (container, _("_Always forward calls to the given host"),
                     self->priv->call_forwarding_settings, "always-forward",
                     _("If enabled, all incoming calls will be forwarded to the host that is specified in the protocol settings"), false);
@@ -551,6 +607,38 @@ gm_pw_init_call_options_page (PreferencesWindow *self,
   gm_pw_toggle_new (container, _("_Automatically answer incoming calls"),
                     self->priv->call_options_settings, "auto-answer",
                     _("If enabled, automatically answer incoming calls"));
+  gm_pw_spin_new (container, _("Timeout between DTMFs"), _("msec"),
+                  self->priv->call_options_settings, "dtmf-timeout",
+                  _("Timeout between DTMFs on transfer call (in mseconds)"), 100.0, 1000.0, 100.0);
+
+  /* Lengths and prefixes */
+  gm_pw_subsection_new (container, _("Dial Prefixes"));
+
+  gm_pw_spin_new (container, _("Local number length"), NULL,
+                  self->priv->call_options_settings, "local-number-length",
+                  _("Dial number length for local calls"), 3.0, 5.0, 1.0);
+
+  entry =
+    gm_pw_entry_new (container, _("Non-local number prefix"),
+                     self->priv->call_options_settings, "nonlocal-number-prefix",
+                     _("Prefix automatically added when dialing"),
+                     false);
+  g_object_set (entry, "regex", NUMBER_REGEX, NULL);
+  gtk_widget_set_size_request (GTK_WIDGET (entry), 40, -1);
+  gtk_entry_set_max_length (GTK_ENTRY (entry), 5);
+
+  gm_pw_spin_new (container, _("Outer number length"), NULL,
+                  self->priv->call_options_settings, "outer-number-length",
+                  _("Dial number length for outer calls"), 8.0, 12.0, 1.0);
+
+  entry =
+    gm_pw_entry_new (container, _("Outer number prefix"),
+                     self->priv->call_options_settings, "outer-number-prefix",
+                     _("Prefix automatically added when dialing"),
+                     false);
+  g_object_set (entry, "regex", NUMBER_REGEX, NULL);
+  gtk_widget_set_size_request (GTK_WIDGET (entry), 40, -1);
+  gtk_entry_set_max_length (GTK_ENTRY (entry), 5);
 }
 
 

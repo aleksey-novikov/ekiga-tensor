@@ -527,8 +527,7 @@ ekiga_window_uri_entry_new (EkigaWindow *mw)
   g_return_val_if_fail (EKIGA_IS_WINDOW (mw), NULL);
 
   /* URI Entry */
-  entry = gm_entry_new (BASIC_URI_REGEX);
-  gm_entry_set_activate_icon (GM_ENTRY (entry), "call-start");
+  entry = gm_entry_new (NUMBER_REGEX);
 
   gtk_widget_add_accelerator (entry, "grab-focus",
                               mw->priv->accel, GDK_KEY_L,

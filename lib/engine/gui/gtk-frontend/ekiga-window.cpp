@@ -244,6 +244,8 @@ on_account_updated (Ekiga::AccountPtr account,
   EkigaWindow *self = EKIGA_WINDOW (data);
   gchar *msg = NULL;
 
+  gchar *title = g_strdup (_("Ekiga"));
+
   switch (account->get_state ()) {
   case Ekiga::Account::RegistrationFailed:
   case Ekiga::Account::UnregistrationFailed:
@@ -257,12 +259,19 @@ on_account_updated (Ekiga::AccountPtr account,
     g_free (msg);
     break;
 
-  case Ekiga::Account::Processing:
   case Ekiga::Account::Registered:
+    g_free (title);
+    title = g_strdup_printf("%s (%s)", _("Ekiga"), account->get_username().c_str());
+    break;
+
   case Ekiga::Account::Unregistered:
+  case Ekiga::Account::Processing:
   default:
     break;
   }
+
+  gtk_window_set_title (GTK_WINDOW (self), title);
+  g_free (title);
 }
 
 

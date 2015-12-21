@@ -427,6 +427,30 @@ key_press_event_cb (EkigaWindow *mw,
 
 
 static void
+insert_url_cb (G_GNUC_UNUSED GtkEditable *entry,
+	       gchar *new_text,
+	       G_GNUC_UNUSED gint new_text_length,
+	       G_GNUC_UNUSED gpointer position,
+	       G_GNUC_UNUSED gpointer data)
+{
+  const char valid_dtmfs[] = "1234567890#*";
+
+  gchar *text = g_strdup(new_text);
+
+  unsigned l = 0;
+  for (unsigned k = 0; k < strlen(text); k++)
+    for (unsigned i = 0; i < strlen (valid_dtmfs); i++)
+      if (text[k] == valid_dtmfs[i]) {
+        new_text[l++] = text[k];
+        break;
+      }
+  new_text[l] = '\0';
+
+  g_free(text);
+}
+
+
+static void
 ekiga_window_append_call_url (EkigaWindow *mw,
                                     const char *url)
 {
@@ -469,6 +493,8 @@ ekiga_window_uri_entry_new (EkigaWindow *mw)
                     G_CALLBACK (url_changed_cb), mw);
   g_signal_connect (entry, "activated",
                     G_CALLBACK (place_call_cb), mw);
+  g_signal_connect (entry, "insert-text",
+                    G_CALLBACK (insert_url_cb), mw);
 
   return entry;
 }

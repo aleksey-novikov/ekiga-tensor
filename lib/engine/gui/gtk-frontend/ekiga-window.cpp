@@ -595,32 +595,42 @@ static void
 ekiga_window_init_dialpad (EkigaWindow *mw)
 {
   GtkWidget *dialpad = NULL;
-  GtkWidget *grid = NULL;
+  GtkWidget *vbox = NULL;
+  GtkWidget *hbox = NULL;
+  GtkWidget *button = NULL;
+  GtkWidget *image = NULL;
 
-  grid = gtk_grid_new ();
-  gtk_grid_set_row_spacing (GTK_GRID (grid), 18);
-  gtk_container_set_border_width (GTK_CONTAINER (grid), 18);
+  vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+  gtk_container_set_border_width (GTK_CONTAINER (vbox), 10);
+
+  hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 5);
+  gtk_widget_set_halign (hbox, GTK_ALIGN_CENTER);
+  gtk_widget_set_hexpand (hbox, TRUE);
+  gtk_widget_set_valign (hbox, GTK_ALIGN_START);
+  gtk_container_add (GTK_CONTAINER (vbox), hbox);
+
+  mw->priv->entry = ekiga_window_uri_entry_new (mw);
+  gtk_container_add(GTK_CONTAINER(hbox), mw->priv->entry);
+
+  button = gtk_button_new ();
+  image = gtk_image_new_from_icon_name ("call-start-symbolic", GTK_ICON_SIZE_MENU);
+  gtk_button_set_image (GTK_BUTTON (button), image);
+  gtk_widget_set_tooltip_text (GTK_WIDGET (button), _("Call"));
+  gtk_actionable_set_detailed_action_name (GTK_ACTIONABLE (button), "win.call");  // WTF???
+  gtk_container_add (GTK_CONTAINER (hbox), button);
 
   dialpad = ekiga_dialpad_new (mw->priv->accel);
-  gtk_widget_set_hexpand (dialpad, FALSE);
-  gtk_widget_set_vexpand (dialpad, FALSE);
+  gtk_widget_set_hexpand (dialpad, TRUE);
+  gtk_widget_set_vexpand (dialpad, TRUE);
   gtk_widget_set_halign (dialpad, GTK_ALIGN_CENTER);
   gtk_widget_set_valign (dialpad, GTK_ALIGN_CENTER);
-  gtk_grid_attach (GTK_GRID (grid), dialpad, 0, 0, 1, 1);
+  gtk_container_add (GTK_CONTAINER (vbox), dialpad);
   g_signal_connect (dialpad, "button-clicked",
                     G_CALLBACK (dialpad_button_clicked_cb), mw);
 
-  mw->priv->entry = ekiga_window_uri_entry_new (mw);
-  gtk_widget_set_hexpand (dialpad, TRUE);
-  gtk_widget_set_vexpand (dialpad, TRUE);
-  gtk_widget_set_halign (mw->priv->entry, GTK_ALIGN_FILL);
-  gtk_widget_set_valign (mw->priv->entry, GTK_ALIGN_END);
-  gtk_grid_attach_next_to (GTK_GRID (grid), mw->priv->entry, dialpad,
-                           GTK_POS_BOTTOM, 1, 1);
-
-  gtk_stack_add_named (GTK_STACK (mw->priv->main_stack), grid, "dialpad");
+  gtk_stack_add_named (GTK_STACK (mw->priv->main_stack), vbox, "dialpad");
   gtk_container_child_set (GTK_CONTAINER (mw->priv->main_stack),
-                           grid,
+                           vbox,
                            "icon-name", "input-dialpad-symbolic", NULL);
 
   g_signal_connect (mw, "key-press-event",

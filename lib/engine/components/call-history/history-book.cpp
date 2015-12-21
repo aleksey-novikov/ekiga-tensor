@@ -102,11 +102,16 @@ History::Book::add (const std::string & name,
   boost::shared_ptr<Ekiga::ContactCore> ccore = contact_core.lock ();
 
   if ( !uri.empty ()) {
+    size_t pos;
+
+    pos = uri.find(':');
+    std::string _uri = uri.substr(pos == std::string::npos ? 0 : pos + 1);
+    _uri = _uri.substr(0, _uri.find('@'));
 
     xmlNodePtr root = xmlDocGetRootElement (doc.get ());
 
-    boost::shared_ptr<History::Contact> contact =
-      History::Contact::create (ccore, doc, name, uri, call_start, call_duration, c_t);
+    boost::shared_ptr<History::Contact> contact = History::Contact::create (ccore, doc,
+      (name == uri ? _uri : _uri + " (" + name + ")"), _uri, call_start, call_duration, c_t);
 
     xmlAddChild (root, contact->get_node ());
 

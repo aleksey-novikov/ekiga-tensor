@@ -432,4 +432,6 @@ libekiga_la_SOURCES += \
 	engine/gui/gtk-frontend/ekiga-window.h \
 	engine/gui/gtk-frontend/ekiga-window.cpp \
 	engine/gui/gtk-frontend/ekiga-app.h \
-	engine/gui/gtk-frontend/ekiga-app.cpp
+	engine/gui/gtk-frontend/ekiga-app.cpp \
+	engine/gui/gtk-frontend/uri.h \
+	engine/gui/gtk-frontend/uri.cpp

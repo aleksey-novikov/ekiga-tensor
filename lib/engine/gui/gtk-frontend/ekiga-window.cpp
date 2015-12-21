@@ -88,7 +88,6 @@ struct _EkigaWindowPrivate
 
   /* Dialpad uri toolbar */
   GtkWidget *entry;
-  GtkListStore *completion;
 
   /* Actions toolbar */
   GtkWidget *actions_toolbar;
@@ -126,10 +125,6 @@ static const char* win_menu =
 
 
 /* GUI Functions */
-static bool account_completion_helper_cb (Ekiga::AccountPtr acc,
-                                          const gchar* text,
-                                          EkigaWindow* mw);
-
 static void place_call_cb (GtkWidget * /*widget*/,
                            gpointer data);
 
@@ -180,29 +175,6 @@ static void ekiga_window_init_actions_toolbar (EkigaWindow *mw);
 /*
  * Callbacks
  */
-static bool
-account_completion_helper_cb (Ekiga::AccountPtr acc,
-                              const gchar* text,
-                              EkigaWindow* mw)
-{
-  Opal::AccountPtr account = boost::dynamic_pointer_cast<Opal::Account>(acc);
-  // propose autocompletion for registered accounts
-  if (account && account->is_active ()) {
-
-    if (g_ascii_strncasecmp (text, "sip:", 4) == 0 && account->get_protocol_name () == "SIP") {
-
-      GtkTreeIter iter;
-      gchar* entry = NULL;
-
-      entry = g_strdup_printf ("%s@%s", text, account->get_host ().c_str ());
-      gtk_list_store_append (mw->priv->completion, &iter);
-      gtk_list_store_set (mw->priv->completion, &iter, 0, entry, -1);
-      g_free (entry);
-    }
-  }
-  return true;
-}
-
 static void
 place_call_cb (GtkWidget * /*widget*/,
                gpointer data)
@@ -243,19 +215,6 @@ url_changed_cb (GtkEditable *e,
                 gpointer data)
 {
   EkigaWindow *mw = EKIGA_WINDOW (data);
-  const char *tip_text = NULL;
-
-  tip_text = gtk_entry_get_text (GTK_ENTRY (e));
-
-  if (g_strrstr (tip_text, "@") == NULL) {
-    boost::shared_ptr<Opal::Bank> b = mw->priv->bank.lock ();
-    if (b) {
-      gtk_list_store_clear (mw->priv->completion);
-      b->visit_accounts (boost::bind (&account_completion_helper_cb, _1, tip_text, mw));
-    }
-  }
-
-  gtk_widget_set_tooltip_text (GTK_WIDGET (e), tip_text);
 }
 
 
@@ -492,22 +451,12 @@ static GtkWidget *
 ekiga_window_uri_entry_new (EkigaWindow *mw)
 {
   GtkWidget *entry = NULL;
-  GtkEntryCompletion *completion = NULL;
 
   g_return_val_if_fail (EKIGA_IS_WINDOW (mw), NULL);
 
   /* URI Entry */
   entry = gm_entry_new (BASIC_URI_REGEX);
   gm_entry_set_activate_icon (GM_ENTRY (entry), "call-start");
-
-  mw->priv->completion = gtk_list_store_new (1, G_TYPE_STRING);
-  completion = gtk_entry_completion_new ();
-  gtk_entry_completion_set_model (GTK_ENTRY_COMPLETION (completion), GTK_TREE_MODEL (mw->priv->completion));
-  gtk_entry_completion_set_text_column (GTK_ENTRY_COMPLETION (completion), 0);
-  gtk_entry_set_completion (GTK_ENTRY (entry), completion);
-  gtk_entry_set_text (GTK_ENTRY (entry), "sip:");
-  gtk_entry_completion_set_inline_completion (GTK_ENTRY_COMPLETION (completion), true);
-  gtk_entry_completion_set_popup_completion (GTK_ENTRY_COMPLETION (completion), true);
 
   gtk_widget_add_accelerator (entry, "grab-focus",
                               mw->priv->accel, GDK_KEY_L,

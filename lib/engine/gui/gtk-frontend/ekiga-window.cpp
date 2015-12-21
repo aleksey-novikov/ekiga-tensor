@@ -92,7 +92,6 @@ struct _EkigaWindowPrivate
 
   /* Actions toolbar */
   GtkWidget *actions_toolbar;
-  GtkWidget *preview_button;
   GtkWidget *menu_button;
 
   GtkWidget* call_history_view;
@@ -313,7 +312,6 @@ static void on_setup_call_cb (boost::shared_ptr<Ekiga::Call>  call,
 
   /* Unsensitive a few things */
   gtk_widget_set_sensitive (GTK_WIDGET (mw->priv->entry), false);
-  gtk_widget_set_sensitive (GTK_WIDGET (mw->priv->preview_button), false);
 }
 
 
@@ -364,7 +362,6 @@ static void on_cleared_call_cb (boost::shared_ptr<Ekiga::Call> call,
 
   /* Sensitive a few things back */
   gtk_widget_set_sensitive (GTK_WIDGET (mw->priv->entry), true);
-  gtk_widget_set_sensitive (GTK_WIDGET (mw->priv->preview_button), true);
 }
 
 
@@ -390,7 +387,6 @@ static void on_missed_call_cb (boost::shared_ptr<Ekiga::Call>  call,
 
     /* Sensitive a few things back */
     gtk_widget_set_sensitive (GTK_WIDGET (mw->priv->entry), true);
-    gtk_widget_set_sensitive (GTK_WIDGET (mw->priv->preview_button), true);
 
     /* Clear sounds */
     mw->priv->audiooutput_core->stop_play_event ("incoming-call-sound");
@@ -554,16 +550,6 @@ ekiga_window_init_actions_toolbar (EkigaWindow *mw)
                                _("Call the selected contact"));
   gtk_actionable_set_detailed_action_name (GTK_ACTIONABLE (button), "win.call");
   gtk_header_bar_pack_start (GTK_HEADER_BAR (mw->priv->actions_toolbar), button);
-
-  mw->priv->preview_button = gtk_toggle_button_new ();
-  image = gtk_image_new_from_icon_name ("camera-web-symbolic", GTK_ICON_SIZE_MENU);
-  gtk_button_set_image (GTK_BUTTON (mw->priv->preview_button), image);
-  gtk_widget_set_tooltip_text (GTK_WIDGET (mw->priv->preview_button),
-                               _("Display images from your camera device"));
-
-  gtk_actionable_set_detailed_action_name (GTK_ACTIONABLE (mw->priv->preview_button),
-                                           "win.enable-preview");
-  gtk_header_bar_pack_start (GTK_HEADER_BAR (mw->priv->actions_toolbar), mw->priv->preview_button);
 
   switcher = gtk_stack_switcher_new ();
   gtk_stack_switcher_set_stack (GTK_STACK_SWITCHER (switcher), GTK_STACK (mw->priv->main_stack));

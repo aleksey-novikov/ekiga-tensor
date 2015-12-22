@@ -90,6 +90,7 @@ struct _EkigaWindowPrivate
 
   /* Dialpad uri toolbar */
   GtkWidget *entry;
+  GtkWidget *call_button;
 
   /* Actions toolbar */
   GtkWidget *actions_toolbar;
@@ -174,6 +175,14 @@ static GtkWidget *ekiga_window_uri_entry_new (EkigaWindow *mw);
  */
 static void ekiga_window_init_actions_toolbar (EkigaWindow *mw);
 
+static void call_activated (GSimpleAction *action,
+                            GVariant *parameter,
+                            gpointer app);
+
+static GActionEntry win_entries[] =
+{
+    { "call", call_activated, NULL, NULL, NULL, 0 }
+};
 
 
 /*
@@ -469,6 +478,18 @@ insert_url_cb (G_GNUC_UNUSED GtkEditable *entry,
 
 
 static void
+call_activated (G_GNUC_UNUSED GSimpleAction *action,
+                G_GNUC_UNUSED GVariant *parameter,
+                gpointer win)
+{
+  g_return_if_fail (EKIGA_IS_WINDOW (win));
+
+  EkigaWindow *mw = EKIGA_WINDOW (win);
+  place_call_cb (NULL, mw);
+}
+
+
+static void
 ekiga_window_append_call_url (EkigaWindow *mw,
                                     const char *url)
 {
@@ -581,7 +602,6 @@ ekiga_window_init_dialpad (EkigaWindow *mw)
   GtkWidget *dialpad = NULL;
   GtkWidget *vbox = NULL;
   GtkWidget *hbox = NULL;
-  GtkWidget *button = NULL;
   GtkWidget *image = NULL;
 
   vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
@@ -596,12 +616,12 @@ ekiga_window_init_dialpad (EkigaWindow *mw)
   mw->priv->entry = ekiga_window_uri_entry_new (mw);
   gtk_container_add(GTK_CONTAINER(hbox), mw->priv->entry);
 
-  button = gtk_button_new ();
-  image = gtk_image_new_from_icon_name ("call-start-symbolic", GTK_ICON_SIZE_MENU);
-  gtk_button_set_image (GTK_BUTTON (button), image);
-  gtk_widget_set_tooltip_text (GTK_WIDGET (button), _("Call"));
-  gtk_actionable_set_detailed_action_name (GTK_ACTIONABLE (button), "win.call");  // WTF???
-  gtk_container_add (GTK_CONTAINER (hbox), button);
+  mw->priv->call_button = gtk_button_new ();
+  image = gtk_image_new_from_icon_name ("call-start-symbolic", GTK_ICON_SIZE_SMALL_TOOLBAR);
+  gtk_button_set_image (GTK_BUTTON (mw->priv->call_button), image);
+  gtk_widget_set_tooltip_text (GTK_WIDGET (mw->priv->call_button), _("Call"));
+  gtk_actionable_set_detailed_action_name (GTK_ACTIONABLE (mw->priv->call_button), "win.call");
+  gtk_container_add (GTK_CONTAINER (hbox), mw->priv->call_button);
 
   dialpad = ekiga_dialpad_new (mw->priv->accel);
   gtk_widget_set_hexpand (dialpad, TRUE);
@@ -671,6 +691,9 @@ ekiga_window_init_gui (EkigaWindow *mw)
   gtk_widget_show_all (mw->priv->main_stack);
   gtk_box_pack_start (GTK_BOX (window_vbox), mw->priv->main_stack,
                       true, true, 0);
+
+  /* Set initial call button state */
+  gtk_widget_set_sensitive (GTK_WIDGET (mw->priv->call_button), false);
 
   gtk_window_set_type_hint (GTK_WINDOW (mw), GDK_WINDOW_TYPE_HINT_MENU);
 

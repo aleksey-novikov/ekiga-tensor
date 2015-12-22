@@ -241,6 +241,9 @@ url_changed_cb (GtkEditable *e,
                 gpointer data)
 {
   EkigaWindow *mw = EKIGA_WINDOW (data);
+
+  const gchar *text = gtk_entry_get_text (GTK_ENTRY (e));
+  gtk_widget_set_sensitive (GTK_WIDGET (mw->priv->call_button), (strlen(text) > 0));
 }
 
 

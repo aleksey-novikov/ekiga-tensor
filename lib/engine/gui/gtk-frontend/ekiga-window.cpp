@@ -106,7 +106,6 @@ struct _EkigaWindowPrivate
 
   Ekiga::scoped_connections connections;
 
-  std::string call_uri;
 
   /* GSettings */
   boost::shared_ptr<Ekiga::Settings> queue_settings;
@@ -139,6 +138,8 @@ static const char *win_menu =
 "</interface>";
 
 /* GUI Functions */
+static bool dial_helper (EkigaWindow *mw, const char *number);
+
 static void place_call_cb (GtkWidget * /*widget*/,
                            gpointer data);
 
@@ -196,18 +197,33 @@ static GActionEntry win_entries[] =
  * Callbacks
  */
 static bool
-call_uri_helper_cb (Ekiga::AccountPtr acc,
-                              const gchar* text,
-                              EkigaWindow* mw)
+dial_helper (EkigaWindow *mw, const char *number)
 {
-  Opal::AccountPtr account = boost::dynamic_pointer_cast<Opal::Account>(acc);
-  if (account && account->is_active ()) {
-    mw->priv->call_uri = gm_make_uri (text, account->get_outbound_proxy());
-    return false;
-  }
-  return true;
-}
+  if (mw->priv->calling_state == Standby) {
+    if (!number  || !strlen(number))
+      return false;
 
+    boost::shared_ptr<Opal::Bank> b = mw->priv->bank.lock ();
+    Opal::AccountPtr account = boost::dynamic_pointer_cast<Opal::Account>(*b->Ekiga::BankImpl<Opal::Account>::begin());
+    if (!account || account->get_outbound_proxy().empty())
+      return false;
+
+    std::string uri = gm_make_uri (number, account->get_outbound_proxy());
+
+    if (uri.empty())
+      return false;
+
+    // Dial
+    if (!mw->priv->call_core->dial (uri)) {
+      gm_info_bar_push_message (GM_INFO_BAR (mw->priv->info_bar),
+                                GTK_MESSAGE_ERROR,
+                                _("Could not connect to remote host"));
+      return false;
+    } else
+      return true;
+  }
+  return false;
+}
 
 static void
 place_call_cb (GtkWidget * /*widget*/,
@@ -219,28 +235,7 @@ place_call_cb (GtkWidget * /*widget*/,
 
   mw = EKIGA_WINDOW (data);
 
-  if (mw->priv->calling_state == Standby) {
-    const gchar* uri = gtk_entry_get_text (GTK_ENTRY (mw->priv->entry));
-
-    if (!uri || !strlen(uri))
-      return;
-
-    mw->priv->call_uri = "";
-
-    boost::shared_ptr<Opal::Bank> b = mw->priv->bank.lock ();
-    b->visit_accounts (boost::bind (&call_uri_helper_cb, _1, uri, mw));
-
-    gtk_entry_set_text (GTK_ENTRY (mw->priv->entry), "");
-
-    if (mw->priv->call_uri.empty())
-      return;
-
-    // Dial
-    if (!mw->priv->call_core->dial (mw->priv->call_uri))
-      gm_info_bar_push_message (GM_INFO_BAR (mw->priv->info_bar),
-                                GTK_MESSAGE_ERROR,
-                                _("Could not connect to remote host"));
-  }
+  dial_helper (mw, gtk_entry_get_text (GTK_ENTRY (mw->priv->entry)));
 }
 
 static void

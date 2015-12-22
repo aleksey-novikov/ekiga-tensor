@@ -237,7 +237,7 @@ static bool
 dial_helper (EkigaWindow *mw, const char *number)
 {
   if (mw->priv->calling_state == Standby) {
-    if (!number  || !strlen(number))
+    if (!number || !strlen(number))
       return false;
 
     boost::shared_ptr<Opal::Bank> b = mw->priv->bank.lock ();
@@ -615,8 +615,8 @@ queue_enter (G_GNUC_UNUSED GSimpleAction *action,
 
   EkigaWindow *mw = EKIGA_WINDOW (win);
 
-  const char *uri = mw->priv->queue_settings->get_string("enter").c_str();
-  if (dial_helper (mw, uri))
+  const std::string uri = mw->priv->queue_settings->get_string("enter");
+  if (dial_helper (mw, uri.c_str()))
     update_state (mw, STATE_QUEUED);
 }
 
@@ -630,8 +630,8 @@ queue_leave (G_GNUC_UNUSED GSimpleAction *action,
 
   EkigaWindow *mw = EKIGA_WINDOW (win);
 
-  const char *uri = mw->priv->queue_settings->get_string("leave").c_str();
-  if (dial_helper (mw, uri))
+  const std::string uri = mw->priv->queue_settings->get_string("leave");
+  if (dial_helper (mw, uri.c_str()))
     update_state (mw, STATE_CONNECTED);
 }
 
@@ -645,8 +645,8 @@ queue_pause (G_GNUC_UNUSED GSimpleAction *action,
 
   EkigaWindow *mw = EKIGA_WINDOW (win);
 
-  const char *uri = mw->priv->queue_settings->get_string("pause").c_str();
-  if (dial_helper (mw, uri))
+  const std::string uri = mw->priv->queue_settings->get_string("pause");
+  if (dial_helper (mw, uri.c_str()))
     update_state (mw, STATE_PAUSED);
 }
 
@@ -660,8 +660,8 @@ queue_resume (G_GNUC_UNUSED GSimpleAction *action,
 
   EkigaWindow *mw = EKIGA_WINDOW (win);
 
-  const char *uri = mw->priv->queue_settings->get_string("resume").c_str();
-  if (dial_helper (mw, uri))
+  const std::string uri = mw->priv->queue_settings->get_string("resume");
+  if (dial_helper (mw, uri.c_str()))
     update_state (mw, STATE_QUEUED);
 }
 

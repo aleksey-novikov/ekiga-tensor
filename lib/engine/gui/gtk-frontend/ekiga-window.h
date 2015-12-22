@@ -69,4 +69,6 @@ G_END_DECLS
  * PRE          :  /
  */
 GtkWidget *gm_ekiga_window_new (GmApplication *app);
+
+void ekiga_window_quit_requested (GtkWidget *win);
 #endif

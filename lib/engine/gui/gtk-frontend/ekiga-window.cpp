@@ -116,6 +116,8 @@ struct _EkigaWindowPrivate
 
   PhoneState state;
 
+  bool quit_requested;
+
   /* GSettings */
   boost::shared_ptr<Ekiga::Settings> queue_settings;
 };
@@ -411,6 +413,9 @@ static void on_cleared_call_cb (boost::shared_ptr<Ekiga::Call> call,
 
   /* Sensitive a few things back */
   gtk_widget_set_sensitive (GTK_WIDGET (mw->priv->entry), true);
+
+  if (mw->priv->quit_requested)
+    g_application_quit (G_APPLICATION (mw->priv->app));
 }
 
 
@@ -673,6 +678,29 @@ call_activated (G_GNUC_UNUSED GSimpleAction *action,
 }
 
 
+void ekiga_window_quit_requested (GtkWidget *win)
+{
+  g_return_if_fail (EKIGA_IS_WINDOW (win));
+
+  EkigaWindow *mw = EKIGA_WINDOW (win);
+
+  if (mw->priv->state == STATE_QUEUED) {
+    mw->priv->quit_requested = true;
+    if (mw->priv->queue_settings->get_bool("enable-enter-leave"))
+      g_idle_add((GSourceFunc)queue_leave_cb, mw);
+    else
+      g_idle_add((GSourceFunc)queue_pause_cb, mw);
+    return;
+  } else if (mw->priv->state == STATE_PAUSED && mw->priv->queue_settings->get_bool("enable-enter-leave")) {
+    mw->priv->quit_requested = true;
+    g_idle_add((GSourceFunc)queue_leave_cb, mw);
+    return;
+  }
+
+  g_application_quit (G_APPLICATION (mw->priv->app));
+}
+
+
 static void
 ekiga_window_append_call_url (EkigaWindow *mw,
                                     const char *url)
@@ -905,6 +933,8 @@ ekiga_window_init (EkigaWindow *mw)
   mw->priv->current_call = boost::shared_ptr<Ekiga::Call>();
   mw->priv->calling_state = Standby;
   mw->priv->call_window = NULL;
+
+  mw->priv->quit_requested = false;
 
   mw->priv->queue_settings =
     boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (QUEUE_SCHEMA));

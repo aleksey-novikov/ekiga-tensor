@@ -67,6 +67,14 @@
 
 enum CallingState {Standby, Calling, Connected, Called};
 
+enum PhoneState {
+  STATE_DISCONNECTED,
+  STATE_CONNECTING,
+  STATE_CONNECTED,
+  STATE_QUEUED,
+  STATE_PAUSED
+};
+
 G_DEFINE_TYPE (EkigaWindow, ekiga_window, GM_TYPE_WINDOW);
 
 
@@ -106,6 +114,7 @@ struct _EkigaWindowPrivate
 
   Ekiga::scoped_connections connections;
 
+  PhoneState state;
 
   /* GSettings */
   boost::shared_ptr<Ekiga::Settings> queue_settings;
@@ -151,6 +160,8 @@ static void ekiga_window_append_call_url (EkigaWindow *mw,
 
 static void ekiga_window_trim_call_url (EkigaWindow *mw);
 
+static void update_state (EkigaWindow *mw, PhoneState state);
+
 /* DESCRIPTION  :  This callback is called when the user
  *                 presses a key.
  * BEHAVIOR     :  Sends a DTMF if we are in a call.
@@ -183,12 +194,36 @@ static GtkWidget *ekiga_window_uri_entry_new (EkigaWindow *mw);
  */
 static void ekiga_window_init_actions_toolbar (EkigaWindow *mw);
 
+static gboolean queue_leave_cb (gpointer data);
+
+static gboolean queue_pause_cb (gpointer data);
+
+static void queue_enter (GSimpleAction *action,
+                         GVariant *parameter,
+                         gpointer win);
+
+static void queue_leave (GSimpleAction *action,
+                         GVariant *parameter,
+                         gpointer win);
+
+static void queue_pause (GSimpleAction *action,
+                         GVariant *parameter,
+                         gpointer win);
+
+static void queue_resume (GSimpleAction *action,
+                          GVariant *parameter,
+                          gpointer win);
+
 static void call_activated (GSimpleAction *action,
                             GVariant *parameter,
-                            gpointer app);
+                            gpointer win);
 
 static GActionEntry win_entries[] =
 {
+    { "queue_enter", queue_enter, NULL, NULL, NULL, 0 },
+    { "queue_leave", queue_leave, NULL, NULL, NULL, 0 },
+    { "queue_pause", queue_pause, NULL, NULL, NULL, 0 },
+    { "queue_resume", queue_resume, NULL, NULL, NULL, 0 },
     { "call", call_activated, NULL, NULL, NULL, 0 }
 };
 
@@ -262,6 +297,7 @@ on_account_updated (Ekiga::AccountPtr account,
 
   switch (account->get_state ()) {
   case Ekiga::Account::RegistrationFailed:
+    update_state (self, STATE_DISCONNECTED);
   case Ekiga::Account::UnregistrationFailed:
     msg = g_strdup_printf ("%s: %s",
                            account->get_name ().c_str (),
@@ -276,10 +312,24 @@ on_account_updated (Ekiga::AccountPtr account,
   case Ekiga::Account::Registered:
     g_free (title);
     title = g_strdup_printf("%s (%s)", _("Ekiga"), account->get_username().c_str());
+    if (self->priv->queue_settings->get_bool("enable")) {
+      update_state (self, STATE_QUEUED);
+      if (self->priv->queue_settings->get_bool("enable-enter-leave"))
+        g_idle_add ((GSourceFunc)queue_leave_cb, self);
+      else
+        g_idle_add ((GSourceFunc)queue_pause_cb, self);
+    } else
+      update_state (self, STATE_CONNECTED);
     break;
 
   case Ekiga::Account::Unregistered:
+    update_state (self, STATE_DISCONNECTED);
+    break;
+
   case Ekiga::Account::Processing:
+    update_state (self, STATE_CONNECTING);
+    break;
+
   default:
     break;
   }
@@ -416,6 +466,58 @@ static bool on_handle_errors (std::string error,
   return true;
 }
 
+static void
+update_state (EkigaWindow *mw,
+              PhoneState state)
+{
+    gchar *tooltip = NULL;
+    const gchar *image_name = NULL;
+
+    mw->priv->state = state;
+
+    if (!mw->priv->menu_button)
+      return;
+
+    GMenuModel *menu = G_MENU_MODEL (gtk_builder_get_object (mw->priv->builder, "queuemenu"));
+    g_menu_remove_all (G_MENU (menu));
+
+    switch (state) {
+      case STATE_CONNECTING:
+        tooltip = _("Connecting");
+        image_name = "mail-send-receive-symbolic";
+        break;
+      case STATE_CONNECTED:
+        tooltip = _("Connected");
+        image_name = "document-open-recent-symbolic";
+        if (mw->priv->queue_settings->get_bool("enable") && mw->priv->queue_settings->get_bool("enable-enter-leave"))
+          g_menu_append (G_MENU (menu), _("Enter queue"), "win.queue_enter");
+        break;
+      case STATE_QUEUED:
+        tooltip = _("In queue");
+        image_name = "view-restore-symbolic";
+        g_menu_append (G_MENU (menu), _("Pause queue"), "win.queue_pause");
+        if (mw->priv->queue_settings->get_bool("enable-enter-leave"))
+          g_menu_append (G_MENU (menu), _("Leave queue"), "win.queue_leave");
+        break;
+      case STATE_PAUSED:
+        tooltip = _("Queue paused");
+        image_name = "media-playback-pause-symbolic";
+        g_menu_append (G_MENU (menu), _("Resume queue"), "win.queue_resume");
+        if (mw->priv->queue_settings->get_bool("enable-enter-leave"))
+          g_menu_append (G_MENU (menu), _("Leave queue"), "win.queue_leave");
+        break;
+      case STATE_DISCONNECTED:
+      default:
+        tooltip = _("Disconnected");
+        image_name = "action-unavailable-symbolic";
+        break;
+    }
+
+    gtk_widget_set_tooltip_text (mw->priv->menu_button, tooltip);
+
+    GtkWidget *image = gtk_image_new_from_icon_name (image_name, GTK_ICON_SIZE_SMALL_TOOLBAR);
+    gtk_button_set_image (GTK_BUTTON (mw->priv->menu_button), image);
+}
 
 /* GTK callbacks */
 static void
@@ -478,6 +580,84 @@ insert_url_cb (G_GNUC_UNUSED GtkEditable *entry,
   new_text[l] = '\0';
 
   g_free(text);
+}
+
+
+static gboolean
+queue_leave_cb (gpointer data)
+{
+  queue_leave (NULL, NULL, data);
+
+  return FALSE;
+}
+
+
+static gboolean
+queue_pause_cb (gpointer data)
+{
+  queue_pause (NULL, NULL, data);
+
+  return FALSE;
+}
+
+
+static void
+queue_enter (G_GNUC_UNUSED GSimpleAction *action,
+             G_GNUC_UNUSED GVariant *parameter,
+             gpointer win)
+{
+  g_return_if_fail (EKIGA_IS_WINDOW (win));
+
+  EkigaWindow *mw = EKIGA_WINDOW (win);
+
+  const char *uri = mw->priv->queue_settings->get_string("enter").c_str();
+  if (dial_helper (mw, uri))
+    update_state (mw, STATE_QUEUED);
+}
+
+
+static void
+queue_leave (G_GNUC_UNUSED GSimpleAction *action,
+             G_GNUC_UNUSED GVariant *parameter,
+             gpointer win)
+{
+  g_return_if_fail (EKIGA_IS_WINDOW (win));
+
+  EkigaWindow *mw = EKIGA_WINDOW (win);
+
+  const char *uri = mw->priv->queue_settings->get_string("leave").c_str();
+  if (dial_helper (mw, uri))
+    update_state (mw, STATE_CONNECTED);
+}
+
+
+static void
+queue_pause (G_GNUC_UNUSED GSimpleAction *action,
+             G_GNUC_UNUSED GVariant *parameter,
+             gpointer win)
+{
+  g_return_if_fail (EKIGA_IS_WINDOW (win));
+
+  EkigaWindow *mw = EKIGA_WINDOW (win);
+
+  const char *uri = mw->priv->queue_settings->get_string("pause").c_str();
+  if (dial_helper (mw, uri))
+    update_state (mw, STATE_PAUSED);
+}
+
+
+static void
+queue_resume (G_GNUC_UNUSED GSimpleAction *action,
+              G_GNUC_UNUSED GVariant *parameter,
+              gpointer win)
+{
+  g_return_if_fail (EKIGA_IS_WINDOW (win));
+
+  EkigaWindow *mw = EKIGA_WINDOW (win);
+
+  const char *uri = mw->priv->queue_settings->get_string("resume").c_str();
+  if (dial_helper (mw, uri))
+    update_state (mw, STATE_QUEUED);
 }
 
 

@@ -435,7 +435,10 @@ key_press_event_cb (EkigaWindow *mw,
   const char valid_dtmfs[] = "1234567890#*";
   unsigned i = 0;
 
-  if (mw->priv->current_call) {
+  if (key->keyval == GDK_KEY_Return || key->keyval == GDK_KEY_KP_Enter) {
+    place_call_cb (NULL, mw);
+    return true;
+  } else if (mw->priv->current_call) {
     while (i < strlen (valid_dtmfs)) {
       if (key->string[0] && key->string[0] == valid_dtmfs[i]) {
         mw->priv->current_call->send_dtmf (key->string[0]);
@@ -445,10 +448,6 @@ key_press_event_cb (EkigaWindow *mw,
     }
   } else if (key->keyval == GDK_KEY_BackSpace) {
     ekiga_window_trim_call_url (mw);
-    return true;
-
-  } else if (key->keyval == GDK_KEY_Return || key->keyval == GDK_KEY_KP_Enter) {
-    place_call_cb(NULL, mw);
     return true;
   }
 

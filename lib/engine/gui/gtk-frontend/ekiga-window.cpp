@@ -112,13 +112,31 @@ struct _EkigaWindowPrivate
   boost::shared_ptr<Ekiga::Settings> queue_settings;
 };
 
-static const char* win_menu =
-"<?xml version='1.0'?>"
+static const char *win_menu =
+"<?xml version=\"1.0\"?>"
 "<interface>"
-"  <menu id='menubar'>"
+"  <menu id=\"winmenu\">"
+"    <section id=\"queuemenu\">"
+"    </section>"
+"    <section>"
+"      <item>"
+"        <attribute name=\"label\" translatable=\"yes\">_Account</attribute>"
+"        <attribute name=\"action\">app.account</attribute>"
+"      </item>"
+"      <item>"
+"        <attribute name=\"label\" translatable=\"yes\">_Preferences</attribute>"
+"        <attribute name=\"action\">app.preferences</attribute>"
+"      </item>"
+"    </section>"
+"    <section>"
+"      <item>"
+"        <attribute name=\"label\" translatable=\"yes\">_Quit</attribute>"
+"        <attribute name=\"action\">app.quit</attribute>"
+"        <attribute name=\"accel\">&lt;Primary&gt;q</attribute>"
+"      </item>"
+"    </section>"
 "  </menu>"
 "</interface>";
-
 
 /* GUI Functions */
 static void place_call_cb (GtkWidget * /*widget*/,
@@ -656,6 +674,13 @@ ekiga_window_init_gui (EkigaWindow *mw)
   // FIXME ??? ekiga-settings.h
   gtk_window_set_title (GTK_WINDOW (mw), _("Ekiga Softphone"));
   gtk_window_set_icon_name (GTK_WINDOW (mw), PACKAGE_NAME);
+
+  g_action_map_add_action_entries (G_ACTION_MAP (mw),
+                                   win_entries, G_N_ELEMENTS (win_entries),
+                                   mw);
+
+  mw->priv->builder =  gtk_builder_new ();
+  gtk_builder_add_from_string (mw->priv->builder, win_menu, -1, NULL);
 
   window_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add (GTK_CONTAINER (mw), window_vbox);

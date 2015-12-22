@@ -109,9 +109,7 @@ struct _EkigaWindowPrivate
   std::string call_uri;
 
   /* GSettings */
-  boost::shared_ptr<Ekiga::Settings> user_interface_settings;
-  boost::shared_ptr<Ekiga::Settings> sound_events_settings;
-  boost::shared_ptr<Ekiga::Settings> contacts_settings;
+  boost::shared_ptr<Ekiga::Settings> queue_settings;
 };
 
 /* channel types */
@@ -718,12 +716,8 @@ ekiga_window_init (EkigaWindow *mw)
   mw->priv->calling_state = Standby;
   mw->priv->call_window = NULL;
 
-  mw->priv->user_interface_settings =
-    boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (USER_INTERFACE ".main-window"));
-  mw->priv->sound_events_settings =
-    boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (SOUND_EVENTS_SCHEMA));
-  mw->priv->contacts_settings =
-    boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (CONTACTS_SCHEMA));
+  mw->priv->queue_settings =
+    boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (QUEUE_SCHEMA));
 }
 
 

@@ -38,9 +38,9 @@ gm_transform_number (const string number)
   Ekiga::Settings* settings = new Ekiga::Settings (CALL_OPTIONS_SCHEMA);
 
   if (number.empty() || number[0] == '*' || number[0] == '#' ||
-      number.length() == settings->get_int ("local-number-length")) {
+      number.length() == (unsigned)settings->get_int ("local-number-length")) {
     retval = number;
-  } else if (number.length() == settings->get_int ("outer-number-length")) {
+  } else if (number.length() == (unsigned)settings->get_int ("outer-number-length")) {
     retval = settings->get_string ("nonlocal-number-prefix") +
              settings->get_string ("outer-number-prefix") +
              number;

@@ -112,13 +112,6 @@ struct _EkigaWindowPrivate
   boost::shared_ptr<Ekiga::Settings> queue_settings;
 };
 
-/* channel types */
-enum {
-  CHANNEL_FIRST,
-  CHANNEL_AUDIO,
-  CHANNEL_LAST
-};
-
 static const char* win_menu =
 "<?xml version='1.0'?>"
 "<interface>"

@@ -128,11 +128,9 @@ static void url_changed_cb (GtkEditable *e,
                             gpointer data);
 
 static void ekiga_window_append_call_url (EkigaWindow *mw,
-                                                const char *url);
+                                          const char *url);
 
 static void ekiga_window_trim_call_url (EkigaWindow *mw);
-
-
 
 /* DESCRIPTION  :  This callback is called when the user
  *                 presses a key.
@@ -579,9 +577,7 @@ ekiga_window_init_actions_toolbar (EkigaWindow *mw)
 
   switcher = gtk_stack_switcher_new ();
   gtk_stack_switcher_set_stack (GTK_STACK_SWITCHER (switcher), GTK_STACK (mw->priv->main_stack));
-//  gtk_header_bar_set_custom_title (GTK_HEADER_BAR (mw->priv->actions_toolbar), switcher);
   gtk_header_bar_pack_end (GTK_HEADER_BAR (mw->priv->actions_toolbar), switcher);
-//  gtk_widget_set_margin_end (GTK_WIDGET (switcher), 6);
 
   gtk_widget_show_all (mw->priv->actions_toolbar);
 
@@ -688,6 +684,7 @@ ekiga_window_init_gui (EkigaWindow *mw)
   /* Set initial call button state */
   gtk_widget_set_sensitive (GTK_WIDGET (mw->priv->call_button), false);
 
+  /* Hide window titlebar buttons */
   gtk_window_set_type_hint (GTK_WINDOW (mw), GDK_WINDOW_TYPE_HINT_MENU);
 
   /* Realize */

@@ -865,7 +865,7 @@ ekiga_window_init_history (EkigaWindow *mw)
     gtk_stack_add_named (GTK_STACK (mw->priv->main_stack), mw->priv->call_history_view, "call-history");
     gtk_container_child_set (GTK_CONTAINER (mw->priv->main_stack),
                              mw->priv->call_history_view,
-                             "icon-name", "document-open-recent-symbolic", NULL);
+                             "icon-name", "view-dual-symbolic", NULL);
   }
 }
 

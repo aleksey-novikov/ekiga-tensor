@@ -14,6 +14,15 @@ theme_icons = \
         gnome_actions_24x24_phone-pick-up.png                   \
         gnome_status_16x16_im-message.png                       \
         gnome_status_16x16_user-inacall.png                     \
+        gnome_status_128x128_call-cleared.png                   \
+        gnome_status_128x128_call-incoming-answered.png         \
+        gnome_status_128x128_call-incoming.png                  \
+        gnome_status_128x128_call-on-hold.png                   \
+        gnome_status_128x128_call-outgoing-answered.png         \
+        gnome_status_128x128_call-outgoing-busy.png             \
+        gnome_status_128x128_call-outgoing-unreachable.png      \
+        gnome_status_128x128_call-outgoing-wrong.png            \
+        gnome_status_128x128_call-outgoing.png                  \
         hicolor_apps_16x16_@PACKAGE_NAME@.png                   \
         hicolor_apps_22x22_@PACKAGE_NAME@.png                   \
         hicolor_apps_24x24_@PACKAGE_NAME@.png                   \

@@ -213,6 +213,22 @@ History::Book::clear ()
 }
 
 void
+History::Book::clear_old (time_t time)
+{
+  while (true) {
+    std::list<ContactPtr>::iterator iter = ordered_contacts.begin ();
+
+    if ((*iter)->get_call_start() >= time)
+      break;
+
+    contact_removed (*iter);
+    ordered_contacts.erase (iter);
+  }
+
+  save ();
+}
+
+void
 History::Book::on_missed_call (boost::shared_ptr<Ekiga::Call> call)
 {
   add (call->get_remote_party_name (),

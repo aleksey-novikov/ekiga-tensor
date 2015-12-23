@@ -504,24 +504,24 @@ update_state (EkigaWindow *mw,
     switch (state) {
       case STATE_CONNECTING:
         tooltip = _("Connecting");
-        image_name = "mail-send-receive-symbolic";
+        image_name = "network-transmit-receive-symbolic";
         break;
       case STATE_CONNECTED:
         tooltip = _("Connected");
-        image_name = "document-open-recent-symbolic";
+        image_name = "avatar-default-symbolic";
         if (mw->priv->queue_settings->get_bool("enable") && mw->priv->queue_settings->get_bool("enable-enter-leave"))
           g_menu_append (G_MENU (menu), _("Enter queue"), "win.queue_enter");
         break;
       case STATE_QUEUED:
         tooltip = _("In queue");
-        image_name = "view-restore-symbolic";
+        image_name = "system-users-symbolic";
         g_menu_append (G_MENU (menu), _("Pause queue"), "win.queue_pause");
         if (mw->priv->queue_settings->get_bool("enable-enter-leave"))
           g_menu_append (G_MENU (menu), _("Leave queue"), "win.queue_leave");
         break;
       case STATE_PAUSED:
         tooltip = _("Queue paused");
-        image_name = "media-playback-pause-symbolic";
+        image_name = "preferences-desktop-screensaver-symbolic";
         g_menu_append (G_MENU (menu), _("Resume queue"), "win.queue_resume");
         if (mw->priv->queue_settings->get_bool("enable-enter-leave"))
           g_menu_append (G_MENU (menu), _("Leave queue"), "win.queue_leave");
@@ -880,7 +880,7 @@ ekiga_window_init_history (EkigaWindow *mw)
     gtk_stack_add_named (GTK_STACK (mw->priv->main_stack), mw->priv->call_history_view, "call-history");
     gtk_container_child_set (GTK_CONTAINER (mw->priv->main_stack),
                              mw->priv->call_history_view,
-                             "icon-name", "view-dual-symbolic", NULL);
+                             "icon-name", "accessories-text-editor-symbolic", NULL);
   }
 }
 

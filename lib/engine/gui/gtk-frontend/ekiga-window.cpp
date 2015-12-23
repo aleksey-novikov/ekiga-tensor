@@ -120,6 +120,7 @@ struct _EkigaWindowPrivate
   std::string call_uri;
 
   /* GSettings */
+  boost::shared_ptr<Ekiga::Settings> contacts_settings;
   boost::shared_ptr<Ekiga::Settings> queue_settings;
 };
 
@@ -874,6 +875,8 @@ ekiga_window_init_history (EkigaWindow *mw)
   if (history_source) {
     boost::shared_ptr<History::Book> history_book = history_source->get_book ();
 
+    history_book->clear_old(time(NULL) - mw->priv->contacts_settings->get_int("history-limit") * 86400);
+
     mw->priv->call_history_view = call_history_view_gtk_new (history_book,
                                                              mw->priv->call_core,
                                                              mw->priv->contact_core);
@@ -951,6 +954,8 @@ ekiga_window_init (EkigaWindow *mw)
 
   mw->priv->quit_requested = false;
 
+  mw->priv->contacts_settings =
+    boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (CONTACTS_SCHEMA));
   mw->priv->queue_settings =
     boost::shared_ptr<Ekiga::Settings> (new Ekiga::Settings (QUEUE_SCHEMA));
 }

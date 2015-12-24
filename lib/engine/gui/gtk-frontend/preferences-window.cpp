@@ -48,7 +48,6 @@
 
 #include "scoped-connections.h"
 #include "form-request-simple.h"
-#include "form-dialog-gtk.h"
 
 #include "codecsbox.h"
 #include "gm-entry.h"

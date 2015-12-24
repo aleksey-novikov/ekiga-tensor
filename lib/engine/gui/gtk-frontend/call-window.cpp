@@ -52,7 +52,6 @@
 #include "gm-info-bar.h"
 #include "gactor-menu.h"
 #include "scoped-connections.h"
-#include "form-dialog-gtk.h"
 
 #ifndef WIN32
 #include <signal.h>

@@ -1,0 +1,17 @@
+[Desktop Entry]
+_Name=Ekiga Softphone
+TryExec=@PACKAGE_NAME@-debug
+_GenericName=IP Telephony and VoIP
+_Comment=Run with logging
+StartupNotify=true
+Exec=@PACKAGE_NAME@-debug -c %u
+Icon=@PACKAGE_NAME@
+MimeType=x-scheme-handler/sip;
+Terminal=false
+Type=Application
+Categories=GNOME;GTK;Network;Telephony;
+DBusActivatable=true
+X-GNOME-Bugzilla-Bugzilla=GNOME
+X-GNOME-Bugzilla-Product=@PACKAGE_NAME@
+X-GNOME-Bugzilla-Component=general
+X-GNOME-Bugzilla-Version=@PACKAGE_VERSION@

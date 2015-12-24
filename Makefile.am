@@ -6,8 +6,8 @@ ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 @INTLTOOL_DESKTOP_RULE@
 @INTLTOOL_SCHEMAS_RULE@
 
-DESKTOP_IN_FILE=org.gnome.@PACKAGE_NAME@.desktop.in.in
-DESKTOP_FILE=org.gnome.@PACKAGE_NAME@.desktop
+DESKTOP_IN_FILE=org.gnome.@PACKAGE_NAME@.desktop.in.in org.gnome.@PACKAGE_NAME@-debug.desktop.in.in
+DESKTOP_FILE=org.gnome.@PACKAGE_NAME@.desktop org.gnome.@PACKAGE_NAME@-debug.desktop
 
 gsettings_SCHEMAS = org.gnome.@PACKAGE_NAME@.gschema.xml
 @INTLTOOL_XML_NOMERGE_RULE@

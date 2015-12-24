@@ -441,6 +441,7 @@ Doxyfile
 org.gnome.ekiga.gschema.xml.in
 ekiga.convert
 org.gnome.ekiga.desktop.in
+org.gnome.ekiga-debug.desktop.in
 lib/Makefile
 po/Makefile.in
 src/Makefile

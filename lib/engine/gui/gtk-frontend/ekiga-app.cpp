@@ -71,8 +71,6 @@
 #include <shellapi.h>
 #include <gdk/gdkwin32.h>
 #include <cstdio>
-#define WIN32_HELP_DIR "help"
-#define WIN32_HELP_FILE "index.html"
 #else
 #include <signal.h>
 #include <gdk/gdkx.h>
@@ -139,14 +137,6 @@ static void quit_activated (GSimpleAction *action,
                             GVariant *parameter,
                             gpointer app);
 
-static void about_activated (GSimpleAction *action,
-                             GVariant *parameter,
-                             gpointer app);
-
-static void help_activated (GSimpleAction *action,
-                            GVariant *parameter,
-                            gpointer app);
-
 static void window_activated (GSimpleAction *action,
                               GVariant *parameter,
                               gpointer app);
@@ -154,8 +144,6 @@ static void window_activated (GSimpleAction *action,
 static GActionEntry app_entries[] =
 {
     { "preferences", window_activated, NULL, NULL, NULL, 0 },
-    { "help", help_activated, NULL, NULL, NULL, 0 },
-    { "about", about_activated, NULL, NULL, NULL, 0 },
     { "quit", quit_activated, NULL, NULL, NULL, 0 }
 };
 
@@ -292,24 +280,6 @@ quit_activated (G_GNUC_UNUSED GSimpleAction *action,
                 gpointer app)
 {
   g_application_quit (G_APPLICATION (app));
-}
-
-
-static void
-about_activated (G_GNUC_UNUSED GSimpleAction *action,
-                 G_GNUC_UNUSED GVariant *parameter,
-                 gpointer app)
-{
-  gm_application_show_about (GM_APPLICATION (app));
-}
-
-
-static void
-help_activated (G_GNUC_UNUSED GSimpleAction *action,
-                G_GNUC_UNUSED GVariant *parameter,
-                gpointer app)
-{
-  gm_application_show_help (GM_APPLICATION (app), NULL);
 }
 
 
@@ -651,170 +621,6 @@ gm_application_get_ekiga_window (GmApplication *self)
   g_return_val_if_fail (GM_IS_APPLICATION (self), NULL);
 
   return self->priv->ekiga_window;
-}
-
-
-gboolean
-gm_application_show_help (GmApplication *app,
-                          G_GNUC_UNUSED const gchar *link_id)
-{
-  g_return_val_if_fail (GM_IS_APPLICATION (app), FALSE);
-
-  GtkWindow *parent = gtk_application_get_active_window (GTK_APPLICATION (app));
-
-#ifdef WIN32
-  gchar *locale, *loc_ , *index_path;
-  int hinst = 0;
-
-  locale = g_win32_getlocale ();
-  if (strlen (locale) > 0) {
-
-    /* try returned locale first, it may be fully qualified e.g. zh_CN */
-    index_path = g_build_filename (WIN32_HELP_DIR, locale,
-                                   WIN32_HELP_FILE, NULL);
-    hinst = (int) ShellExecute (NULL, "open", index_path, NULL,
-                                DATA_DIR, SW_SHOWNORMAL);
-    g_free (index_path);
-  }
-
-  if (hinst <= 32 && (loc_ = g_strrstr (locale, "_"))) {
-    /* on error, try short locale */
-    *loc_ = 0;
-    index_path = g_build_filename (WIN32_HELP_DIR, locale,
-                                   WIN32_HELP_FILE, NULL);
-    hinst = (int) ShellExecute (NULL, "open", index_path, NULL,
-                                DATA_DIR, SW_SHOWNORMAL);
-    g_free (index_path);
-  }
-
-  g_free (locale);
-
-  if (hinst <= 32) {
-
-    /* on error or missing locale, try default locale */
-    index_path = g_build_filename (WIN32_HELP_DIR, "C", WIN32_HELP_FILE, NULL);
-    (void)ShellExecute (NULL, "open", index_path, NULL,
-                        DATA_DIR, SW_SHOWNORMAL);
-    g_free (index_path);
-  }
-#else /* !WIN32 */
-  GError *err = NULL;
-  gboolean success = FALSE;
-
-  success = gtk_show_uri (NULL, "ghelp:" PACKAGE_NAME, GDK_CURRENT_TIME, &err);
-
-  if (!success) {
-    GtkWidget *d;
-    d = gtk_message_dialog_new (NULL,
-                                (GtkDialogFlags) (GTK_DIALOG_MODAL),
-                                GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
-                                "%s", _("Unable to open help file."));
-    gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (d),
-                                              "%s", err->message);
-    g_signal_connect (d, "response", G_CALLBACK (gtk_widget_destroy), NULL);
-    gtk_window_set_transient_for (GTK_WINDOW (d), GTK_WINDOW (parent));
-    gtk_window_present (GTK_WINDOW (d));
-    g_error_free (err);
-    return FALSE;
-  }
-#endif
-
-  return TRUE;
-}
-
-
-void
-gm_application_show_about (GmApplication *app)
-{
-  g_return_if_fail (GM_IS_APPLICATION (app));
-
-  GtkWidget *pixmap = NULL;
-  gchar *filename = NULL;
-
-  const gchar *authors [] = {
-      "Damien Sandras <dsandras@seconix.com>",
-      "",
-      N_("Contributors:"),
-      "Eugen Dedu <eugen.dedu@univ-fcomte.fr>",
-      "Julien Puydt <julien.puydt@laposte.net>",
-      "Robert Jongbloed <rjongbloed@postincrement.com>",
-      "",
-      N_("Artwork:"),
-      "Fabian Deutsch <fabian.deutsch@gmx.de>",
-      "Vinicius Depizzol <vdepizzol@gmail.com>",
-      "Andreas Kwiatkowski <post@kwiat.org>",
-      "Carlos Pardo <me@m4de.com>",
-      "Jakub Steiner <jimmac@ximian.com>",
-      "",
-      N_("See AUTHORS file for full credits"),
-      NULL
-  };
-
-  authors [2] = gettext (authors [2]);
-  authors [7] = gettext (authors [7]);
-  authors [14] = gettext (authors [14]);
-
-  const gchar *documenters [] = {
-    "Damien Sandras <dsandras@seconix.com>",
-    "Christopher Warner <zanee@kernelcode.com>",
-    "Matthias Redlich <m-redlich@t-online.de>",
-    NULL
-  };
-
-  const gchar *license[] = {
-N_("This program is free software; you can redistribute it and/or modify \
-it under the terms of the GNU General Public License as published by \
-the Free Software Foundation; either version 2 of the License, or \
-(at your option) any later version. "),
-N_("This program is distributed in the hope that it will be useful, \
-but WITHOUT ANY WARRANTY; without even the implied warranty of \
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the \
-GNU General Public License for more details. \
-You should have received a copy of the GNU General Public License \
-along with this program; if not, write to the Free Software Foundation, \
-Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA."),
-N_("Ekiga is licensed under the GPL license and as a special exception, \
-you have permission to link or otherwise combine this program with the \
-programs OPAL and PWLIB, and distribute the combination, \
-without applying the requirements of the GNU GPL to the OPAL \
-and PWLIB programs, as long as you do follow the requirements of the \
-GNU GPL for all the rest of the software thus combined.")
-  };
-
-  gchar *license_trans;
-
-  /* Translators: Please write translator credits here, and
-   * separate names with \n */
-  const gchar *translator_credits = _("translator-credits");
-  if (g_strcmp0 (translator_credits, "translator-credits") == 0)
-    translator_credits = "No translators, English by\n"
-        "Damien Sandras <dsandras@seconix.com>";
-
-  const gchar *comments =  _("Ekiga is full-featured SIP compatible VoIP and IP-Telephony application that allows you to make audio calls to remote users with SIP hardware or software.");
-
-  license_trans = g_strconcat (_(license[0]), "\n\n", _(license[1]), "\n\n",
-                               _(license[2]), "\n\n", NULL);
-
-  filename = g_build_filename (DATA_DIR, "pixmaps", PACKAGE_NAME,
-                               PACKAGE_NAME "-logo.png", NULL);
-  pixmap =  gtk_image_new_from_file (filename);
-
-  gtk_show_about_dialog (GTK_WINDOW (gtk_application_get_active_window (GTK_APPLICATION (app))),
-                         "name", "Ekiga",
-                         "version", VERSION,
-                         "copyright", "Copyright © 2000-2014 Damien Sandras",
-                         "authors", authors,
-                         "documenters", documenters,
-                         "translator-credits", translator_credits,
-                         "comments", comments,
-                         "logo", gtk_image_get_pixbuf (GTK_IMAGE (pixmap)),
-                         "license", license_trans,
-                         "wrap-license", TRUE,
-                         "website", "http://www.ekiga.org",
-                         NULL);
-
-  g_free (license_trans);
-  g_free (filename);
 }
 
 

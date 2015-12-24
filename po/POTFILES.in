@@ -2,6 +2,7 @@
 # Please keep this file in alphabetical order.
 ekiga.appdata.xml.in
 org.gnome.ekiga.desktop.in.in
+org.gnome.ekiga-debug.desktop.in.in
 lib/engine/addressbook/contact-core.cpp
 lib/engine/audioinput/audioinput-core.cpp
 lib/engine/audiooutput/audiooutput-core.cpp

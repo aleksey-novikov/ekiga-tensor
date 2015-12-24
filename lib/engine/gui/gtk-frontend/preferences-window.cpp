@@ -522,12 +522,6 @@ gm_pw_init_general_page (PreferencesWindow *self,
                     self->priv->contacts_settings, "show-offline-contacts",
                     _("Show offline contacts in the roster"), false);
 
-  /* History Settings */
-  gm_pw_spin_new (container, _("History limit"), _("days"),
-                  self->priv->contacts_settings, "history-limit",
-                  _("Older entries are cleared on startup"),
-                  1.0, 100.0, 1.0);
-
   /* Network Settings */
   gm_pw_subsection_new (container, _("Network Settings"));
   gm_pw_spin_new (container, _("Type of Service (TOS)"), NULL,

@@ -87,8 +87,6 @@ namespace History
 
     void clear ();
 
-    void clear_old (time_t time);
-
     boost::signals2::signal<void(void)> cleared;
 
   private:

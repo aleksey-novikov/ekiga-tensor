@@ -556,11 +556,6 @@
       <_summary>Calls history</_summary>
       <_description>The history of the 100 last calls</_description>
     </key>
-    <key name="history-limit" type="i">
-      <default>7</default>
-      <_summary>History limit (days)</_summary>
-      <_description>Older entries are cleared on startup</_description>
-    </key>
     <key name="roster" type="s">
       <default>''</default>
     </key>

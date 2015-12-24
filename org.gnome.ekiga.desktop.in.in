@@ -2,7 +2,7 @@
 _Name=Ekiga Softphone
 TryExec=@PACKAGE_NAME@
 _GenericName=IP Telephony and VoIP
-_Comment=Talk to people over the Internet
+_Comment=Run without logging
 StartupNotify=true
 Exec=@PACKAGE_NAME@ -c %u
 Icon=@PACKAGE_NAME@

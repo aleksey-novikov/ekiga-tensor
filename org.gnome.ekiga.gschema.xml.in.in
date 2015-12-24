@@ -583,17 +583,17 @@
     </key>
     <key name="leave" type="s">
       <default>''</default>
-      <_summary>Enter leave number</_summary>
+      <_summary>Leave queue number</_summary>
       <_description>Number to dial to leave the queue</_description>
     </key>
     <key name="pause" type="s">
       <default>''</default>
-      <_summary>Enter pause number</_summary>
+      <_summary>Pause queue number</_summary>
       <_description>Number to dial to pause the queue</_description>
     </key>
     <key name="resume" type="s">
       <default>''</default>
-      <_summary>Enter resume number</_summary>
+      <_summary>Resume queue number</_summary>
       <_description>Number to dial to resume the queue</_description>
     </key>
   </schema>

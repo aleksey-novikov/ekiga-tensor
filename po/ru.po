@@ -1024,7 +1024,7 @@ msgstr "В очереди"
 
 #: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:519
 msgid "Pause queue"
-msgstr "Приостановить прием звонков из очереди"
+msgstr "Поставить очередь на паузу"
 
 #: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:521
 #: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:528
@@ -1033,11 +1033,11 @@ msgstr "Выйти из очереди"
 
 #: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:524
 msgid "Queue paused"
-msgstr "Прием звонков из очереди приостановлен"
+msgstr "Очередь поставлена на паузу"
 
 #: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:526
 msgid "Resume queue"
-msgstr "Возобновить прием звонков из очереди"
+msgstr "Снять очередь с паузы"
 
 #: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:532
 msgid "Disconnected"

@@ -133,6 +133,10 @@ static void engine_call_uri_action_cb (GSimpleAction *simple,
                                        GVariant *parameter,
                                        gpointer data);
 
+static void account_activated (GSimpleAction *action,
+                            GVariant *parameter,
+                            gpointer app);
+
 static void quit_activated (GSimpleAction *action,
                             GVariant *parameter,
                             gpointer app);
@@ -143,6 +147,7 @@ static void window_activated (GSimpleAction *action,
 
 static GActionEntry app_entries[] =
 {
+    { "account", account_activated, NULL, NULL, NULL, 0 },
     { "preferences", window_activated, NULL, NULL, NULL, 0 },
     { "quit", quit_activated, NULL, NULL, NULL, 0 }
 };
@@ -294,6 +299,22 @@ window_activated (GSimpleAction *action,
 
   if (!g_strcmp0 (g_action_get_name (G_ACTION (action)), "preferences"))
     gm_application_show_preferences_window (self);
+}
+
+
+static void
+account_activated (GSimpleAction *action,
+                  G_GNUC_UNUSED GVariant *parameter,
+                  gpointer app)
+{
+  GmApplication *self = GM_APPLICATION (app);
+
+  g_return_if_fail (self);
+
+  if (!g_strcmp0 (g_action_get_name (G_ACTION (action)), "account")) {
+    boost::shared_ptr<Opal::Bank> b = boost::shared_ptr<Opal::Bank> (self->priv->core.get<Opal::Bank> ("opal-account-store"));
+    b->edit_account();
+  }
 }
 
 

@@ -1,12 +1,12 @@
 [Desktop Entry]
 _Name=Ekiga Softphone
 TryExec=@PACKAGE_NAME@
-_GenericName=IP Telephony, VoIP and Video Conferencing
-_Comment=Talk to and see people over the Internet
+_GenericName=IP Telephony and VoIP
+_Comment=Talk to people over the Internet
 StartupNotify=true
 Exec=@PACKAGE_NAME@ -c %u
 Icon=@PACKAGE_NAME@
-MimeType=x-scheme-handler/sip;x-scheme-handler/h323;
+MimeType=x-scheme-handler/sip;
 Terminal=false
 Type=Application
 Categories=GNOME;GTK;Network;Telephony;

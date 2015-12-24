@@ -222,7 +222,13 @@ quit_activated (G_GNUC_UNUSED GSimpleAction *action,
                 G_GNUC_UNUSED GVariant *parameter,
                 gpointer app)
 {
-  g_application_quit (G_APPLICATION (app));
+  g_return_if_fail (GM_IS_APPLICATION (app));
+
+  GmApplication *self = GM_APPLICATION (app);
+  if (self->priv->ekiga_window)
+    ekiga_window_quit_requested (self->priv->ekiga_window);
+  else
+    g_application_quit (G_APPLICATION (app));
 }
 
 

@@ -96,8 +96,8 @@ GUDevMonitor::device_change (GUdevDevice* device,
                              const gchar* action)
 {
 #if DEBUG
-  //g_print ("%s\n", __PRETTY_FUNCTION__);
-  //print_gudev_device (device);
+  g_print ("%s\n", __PRETTY_FUNCTION__);
+  print_gudev_device (device);
 #endif
   gboolean add = g_str_equal (action, "add");
   gboolean remove = g_str_equal (action, "remove");

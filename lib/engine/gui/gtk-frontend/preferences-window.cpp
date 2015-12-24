@@ -190,15 +190,6 @@ static void gm_pw_init_sound_events_page (PreferencesWindow *self,
 
 
 /* DESCRIPTION  : /
- * BEHAVIOR     : Builds the SIP settings page.
- * PRE          : A valid pointer to the preferences window GMObject, and to the
- * 		  container widget where to attach the generated page.
- */
-static void gm_pw_init_sip_page (PreferencesWindow *self,
-                                 GtkWidget *container);
-
-
-/* DESCRIPTION  : /
  * BEHAVIOR     : Builds the audio settings page.
  * PRE          : A valid pointer to the preferences window GMObject, and to the
  * 		  container widget where to attach the generated page.
@@ -517,9 +508,9 @@ gm_pw_init_general_page (PreferencesWindow *self,
   GtkWidget *entry = NULL;
 
   /* Display */
-  gm_pw_toggle_new (container, _("Show o_ffline contacts"),
-                    self->priv->contacts_settings, "show-offline-contacts",
-                    _("Show offline contacts in the roster"), false);
+//  gm_pw_toggle_new (container, _("Show o_ffline contacts"),
+//                    self->priv->contacts_settings, "show-offline-contacts",
+//                    _("Show offline contacts in the roster"), false);
 
   /* Network Settings */
   gm_pw_subsection_new (container, _("Network Settings"));
@@ -578,28 +569,30 @@ gm_pw_init_call_options_page (PreferencesWindow *self,
 {
   GtkWidget *entry = NULL;
 
-  gm_pw_toggle_new (container, _("_Always forward calls to the given host"),
-                    self->priv->call_forwarding_settings, "always-forward",
-                    _("If enabled, all incoming calls will be forwarded to the host that is specified in the protocol settings"), false);
-
-  gm_pw_toggle_new (container, _("Forward calls to the given host if _no answer"),
-                    self->priv->call_forwarding_settings, "forward-on-no-answer",
-                    _("If enabled, all incoming calls will be forwarded to the host that is specified in the protocol settings if you do not answer the call"), false);
-
-  gm_pw_toggle_new (container, _("Forward calls to the given host if _busy"),
-                    self->priv->call_forwarding_settings, "forward-on-busy",
-                    _("If enabled, all incoming calls will be forwarded to the host that is specified in the protocol settings if you already are in a call or if you are in busy mode"), false);
-
-
   gm_pw_subsection_new (container, _("Call Options"));
 
-  /* Translators: the full sentence is Forward calls after x seconds. */
-  gm_pw_spin_new (container, _("Forward calls after"), _("seconds"),
+  /* Translators: the full sentence is Reject calls after x seconds. */
+  gm_pw_spin_new (container, _("Reject calls after"), _("seconds"),
                   self->priv->call_options_settings, "no-answer-timeout",
-                  _("Automatically reject or forward incoming calls if no answer is given after the specified amount of time (in seconds)"), 0.0, 299.0, 1.0);
-  gm_pw_toggle_new (container, _("_Automatically answer incoming calls"),
-                    self->priv->call_options_settings, "auto-answer",
-                    _("If enabled, automatically answer incoming calls"));
+                  _("Automatically reject incoming calls if no answer is given after the specified amount of time (in seconds)"), 0.0, 299.0, 1.0);
+
+  Choices capabilities_choices;
+
+  static const char *capabilities [][2] =
+    {
+        { "rfc2833", _("RFC2833") },
+        { "info",    _("INFO") },
+        { NULL,      NULL }
+    };
+  for (int i=0 ; capabilities[i][0] != NULL ; ++i)
+    capabilities_choices.push_back (boost::make_tuple (capabilities[i][0], capabilities[i][1]));
+
+  /* Packing widget */
+  gm_pw_string_option_menu_new (container, _("_Send DTMF as"),
+                                capabilities_choices,
+                                self->priv->sip_settings, "dtmf-mode",
+                                _("Select the mode for DTMFs sending"));
+
   gm_pw_spin_new (container, _("Timeout between DTMFs"), _("msec"),
                   self->priv->call_options_settings, "dtmf-timeout",
                   _("Timeout between DTMFs on transfer call (in mseconds)"), 100.0, 1000.0, 100.0);
@@ -753,43 +746,6 @@ gm_pw_init_sound_events_page (PreferencesWindow *self,
   /* Place it after the signals so that we can make sure they are run if
      required */
   gm_prefs_window_sound_events_list_build (self);
-}
-
-
-static void
-gm_pw_init_sip_page (PreferencesWindow *self,
-                     GtkWidget *container)
-{
-  GtkWidget *entry = NULL;
-
-  Choices capabilities_choices;
-
-  static const char *capabilities [][2] =
-    {
-        { "rfc2833", _("RFC2833") },
-        { "info",    _("INFO") },
-        { NULL,      NULL }
-    };
-  for (int i=0 ; capabilities[i][0] != NULL ; ++i)
-    capabilities_choices.push_back (boost::make_tuple (capabilities[i][0], capabilities[i][1]));
-
-  /* Add Misc Settings */
-  entry =
-    gm_pw_entry_new (container, _("Forward _URI"),
-                     self->priv->sip_settings, "forward-host",
-                     _("The host where calls should be forwarded if call forwarding is enabled"),
-                     false);
-  g_object_set (entry, "regex", BASIC_URI_REGEX, NULL);
-  if (!g_strcmp0 (gtk_entry_get_text (GTK_ENTRY (entry)), ""))
-    gtk_entry_set_text (GTK_ENTRY (entry), "sip:");
-
-  /* Packing widget */
-  gm_pw_subsection_new (container, _("DTMF Mode"));
-
-  gm_pw_string_option_menu_new (container, _("_Send DTMF as"),
-                                capabilities_choices,
-                                self->priv->sip_settings, "dtmf-mode",
-                                _("Select the mode for DTMFs sending"));
 }
 
 
@@ -1591,11 +1547,6 @@ preferences_window_new (GmApplication *app)
   container = gm_pw_window_subsection_new (self,
                                            _("Sound Events"));
   gm_pw_init_sound_events_page (self, container);
-  gtk_widget_show_all (GTK_WIDGET (container));
-
-  container = gm_pw_window_subsection_new (self,
-                                           _("SIP"));
-  gm_pw_init_sip_page (self, container);
   gtk_widget_show_all (GTK_WIDGET (container));
 
   container = gm_pw_window_subsection_new (self, _("Audio"));

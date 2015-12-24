@@ -32,9 +32,11 @@ depcomp
 org.gnome.ekiga*.desktop
 org.gnome.ekiga*.desktop.in
 ekiga.convert
+ekiga.appdata.xml
 org.gnome.ekiga.gschema.valid
 org.gnome.ekiga.gschema.xml
 org.gnome.ekiga.gschema.xml.in
+org.gnome.ekiga.service
 gnome-doc-utils.make
 install-sh
 intltool-extract.in

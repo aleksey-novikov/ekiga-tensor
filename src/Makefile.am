@@ -26,6 +26,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/dbus-helper
 
 bin_PROGRAMS = ekiga
+bin_SCRIPTS = ekiga-debug
 
 EXTRA_PROGRAMS =
 

@@ -444,6 +444,7 @@ org.gnome.ekiga.desktop.in
 lib/Makefile
 po/Makefile.in
 src/Makefile
+src/ekiga-debug
 pixmaps/Makefile
 sounds/Makefile
 plugins/Makefile

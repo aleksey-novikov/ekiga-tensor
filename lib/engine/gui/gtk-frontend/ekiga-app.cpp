@@ -110,21 +110,13 @@ struct _GmApplicationPrivate
 
 G_DEFINE_TYPE (GmApplication, gm_application, GTK_TYPE_APPLICATION);
 
-static void gm_application_populate_application_menu (GmApplication *app);
-
 static GtkWidget *gm_application_show_call_window (GmApplication *self);
 
 static void on_setup_call_cb (boost::shared_ptr<Ekiga::Call> call,
                               gpointer data);
 
-static bool on_visit_banks_cb (Ekiga::BankPtr bank,
-                               gpointer data);
-
 static bool on_handle_questions_cb (Ekiga::FormRequestPtr request,
                                     GmApplication *application);
-
-static void on_account_modified_cb (Ekiga::AccountPtr account,
-                                    GmApplication *app);
 
 static void call_window_destroyed_cb (GtkWidget *widget,
                                       gpointer data);
@@ -154,34 +146,6 @@ static GActionEntry app_entries[] =
 
 
 /* Private helpers */
-static void
-gm_application_populate_application_menu (GmApplication *app)
-{
-  g_return_if_fail (GM_IS_APPLICATION (app));
-  GMenuModel *app_menu = G_MENU_MODEL (gtk_builder_get_object (app->priv->builder, "appmenu"));
-
-  boost::shared_ptr<Ekiga::AccountCore> account_core
-    = app->priv->core.get<Ekiga::AccountCore> ("account-core");
-  g_return_if_fail (account_core);
-
-  for (int i = app->priv->banks_menu.size () ;
-       i > 0 ;
-       i--)
-    g_menu_remove (G_MENU (app_menu), 0);
-
-  app->priv->banks_menu.clear ();
-  app->priv->banks_actions_count = 0;
-  account_core->visit_banks (boost::bind (&on_visit_banks_cb, _1, (gpointer) app));
-
-  for (std::list<Ekiga::GActorMenuPtr>::iterator it = app->priv->banks_menu.begin ();
-       it != app->priv->banks_menu.end ();
-       it++) {
-    g_menu_insert_section (G_MENU (app_menu), 0, NULL, (*it)->get_model ());
-    app->priv->banks_actions_count += (*it)->size ();
-  }
-}
-
-
 static GtkWidget *
 gm_application_show_call_window (GmApplication *self)
 {
@@ -214,22 +178,6 @@ on_setup_call_cb (boost::shared_ptr<Ekiga::Call> call,
 
 
 static bool
-on_visit_banks_cb (Ekiga::BankPtr bank,
-                   gpointer data)
-{
-  g_return_val_if_fail (GM_IS_APPLICATION (data), false);
-
-  GmApplication *self = GM_APPLICATION (data);
-
-  self->priv->banks_menu.push_back (Ekiga::GActorMenuPtr (new Ekiga::GActorMenu (*bank, "", "app")));
-  self->priv->conns.add (bank->account_added.connect (boost::bind (&on_account_modified_cb, _1, self)));
-  self->priv->conns.add (bank->account_removed.connect (boost::bind (&on_account_modified_cb, _1, self)));
-
-  return true;
-}
-
-
-static bool
 on_handle_questions_cb (Ekiga::FormRequestPtr request,
                         GmApplication *application)
 {
@@ -240,16 +188,6 @@ on_handle_questions_cb (Ekiga::FormRequestPtr request,
   dialog.run ();
 
   return true;
-}
-
-
-static void
-on_account_modified_cb (G_GNUC_UNUSED Ekiga::AccountPtr account,
-                        GmApplication *app)
-{
-  g_return_if_fail (GM_IS_APPLICATION (app));
-
-  gm_application_populate_application_menu (app);
 }
 
 
@@ -360,8 +298,6 @@ ekiga_main (int argc,
     general_settings->set_int ("version", schema_version);
   }
 
-  gm_application_populate_application_menu (app);
-
   g_application_run (G_APPLICATION (app), argc, argv);
 
   g_object_unref (app);
@@ -383,7 +319,6 @@ gm_application_startup (GApplication *app)
   GmApplication *self = GM_APPLICATION (app);
   GVariantType *type_string = NULL;
   GSimpleAction *action = NULL;
-  GMenuModel *app_menu = NULL;
   gchar *path = NULL;
 
   G_APPLICATION_CLASS (gm_application_parent_class)->startup (app);
@@ -420,41 +355,6 @@ gm_application_startup (GApplication *app)
   g_action_map_add_action_entries (G_ACTION_MAP (self),
                                    app_entries, G_N_ELEMENTS (app_entries),
                                    self);
-  gtk_builder_add_from_string (self->priv->builder,
-                               "<?xml version=\"1.0\"?>"
-                               "<interface>"
-                               "  <menu id=\"appmenu\">"
-                               "    <section id=\"banks\">"
-                               "    </section>"
-                               "    <section>"
-                               "      <item>"
-                               "        <attribute name=\"label\" translatable=\"yes\">_Preferences</attribute>"
-                               "        <attribute name=\"action\">app.preferences</attribute>"
-                               "      </item>"
-                               "    </section>"
-                               "    <section>"
-                               "      <item>"
-                               "        <attribute name=\"label\" translatable=\"yes\">_Help</attribute>"
-                               "        <attribute name=\"action\">app.help</attribute>"
-                               "        <attribute name=\"accel\">F1</attribute>"
-                               "      </item>"
-                               "      <item>"
-                               "        <attribute name=\"label\" translatable=\"yes\">_About</attribute>"
-                               "        <attribute name=\"action\">app.about</attribute>"
-                               "      </item>"
-                               "    </section>"
-                               "    <section>"
-                               "      <item>"
-                               "        <attribute name=\"label\" translatable=\"yes\">_Quit</attribute>"
-                               "        <attribute name=\"action\">app.quit</attribute>"
-                               "        <attribute name=\"accel\">&lt;Primary&gt;q</attribute>"
-                               "      </item>"
-                               "    </section>"
-                               "  </menu>"
-                               "</interface>", -1, NULL);
-
-  app_menu = G_MENU_MODEL (gtk_builder_get_object (self->priv->builder, "appmenu"));
-  gtk_application_set_app_menu (GTK_APPLICATION (self), app_menu);
 
   self->priv->call_window = NULL;
 

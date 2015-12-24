@@ -53,7 +53,6 @@
 #include "gactor-menu.h"
 #include "scoped-connections.h"
 #include "form-dialog-gtk.h"
-#include "ext-window.h"
 
 #ifndef WIN32
 #include <signal.h>

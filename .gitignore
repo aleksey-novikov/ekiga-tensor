@@ -29,8 +29,8 @@ INSTALL
 Doxyfile
 Session.vim
 depcomp
-org.gnome.ekiga.desktop
-org.gnome.ekiga.desktop.in
+org.gnome.ekiga*.desktop
+org.gnome.ekiga*.desktop.in
 ekiga.convert
 org.gnome.ekiga.gschema.valid
 org.gnome.ekiga.gschema.xml
@@ -49,6 +49,7 @@ mkinstalldirs
 pixmaps/inlines.h
 po/.intltool-merge-cache
 po/POTFILES
+po/ekiga.pot
 po/stamp-it
 src/build-subdir-stamp
 src/dbus-helper/dbus-helper-stub.h
@@ -57,6 +58,7 @@ src/dbus-helper/org.ekiga.Ekiga.service
 src/dbus-helper/org.ekiga.Helper.service
 src/ekiga
 src/ekiga-config-tool
+src/ekiga-debug
 src/ekiga-helper
 revision.h
 lib/engine/components/hal-dbus/hal-marshal.*

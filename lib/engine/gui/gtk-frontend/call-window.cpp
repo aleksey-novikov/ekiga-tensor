@@ -690,13 +690,13 @@ ekiga_call_window_update_calling_state (EkigaCallWindow *self,
     case Standby:
       gtk_label_set_text (GTK_LABEL (self->priv->call_status_text), call_status);
       if (call_status && !strcmp(call_status, _("Remote user is busy")))
-        self->priv->call_image = gtk_image_new_from_icon_name ("outgoing-call-busy", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
+        self->priv->call_image = gtk_image_new_from_icon_name ("call-outgoing-busy", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
       else if (call_status && (!strcmp(call_status, _("Service unavailable")) || !strcmp(call_status, _("User is not available"))))
-        self->priv->call_image = gtk_image_new_from_icon_name ("outgoing-call-unreachable", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
+        self->priv->call_image = gtk_image_new_from_icon_name ("call-outgoing-unreachable", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
       else if (call_status && (!strcmp (call_status, _("User not found"))))
-        self->priv->call_image = gtk_image_new_from_icon_name ("outgoing-call-wrong", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
+        self->priv->call_image = gtk_image_new_from_icon_name ("call-outgoing-wrong", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
       else
-        self->priv->call_image = gtk_image_new_from_icon_name ("cleared-call", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
+        self->priv->call_image = gtk_image_new_from_icon_name ("call-cleared", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
 
       /* Update the hold state */
       ekiga_call_window_set_call_hold (self, false);
@@ -716,7 +716,7 @@ ekiga_call_window_update_calling_state (EkigaCallWindow *self,
       break;
 
     case Calling:
-      self->priv->call_image = gtk_image_new_from_icon_name ("outgoing-call", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
+      self->priv->call_image = gtk_image_new_from_icon_name ("call-outgoing", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
       gtk_label_set_text (GTK_LABEL (self->priv->call_status_text), _("Outgoing call"));
       gtk_label_set_text (GTK_LABEL (self->priv->call_duration_text), "");
 
@@ -728,10 +728,10 @@ ekiga_call_window_update_calling_state (EkigaCallWindow *self,
 
     case Ringing:
       if (self->priv->current_call->is_outgoing()) {
-        self->priv->call_image = gtk_image_new_from_icon_name ("outgoing-call", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
+        self->priv->call_image = gtk_image_new_from_icon_name ("call-outgoing", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
         gtk_label_set_text (GTK_LABEL (self->priv->call_status_text), _("Outgoing call"));
       } else {
-        self->priv->call_image = gtk_image_new_from_icon_name ("incoming-call", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
+        self->priv->call_image = gtk_image_new_from_icon_name ("call-incoming", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
         gtk_label_set_text (GTK_LABEL (self->priv->call_status_text), _("Incoming call"));
       }
       gtk_label_set_text (GTK_LABEL (self->priv->call_duration_text), "");
@@ -742,13 +742,13 @@ ekiga_call_window_update_calling_state (EkigaCallWindow *self,
         if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (self->priv->hold_button)))
           self->priv->call_image = gtk_image_new_from_icon_name ("call-on-hold", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
         else
-          self->priv->call_image = gtk_image_new_from_icon_name ("outgoing-call-answered", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
+          self->priv->call_image = gtk_image_new_from_icon_name ("call-outgoing-answered", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
         gtk_label_set_text (GTK_LABEL (self->priv->call_status_text), _("Outgoing call"));
       } else {
         if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (self->priv->hold_button)))
           self->priv->call_image = gtk_image_new_from_icon_name ("call-on-hold", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
         else
-          self->priv->call_image = gtk_image_new_from_icon_name ("incoming-call-answered", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
+          self->priv->call_image = gtk_image_new_from_icon_name ("call-incoming-answered", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
         gtk_label_set_text (GTK_LABEL (self->priv->call_status_text), _("Incoming call"));
       }
 
@@ -759,7 +759,7 @@ ekiga_call_window_update_calling_state (EkigaCallWindow *self,
       break;
 
     case Called:
-      self->priv->call_image = gtk_image_new_from_icon_name ("incoming-call", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
+      self->priv->call_image = gtk_image_new_from_icon_name ("call-incoming", gtk_icon_size_from_name (CALL_IMAGE_SIZE));
       gtk_label_set_text (GTK_LABEL (self->priv->call_status_text), _("Incoming call"));
       gtk_label_set_text (GTK_LABEL (self->priv->call_duration_text), "");
 

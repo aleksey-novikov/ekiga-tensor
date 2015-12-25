@@ -817,6 +817,7 @@ ekiga_window_uri_entry_new (EkigaWindow *mw)
 
   /* URI Entry */
   entry = gm_entry_new (NUMBER_REGEX);
+  gtk_entry_set_width_chars (GTK_ENTRY (entry), 10);
 
   gtk_widget_add_accelerator (entry, "grab-focus",
                               mw->priv->accel, GDK_KEY_L,

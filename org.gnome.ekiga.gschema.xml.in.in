@@ -41,6 +41,7 @@
     <child name="codecs" schema="org.gnome.@PACKAGE_NAME@.codecs"/>
     <child name="protocols" schema="org.gnome.@PACKAGE_NAME@.protocols"/>
     <child name="contacts" schema="org.gnome.@PACKAGE_NAME@.contacts"/>
+    <child name="queue" schema="org.gnome.@PACKAGE_NAME@.queue"/>
   </schema>
   <schema gettext-domain="@GETTEXT_PACKAGE@" id="org.gnome.@PACKAGE_NAME@.devices" path="/org/gnome/@PACKAGE_NAME@/devices/">
     <child name="audio" schema="org.gnome.@PACKAGE_NAME@.devices.audio"/>

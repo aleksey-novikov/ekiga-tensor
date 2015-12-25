@@ -172,7 +172,7 @@ ekiga_dialpad_init (EkigaDialpad *dialpad)
     text = g_strdup_printf ("<span size=\"large\"><b>%s</b></span>",
                             _(keys_info [i].number));
     gtk_label_set_markup (GTK_LABEL (label), text);
-    gtk_misc_set_padding (GTK_MISC (label), 10, 5);
+    gtk_misc_set_padding (GTK_MISC (label), 7, 3);
     gtk_box_pack_start (GTK_BOX (box), label, TRUE, FALSE, 0);
     gtk_widget_set_halign (label, GTK_ALIGN_CENTER);
     gtk_widget_set_valign (label, GTK_ALIGN_CENTER);

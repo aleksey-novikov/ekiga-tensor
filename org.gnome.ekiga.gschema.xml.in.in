@@ -370,7 +370,7 @@
   </schema>
   <schema gettext-domain="@GETTEXT_PACKAGE@" id="org.gnome.@PACKAGE_NAME@.codecs.audio" path="/org/gnome/@PACKAGE_NAME@/codecs/audio/">
     <key name="media-list" type="as">
-      <default>['Opus-48:1', 'G.722-64k:1', 'G.711-uLaw-64k:1', 'G.711-ALaw-64k:1', 'G.722.2:0', 'GSM-AMR:0', 'iSAC-16kHz:0', 'iSAC-32kHz:0', 'MS-IMA-ADPCM:0', 'G.726-40k:0', 'G.726-32k:0', 'G.726-24k:0', 'G.726-16k:0', 'G.722.1-24K:0', 'G.722.1-32K:0', 'G.722.1C-24K:0', 'G.722.1C-32K:0', 'G.722.1C-48K:0', 'SILK-8:0', 'SILK-16:0']</default>
+      <default>['G.711-ALaw-64k:1', 'G.711-uLaw-64k:1', 'G.722-64k:0', 'Opus-48:0', 'G.722.2:0', 'GSM-AMR:0', 'iSAC-16kHz:0', 'iSAC-32kHz:0', 'MS-IMA-ADPCM:0', 'G.726-40k:0', 'G.726-32k:0', 'G.726-24k:0', 'G.726-16k:0', 'G.722.1-24K:0', 'G.722.1-32K:0', 'G.722.1C-24K:0', 'G.722.1C-32K:0', 'G.722.1C-48K:0', 'SILK-8:0', 'SILK-16:0']</default>
       <_summary>The Audio Codecs List</_summary>
       <_description>The audio codecs list</_description>
     </key>
@@ -380,7 +380,7 @@
       <_description>If enabled, use silence detection with the codecs supporting it</_description>
     </key>
     <key name="enable-echo-cancellation" type="b">
-      <default>true</default>
+      <default>false</default>
       <_summary>Enable echo cancellation</_summary>
       <_description>If enabled, use echo cancellation</_description>
     </key>

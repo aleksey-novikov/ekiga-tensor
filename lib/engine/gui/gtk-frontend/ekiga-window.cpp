@@ -202,6 +202,10 @@ static gboolean queue_leave_cb (gpointer data);
 
 static gboolean queue_pause_cb (gpointer data);
 
+static void stack_change (GSimpleAction *action,
+                          GVariant *parameter,
+                          gpointer win);
+
 static void queue_enter (GSimpleAction *action,
                          GVariant *parameter,
                          gpointer win);
@@ -224,6 +228,7 @@ static void call_activated (GSimpleAction *action,
 
 static GActionEntry win_entries[] =
 {
+    { "stack", stack_change, "s", "'dialpad'", NULL, 0 },
     { "queue_enter", queue_enter, NULL, NULL, NULL, 0 },
     { "queue_leave", queue_leave, NULL, NULL, NULL, 0 },
     { "queue_pause", queue_pause, NULL, NULL, NULL, 0 },
@@ -619,6 +624,29 @@ queue_pause_cb (gpointer data)
   queue_pause (NULL, NULL, data);
 
   return FALSE;
+}
+
+
+static void
+stack_change (GSimpleAction *action,
+              GVariant *parameter,
+              gpointer win)
+{
+  EkigaWindow *mw = EKIGA_WINDOW (win);
+
+  g_return_if_fail (EKIGA_IS_WINDOW (mw));
+
+  GVariant *old_state = g_action_get_state (G_ACTION (action));
+  const gchar *new_state_string = g_variant_get_string (parameter, NULL);
+
+  gtk_stack_set_visible_child_name (GTK_STACK (mw->priv->main_stack),
+                                    new_state_string);
+  g_simple_action_set_state (action, g_variant_new_string (new_state_string));
+
+  // Popover does not hide automatically
+  gtk_widget_hide (GTK_WIDGET (gtk_menu_button_get_popover (GTK_MENU_BUTTON (mw->priv->menu_button))));
+
+  g_variant_unref (old_state);
 }
 
 

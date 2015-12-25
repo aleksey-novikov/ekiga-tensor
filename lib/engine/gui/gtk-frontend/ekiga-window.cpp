@@ -912,7 +912,7 @@ ekiga_window_init_history (EkigaWindow *mw)
     mw->priv->call_history_view = call_history_view_gtk_new (history_book,
                                                              mw->priv->call_core,
                                                              mw->priv->contact_core);
-    gtk_stack_add_named (GTK_STACK (mw->priv->main_stack), mw->priv->call_history_view, "call-history");
+    gtk_stack_add_named (GTK_STACK (mw->priv->main_stack), mw->priv->call_history_view, "history");
     gtk_container_child_set (GTK_CONTAINER (mw->priv->main_stack),
                              mw->priv->call_history_view,
                              "icon-name", "accessories-text-editor-symbolic", NULL);

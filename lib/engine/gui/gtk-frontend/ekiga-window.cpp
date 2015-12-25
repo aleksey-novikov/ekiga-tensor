@@ -964,7 +964,7 @@ ekiga_window_init_gui (EkigaWindow *mw)
   gtk_widget_set_sensitive (GTK_WIDGET (mw->priv->call_button), false);
 
   /* Hide window titlebar buttons */
-  gtk_window_set_type_hint (GTK_WINDOW (mw), GDK_WINDOW_TYPE_HINT_MENU);
+  gtk_window_set_type_hint (GTK_WINDOW (mw), GDK_WINDOW_TYPE_HINT_UTILITY);
 
   /* Realize */
   gtk_widget_realize (GTK_WIDGET (mw));

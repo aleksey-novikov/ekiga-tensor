@@ -966,6 +966,10 @@ ekiga_window_init_gui (EkigaWindow *mw)
   /* Hide window titlebar buttons */
   gtk_window_set_type_hint (GTK_WINDOW (mw), GDK_WINDOW_TYPE_HINT_UTILITY);
 
+  update_state (mw, STATE_DISCONNECTED);
+
+  gtk_window_set_title (GTK_WINDOW (mw), _("Ekiga"));
+
   /* Realize */
   gtk_widget_realize (GTK_WIDGET (mw));
 }

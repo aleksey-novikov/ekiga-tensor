@@ -258,8 +258,6 @@ gm_window_init (GmWindow* self)
 
   self->priv->accel = gtk_accel_group_new ();
   gtk_window_add_accel_group (GTK_WINDOW (self), self->priv->accel);
-  gtk_accel_group_connect (self->priv->accel, GDK_KEY_Escape, (GdkModifierType) 0, GTK_ACCEL_LOCKED,
-                           g_cclosure_new_swap (G_CALLBACK (gtk_widget_hide), (gpointer) self, NULL));
 
   g_signal_connect (self, "delete-event",
 		    G_CALLBACK (gm_window_delete_event_cb), NULL);

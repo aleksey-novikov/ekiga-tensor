@@ -72,7 +72,6 @@ struct _CallHistoryViewGtkPrivate
 /* this is what we put in the view */
 enum {
   COLUMN_CONTACT,
-  COLUMN_ERROR_PIXBUF,
   COLUMN_PIXBUF,
   COLUMN_NAME,
   COLUMN_INFO,
@@ -133,10 +132,10 @@ on_contact_added (Ekiga::ContactPtr contact,
     info << buffer;
     if (!hcontact->get_call_duration ().empty ())
       info << " (" << hcontact->get_call_duration () << ")";
-    else
-      gtk_list_store_set (store, &iter,
-                          COLUMN_ERROR_PIXBUF, "error",
-                          -1);
+//    else
+//      gtk_list_store_set (store, &iter,
+//                          COLUMN_ERROR_PIXBUF, "error",
+//                          -1);
   }
   else
     info << hcontact->get_call_duration ();
@@ -339,7 +338,7 @@ call_history_view_gtk_new (boost::shared_ptr<History::Book> book,
   renderer = gtk_cell_renderer_pixbuf_new ();
   gtk_tree_view_column_pack_start (column, renderer, FALSE);
   gtk_tree_view_column_add_attribute (column, renderer,
-                                      "icon-name", COLUMN_ERROR_PIXBUF);
+                                      "icon-name", COLUMN_PIXBUF);
   g_object_set (renderer, "xalign", 0.0, "yalign", 0.5, "xpad", 6, "stock-size", 1, NULL);
 
   /* show name and text */
@@ -350,13 +349,6 @@ call_history_view_gtk_new (boost::shared_ptr<History::Book> book,
   gtk_tree_view_column_add_attribute (column, renderer,
                                       "secondary-text", COLUMN_INFO);
   gtk_tree_view_append_column (self->priv->tree, column);
-
-  /* show icon */
-  renderer = gtk_cell_renderer_pixbuf_new ();
-  gtk_tree_view_column_pack_end (column, renderer, FALSE);
-  gtk_tree_view_column_add_attribute (column, renderer,
-                                      "icon-name", COLUMN_PIXBUF);
-  g_object_set (renderer, "xalign", 1.0, "yalign", 0.5, "xpad", 6, "stock-size", 2, NULL);
 
   /* react to user clicks */
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (self->priv->tree));

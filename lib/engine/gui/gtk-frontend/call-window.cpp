@@ -91,8 +91,6 @@ struct _EkigaCallWindowPrivate
   boost::shared_ptr<Ekiga::Call> current_call;
   CallingState calling_state;
 
-  GtkBuilder *builder;
-
   bool dead;
 
   GtkWidget *call_status_text;

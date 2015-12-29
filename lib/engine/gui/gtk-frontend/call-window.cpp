@@ -926,6 +926,20 @@ ekiga_call_window_init_gui (EkigaCallWindow *self)
   transfer_activated (NULL, NULL, self);
 
   gtk_window_set_type_hint (GTK_WINDOW (self), GDK_WINDOW_TYPE_HINT_UTILITY);
+
+  self->priv->accel = gtk_accel_group_new ();
+  gtk_window_add_accel_group (GTK_WINDOW (self), self->priv->accel);
+  gtk_widget_add_accelerator (self->priv->pickup_button, "clicked", self->priv->accel,
+                              GDK_KEY_A, (GdkModifierType) GDK_SUPER_MASK, (GtkAccelFlags) 0);
+  gtk_widget_add_accelerator (self->priv->pickup_button, "clicked", self->priv->accel,
+                              GDK_KEY_a, (GdkModifierType) GDK_SUPER_MASK, (GtkAccelFlags) 0);
+  gtk_widget_add_accelerator (self->priv->pickup_button, "clicked", self->priv->accel,
+                              GDK_KEY_Cyrillic_EF, (GdkModifierType) GDK_SUPER_MASK, (GtkAccelFlags) 0);
+  gtk_widget_add_accelerator (self->priv->pickup_button, "clicked", self->priv->accel,
+                              GDK_KEY_Cyrillic_ef, (GdkModifierType) GDK_SUPER_MASK, (GtkAccelFlags) 0);
+  gtk_widget_add_accelerator (self->priv->pickup_button, "clicked", self->priv->accel,
+                              GDK_KEY_Phone, (GdkModifierType) 0, (GtkAccelFlags) 0);
+  g_object_unref (self->priv->accel);
 }
 
 
@@ -933,13 +947,6 @@ static void
 ekiga_call_window_init (EkigaCallWindow *self)
 {
   self->priv = new EkigaCallWindowPrivate ();
-
-  self->priv->accel = gtk_accel_group_new ();
-  gtk_window_add_accel_group (GTK_WINDOW (self), self->priv->accel);
-  gtk_accel_group_connect (self->priv->accel, GDK_KEY_Escape, (GdkModifierType) 0, GTK_ACCEL_LOCKED,
-                           g_cclosure_new_swap (G_CALLBACK (ekiga_call_window_delete_event_cb),
-                                                (gpointer) self, NULL));
-  g_object_unref (self->priv->accel);
 
   self->priv->current_call = boost::shared_ptr<Ekiga::Call>();
   self->priv->destroy_timeout_id = 0;
@@ -1022,7 +1029,8 @@ call_window_new (GmApplication *app)
                                           "application", GTK_APPLICATION (app),
                                           "key", USER_INTERFACE ".call-window",
                                           "hide_on_delete", false,
-                                          "hide_on_esc", false, NULL));
+                                          NULL));
+
   Ekiga::ServiceCore& core = gm_application_get_core (app);
 
   self->priv->audioinput_core = core.get<Ekiga::AudioInputCore> ("audioinput-core");

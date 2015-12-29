@@ -894,7 +894,7 @@ ekiga_call_window_init_gui (EkigaCallWindow *self)
   gtk_button_set_image (GTK_BUTTON (self->priv->transfer_button), image);
   gtk_actionable_set_detailed_action_name (GTK_ACTIONABLE (self->priv->transfer_button), "win.transfer");
   gtk_box_pack_end (GTK_BOX (hbox), self->priv->transfer_button, false, false, 0);
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (self->priv->transfer_button), false); // FIXME
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (self->priv->transfer_button), false);
 
   self->priv->transfer_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   alignment = gtk_alignment_new (0.0, 0.0, 1.0, 0.0);
@@ -921,9 +921,9 @@ ekiga_call_window_init_gui (EkigaCallWindow *self)
   gtk_container_add (GTK_CONTAINER (self->priv->transfer_box), alignment);
 
   gtk_widget_show_all (box);
+  gtk_widget_hide (self->priv->transfer_box);
 
   ekiga_call_window_set_call_hold (self, false);
-  transfer_activated (NULL, NULL, self);
 
   gtk_window_set_type_hint (GTK_WINDOW (self), GDK_WINDOW_TYPE_HINT_UTILITY);
 

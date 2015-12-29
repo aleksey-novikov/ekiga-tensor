@@ -192,8 +192,12 @@ void CallCore::on_missed_call (const boost::shared_ptr<Call> call)
 {
   boost::shared_ptr<Ekiga::NotificationCore> _notification_core = notification_core.lock ();
   if (_notification_core) {
+    size_t pos = call->get_remote_uri().find(':');
+    std::string uri = call->get_remote_uri().substr(pos == std::string::npos ? 0 : pos + 1);
+    uri = uri.substr(0, uri.find('@'));
+
     std::stringstream msg;
-    msg << _("Missed call from") << " " << call->get_remote_party_name ();
+    msg << _("Missed call from") << " " << (call->get_remote_party_name() == call->get_remote_uri() ? uri : uri + " (" + call->get_remote_party_name() + ")");
     boost::shared_ptr<Ekiga::Notification> notif (new Ekiga::Notification (Ekiga::Notification::Warning,
                                                                            _("Missed call"), msg.str (),
                                                                            _("Call"),

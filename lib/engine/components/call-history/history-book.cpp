@@ -111,7 +111,7 @@ History::Book::add (const std::string & name,
     xmlNodePtr root = xmlDocGetRootElement (doc.get ());
 
     boost::shared_ptr<History::Contact> contact = History::Contact::create (ccore, doc,
-      (name == uri ? _uri : _uri + " (" + name + ")"), _uri, call_start, call_duration, c_t);
+      (name == uri ? _uri : _uri + " (" + name + ")"), uri, call_start, call_duration, c_t);
 
     xmlAddChild (root, contact->get_node ());
 

@@ -90,8 +90,6 @@ struct _EkigaWindowPrivate
   boost::weak_ptr<Opal::Bank> bank;
   boost::weak_ptr<History::Source> history_source;
 
-  GtkWidget *call_window;
-
   GtkAccelGroup *accel;
   GtkWidget *main_stack;
   GtkBuilder *builder;
@@ -987,7 +985,6 @@ ekiga_window_init (EkigaWindow *mw)
 
   mw->priv->current_call = boost::shared_ptr<Ekiga::Call>();
   mw->priv->calling_state = Standby;
-  mw->priv->call_window = NULL;
 
   mw->priv->quit_requested = false;
 

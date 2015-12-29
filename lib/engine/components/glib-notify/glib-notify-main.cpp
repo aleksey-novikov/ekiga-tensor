@@ -144,7 +144,7 @@ GNotify::GNotify (Ekiga::ServiceCore& core)
   connections.add (notification_core->notification_added.connect (boost::bind (&GNotify::on_notification_added, this, _1)));
 
   /* Specific notifications */
-  connections.add (call_core->setup_call.connect (boost::bind (&GNotify::on_call_notification, this, _1)));
+//  connections.add (call_core->setup_call.connect (boost::bind (&GNotify::on_call_notification, this, _1)));
 }
 
 

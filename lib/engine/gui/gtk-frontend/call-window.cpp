@@ -800,8 +800,8 @@ static void
 ekiga_call_window_init_gui (EkigaCallWindow *self)
 {
   GtkWidget *alignment = NULL;
+  GtkWidget *frame = NULL;
   GtkWidget *box = NULL;
-
   GtkWidget *image = NULL;
   GtkWidget *vbox = NULL;
   GtkWidget *hbox = NULL;
@@ -811,8 +811,12 @@ ekiga_call_window_init_gui (EkigaCallWindow *self)
                                    win_entries, G_N_ELEMENTS (win_entries),
                                    self);
 
+  frame = gtk_frame_new (NULL);
+  gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_OUT);
+  gtk_container_add (GTK_CONTAINER (self), frame);
+
   box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  gtk_container_add (GTK_CONTAINER (self), box);
+  gtk_container_add (GTK_CONTAINER (frame), box);
 
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_box_pack_start (GTK_BOX (box), hbox, true, true, 10);
@@ -918,13 +922,15 @@ ekiga_call_window_init_gui (EkigaCallWindow *self)
   gtk_container_add (GTK_CONTAINER (alignment), self->priv->call_button);
   gtk_container_add (GTK_CONTAINER (self->priv->transfer_box), alignment);
 
-  gtk_widget_show_all (box);
+  gtk_widget_show_all (frame);
   gtk_widget_hide (self->priv->transfer_box);
 
   ekiga_call_window_set_call_hold (self, false);
 
   gtk_window_set_type_hint (GTK_WINDOW (self), GDK_WINDOW_TYPE_HINT_DIALOG);
   gtk_window_set_decorated (GTK_WINDOW (self), FALSE);
+  gtk_widget_realize (GTK_WIDGET (self));
+  gtk_window_resize (GTK_WINDOW (self), 580, 160);
 
   self->priv->accel = gtk_accel_group_new ();
   gtk_window_add_accel_group (GTK_WINDOW (self), self->priv->accel);

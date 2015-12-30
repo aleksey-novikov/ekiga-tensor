@@ -6,4 +6,5 @@ mkdir -p "$DIR"
 
 TIME=`date +%y%m%d-%H:%M:%S`
 
+killall @PACKAGE_NAME@
 @bindir@/@PACKAGE_NAME@ -d 4 2>"$DIR/$TIME.log"

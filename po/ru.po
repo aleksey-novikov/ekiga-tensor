@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ekiga trunk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-24 10:36+0300\n"
+"POT-Creation-Date: 2015-12-30 13:02+0300\n"
 "PO-Revision-Date: 2012-12-19 14:05+0400\n"
 "Last-Translator: Yuri Myasoedov <omerta13@yandex.ru>\n"
 "Language-Team: русский <gnome-cyr@gnome.org>\n"
@@ -39,9 +39,9 @@ msgstr ""
 #. FIXME ??? ekiga-settings.h
 #: ../org.gnome.ekiga.desktop.in.in.h:1
 #: ../org.gnome.ekiga-debug.desktop.in.in.h:1
-#: ../lib/engine/gui/gtk-frontend/ekiga-app.cpp:416
-#: ../lib/engine/gui/gtk-frontend/ekiga-app.cpp:418
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:894
+#: ../lib/engine/gui/gtk-frontend/ekiga-app.cpp:351
+#: ../lib/engine/gui/gtk-frontend/ekiga-app.cpp:353
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:898
 msgid "Ekiga Softphone"
 msgstr "Коммуникатор Ekiga"
 
@@ -297,7 +297,7 @@ msgstr "У Вас уже есть контакт с этим адресом!"
 #. Translators: this is a state, not an action, i.e. it should be read as
 #. "(you are) registered", and not as "(you have been) registered"
 #: ../lib/engine/components/opal/opal-account.cpp:914
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:271
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:269
 msgid "Registered"
 msgstr "Зарегистрирован"
 
@@ -471,7 +471,7 @@ msgid "_Account"
 msgstr "Учётные записи"
 
 #: ../lib/engine/components/opal/opal-call.cpp:92
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:874
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:872
 #, fuzzy
 msgid "Hangup"
 msgstr "Завершить"
@@ -482,7 +482,7 @@ msgstr "Перевести звонок"
 
 #: ../lib/engine/components/opal/opal-call.cpp:143
 #: ../lib/engine/components/opal/opal-call.cpp:442
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:892
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:890
 msgid "Transfer"
 msgstr "Перевести"
 
@@ -496,7 +496,7 @@ msgid "sip:username@ekiga.net"
 msgstr ""
 
 #: ../lib/engine/components/opal/opal-call.cpp:440
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:886
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:884
 msgid "Hold"
 msgstr "Удерживать"
 
@@ -770,7 +770,7 @@ msgid "Bad gateway"
 msgstr "Некорректный шлюз"
 
 #: ../lib/engine/components/opal/process/sip-endpoint.cpp:480
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:694
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:692
 msgid "Service unavailable"
 msgstr "Служба недоступна"
 
@@ -811,9 +811,9 @@ msgid "Failed"
 msgstr "Сбой"
 
 #: ../lib/engine/components/opal/process/sip-endpoint.cpp:613
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:735
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:752
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:763
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:733
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:750
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:761
 #, c-format
 msgid "Incoming call"
 msgstr "Входящий звонок"
@@ -829,8 +829,8 @@ msgid "In a call"
 msgstr "Разговор"
 
 #: ../lib/engine/components/opal/sip-call-manager.cpp:96
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:848
-#: ../lib/engine/protocol/call-core.cpp:199
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:852
+#: ../lib/engine/protocol/call-core.cpp:203
 msgid "Call"
 msgstr "Вызов"
 
@@ -862,7 +862,7 @@ msgstr "Фильтр _поиска:"
 msgid "Full Name"
 msgstr "Полное имя"
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:291
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:289
 #, c-format
 msgid ""
 "Unable to open %s for recording.\n"
@@ -876,7 +876,7 @@ msgstr ""
 "противном случае проверьте настройки звука, права доступа к устройству и "
 "убедитесь, что другие приложения не занимают устройство."
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:295
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:293
 #, c-format
 msgid ""
 "%s was successfully opened but it is impossible to read data from this "
@@ -889,18 +889,18 @@ msgstr ""
 "устройство подключаемое, его повторное подключение может помочь решить "
 "проблему. В противном случае проверьте настройки звука."
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:300
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:298
 #, c-format
 msgid "Error while opening audio input device %s"
 msgstr "Не удалось открыть устройство для записи звука %s"
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:311
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:359
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:480
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:309
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:357
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:466
 msgid "Error"
 msgstr "Ошибка"
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:338
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:336
 #, c-format
 msgid ""
 "Unable to open %s for playing.\n"
@@ -914,7 +914,7 @@ msgstr ""
 "проблему. В противном случае проверьте настройки звука, права доступа к "
 "устройству и убедитесь, что другие приложения не занимают устройство."
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:342
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:340
 #, c-format
 msgid ""
 "%s was successfully opened but it is impossible to write data to this "
@@ -927,166 +927,167 @@ msgstr ""
 "Если устройство подключаемое, его повторное подключение может помочь решить "
 "проблему. В противном случае проверьте настройки звука."
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:347
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:345
 #, c-format
 msgid "Error while opening audio output device %s"
 msgstr "Ошибка открытия устройства воспроизведения звука %s"
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:428
-#: ../lib/engine/protocol/call-core.cpp:198
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:426
+#: ../lib/engine/protocol/call-core.cpp:202
 msgid "Missed call"
 msgstr "Пропущенный вызов"
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:620
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:618
 msgid "My number"
 msgstr "Мой номер"
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:692
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:690
 msgid "Remote user is busy"
 msgstr "Удалённый пользователь занят"
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:694
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:692
 msgid "User is not available"
 msgstr "Пользователь недоступен"
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:696
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:694
 msgid "User not found"
 msgstr "Пользователь не найден"
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:720
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:732
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:746
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:718
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:730
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:744
 msgid "Outgoing call"
 msgstr "Исходящий вызов"
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:789
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:787
 msgid "Retrieve Call"
 msgstr "Восстановить"
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:791
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:789
 msgid "Hold Call"
 msgstr "Удерживать"
 
-#: ../lib/engine/gui/gtk-frontend/call-window.cpp:880
+#: ../lib/engine/gui/gtk-frontend/call-window.cpp:878
 msgid "Pickup"
 msgstr "Ответить"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-app.cpp:562
+#: ../lib/engine/gui/gtk-frontend/ekiga-app.cpp:472
 msgid "Show the application's help"
 msgstr "Показать справку программы"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-app.cpp:568
+#: ../lib/engine/gui/gtk-frontend/ekiga-app.cpp:478
 msgid "Show the application's version"
 msgstr "Показать версию программы"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-app.cpp:572
+#: ../lib/engine/gui/gtk-frontend/ekiga-app.cpp:482
 msgid "Prints debug messages in the console (level between 1 and 8)"
 msgstr "Выводить отладочные сообщения на консоль (уровень между 1 и 8)"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-app.cpp:577
+#: ../lib/engine/gui/gtk-frontend/ekiga-app.cpp:487
 msgid "Makes Ekiga call the given URI"
 msgstr "Вызывать указанный URI с помощью Ekiga"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-app.cpp:582
+#: ../lib/engine/gui/gtk-frontend/ekiga-app.cpp:492
 msgid "Hangup the current call (if any)"
 msgstr "Завершить текущий вызов"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:273
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:259
 msgid "Could not connect to remote host"
 msgstr "Не удалось подключиться к удаленному узлу"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:314
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:332
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:300
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:318
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:944
 msgid "Ekiga"
 msgstr "Ekiga"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:445
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:431
 #, c-format
 msgid "Missed call from %s"
 msgstr "Пропущенный вызов от %s"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:507
-#, fuzzy
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:493
 msgid "Connecting"
-msgstr "Подключение…"
+msgstr "Подключение"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:511
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:497
 msgid "Connected"
 msgstr "Подключён"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:514
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:500
 msgid "Enter queue"
 msgstr "Войти в очередь"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:517
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:503
 msgid "In queue"
 msgstr "В очереди"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:519
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:505
 msgid "Pause queue"
 msgstr "Поставить очередь на паузу"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:521
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:528
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:507
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:514
 msgid "Leave queue"
 msgstr "Выйти из очереди"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:524
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:510
 msgid "Queue paused"
 msgstr "Очередь поставлена на паузу"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:526
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:512
 msgid "Resume queue"
 msgstr "Снять очередь с паузы"
 
-#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:532
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:518
 msgid "Disconnected"
 msgstr "Отключён"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:438
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:909
+msgid "Dialpad"
+msgstr "Номеронабиратель"
+
+#: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:910
+msgid "History"
+msgstr "История"
+
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:429
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:23
 msgid "Play sound on incoming calls"
 msgstr "Воспроизводить звук при входящем вызове"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:448
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:439
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:33
 msgid "Play ring tone"
 msgstr "Воспроизводить мелодия звонка"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:458
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:449
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:37
 msgid "Play busy tone"
 msgstr "Воспроизводить сигнал «занято»"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:468
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:459
 msgid "Play sound for new voice mails"
 msgstr "Воспроизводить звук при получении голосовой почты"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:478
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:469
 msgid "Play sound for new instant messages"
 msgstr "Воспроизводить звук при получении сообщений"
 
 #. Display
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:520
-#, fuzzy
-msgid "Show o_ffline contacts"
-msgstr "Показывать контакты не в сети"
-
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:522
-#, fuzzy
-msgid "Show offline contacts in the roster"
-msgstr "Показывать контакты не в сети"
-
+#. gm_pw_toggle_new (container, _("Show o_ffline contacts"),
+#. self->priv->contacts_settings, "show-offline-contacts",
+#. _("Show offline contacts in the roster"), false);
 #. Network Settings
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:525
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:516
 msgid "Network Settings"
 msgstr "Параметры сети"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:526
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:517
 msgid "Type of Service (TOS)"
 msgstr ""
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:528
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:519
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:98
 #, fuzzy
 msgid ""
@@ -1101,342 +1102,277 @@ msgstr ""
 "определению RFC 3246."
 
 #. Queue Settings
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:532
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:523
 msgid "Queue"
 msgstr "Очередь"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:534
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:525
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:142
 msgid "Enable queue"
 msgstr "Включить очередь"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:536
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:527
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:143
 msgid "Enable queue support"
 msgstr "Включить поддержку очереди"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:538
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:529
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:144
 msgid "Enable entering/leaving queue"
 msgstr "Включить вход/выход из очереди"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:540
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:531
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:145
 msgid "Enable entering and leaving queue support"
 msgstr "Включить поддержку входа/выхода из очереди"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:543
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:534
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:146
 msgid "Enter queue number"
 msgstr "Номер входа в очередь"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:545
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:536
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:147
 msgid "Number to dial to enter the queue"
 msgstr "Номер, который нужно набрать для входа в очередь"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:551
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:542
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:148
 msgid "Leave queue number"
 msgstr "Номер выхода из очереди"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:553
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:544
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:149
 msgid "Number to dial to leave the queue"
 msgstr "Номер, который нужно набрать для выхода из очереди"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:559
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:550
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:150
 msgid "Pause queue number"
 msgstr "Номер постановки очереди на паузу"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:561
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:552
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:151
 msgid "Number to dial to pause the queue"
 msgstr "Номер, который нужно набрать для постановки очереди на паузу"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:567
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:558
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:152
 msgid "Resume queue number"
 msgstr "Номер возобновления очереди"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:569
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:560
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:153
 msgid "Number to dial to resume the queue"
 msgstr "Номер, который нужно набрать для возобновления очереди"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:581
-msgid "_Always forward calls to the given host"
-msgstr "_Всегда перенаправлять вызовы на указанный узел"
-
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:583
-msgid ""
-"If enabled, all incoming calls will be forwarded to the host that is "
-"specified in the protocol settings"
-msgstr ""
-"Если включено, все входящие вызовы будут перенаправляться на узел, указанный "
-"в параметрах протокола"
-
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:585
-msgid "Forward calls to the given host if _no answer"
-msgstr "Перенаправлять вызовы на указанный узел, если _нет ответа"
-
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:587
-msgid ""
-"If enabled, all incoming calls will be forwarded to the host that is "
-"specified in the protocol settings if you do not answer the call"
-msgstr ""
-"Если включено, все входящие вызовы будут перенаправляться на узел, указанный "
-"в параметрах протокола, если вы не отвечаете на вызов"
-
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:589
-msgid "Forward calls to the given host if _busy"
-msgstr "Перенапралять вызовы на указанный узел, если _занято"
-
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:591
-msgid ""
-"If enabled, all incoming calls will be forwarded to the host that is "
-"specified in the protocol settings if you already are in a call or if you "
-"are in busy mode"
-msgstr ""
-"Если включено, все входящие вызовы будут перенаправляться на указанный узел, "
-"указанный в параметрах протокола, если активен другой вызов (линия занята), "
-"или если вы находитесь в режиме «Не беспокоить»"
-
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:594
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:572
 msgid "Call Options"
 msgstr "Параметры вызовов"
 
-#. Translators: the full sentence is Forward calls after x seconds.
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:597
-msgid "Forward calls after"
-msgstr "Перенаправлять звонки после"
+#. Translators: the full sentence is Reject calls after x seconds.
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:575
+msgid "Reject calls after"
+msgstr "Отклонять звонки после"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:597
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:575
 msgid "seconds"
 msgstr "секунд"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:599
-#: ../org.gnome.ekiga.gschema.xml.in.in.h:68
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:577
+#, fuzzy
 msgid ""
-"Automatically reject or forward incoming calls if no answer is given after "
-"the specified amount of time (in seconds)"
+"Automatically reject incoming calls if no answer is given after the "
+"specified amount of time (in seconds)"
 msgstr ""
 "Автоматически отклонять или перенаправлять входящие вызовы в случае "
 "отсутствия ответа в течение указанного времени (в секундах)"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:600
-msgid "_Automatically answer incoming calls"
-msgstr "_Автоматически отвечать на входящие звонки"
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:583
+msgid "RFC2833"
+msgstr "RFC2823"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:602
-#: ../org.gnome.ekiga.gschema.xml.in.in.h:70
-msgid "If enabled, automatically answer incoming calls"
-msgstr "Если включено, автоматически принимать входящие звонки"
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:584
+msgid "INFO"
+msgstr "INFO"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:603
+#. Packing widget
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:591
+#, fuzzy
+msgid "_Send DTMF as"
+msgstr "_Посылать DTMF как:"
+
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:594
+msgid "Select the mode for DTMFs sending"
+msgstr "Выбрать режим для отправки сигналов DTMF"
+
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:596
 msgid "Timeout between DTMFs"
 msgstr "Задержка между DTMF сигналами"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:603
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:596
 msgid "msec"
 msgstr "мсек"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:605
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:598
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:79
 #, fuzzy
 msgid "Timeout between DTMFs on transfer call (in mseconds)"
 msgstr "Задержка между DTMF сигналами при переводе вызова (в мсек)"
 
 #. Lengths and prefixes
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:608
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:601
 msgid "Dial Prefixes"
 msgstr "Префиксы вызовов"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:610
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:603
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:71
 msgid "Local number length"
 msgstr "Длина внутреннего номера"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:612
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:605
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:72
 msgid "Dial number length for local calls"
 msgstr "Длина номера для внутренних звонков"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:615
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:608
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:75
 msgid "Non-local number prefix"
 msgstr "Префикс для внешних звонков"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:617
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:630
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:610
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:623
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:76
 msgid "Prefix automatically added when dialing"
 msgstr "Префикс автоматически добавляется при звонке"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:623
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:616
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:73
 msgid "Outer number length"
 msgstr "Длина внешнего номера"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:625
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:618
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:74
 msgid "Dial number length for outer calls"
 msgstr "Длина номера для внешних звонков"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:628
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:621
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:77
 msgid "Outer number prefix"
 msgstr "Префикс выхода на межгород"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:696
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:689
 msgid "A"
 msgstr "Вкл."
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:706
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:699
 msgid "Event"
 msgstr "Событие"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:717
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:710
 msgid "Choose a sound"
 msgstr "Выберите звук"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:722
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:715
 msgid "Wavefiles"
 msgstr "Звуковые файлы"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:731
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:746
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:724
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:739
 msgid "Play"
 msgstr "Воспроизвести"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:769
-msgid "RFC2833"
-msgstr "RFC2823"
-
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:770
-msgid "INFO"
-msgstr "INFO"
-
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:778
-#, fuzzy
-msgid "Forward _URI"
-msgstr "URI переадреса_ции:"
-
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:780
-#: ../org.gnome.ekiga.gschema.xml.in.in.h:102
-msgid "The host where calls should be forwarded if call forwarding is enabled"
-msgstr ""
-"Узел, на который должны перенаправляться вызовы когда включена переадресация"
-
-#. Packing widget
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:787
-msgid "DTMF Mode"
-msgstr "Режим DTMF"
-
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:789
-#, fuzzy
-msgid "_Send DTMF as"
-msgstr "_Посылать DTMF как:"
-
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:792
-msgid "Select the mode for DTMFs sending"
-msgstr "Выбрать режим для отправки сигналов DTMF"
-
 #. Here we add the audio codecs options
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:811
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:767
 msgid "Settings"
 msgstr "Параметры"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:813
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:769
 msgid "Enable silence _detection"
 msgstr "Включить обнаружение _молчания"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:815
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:771
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:83
 msgid "If enabled, use silence detection with the codecs supporting it"
 msgstr ""
 "Использовать обнаружение молчания для поддерживающих эту функцию кодеков"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:817
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:773
 msgid "Enable echo can_celation"
 msgstr "Включить подавление _эха"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:819
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:775
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:85
 msgid "If enabled, use echo cancellation"
 msgstr "Если включено, используется подавление эха"
 
 #. Audio Devices
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:822
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:778
 msgid "Devices"
 msgstr "Устройства"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:828
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:784
 msgid "Ringing Device"
 msgstr "Устройство звонка"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:832
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:788
 msgid "Select the ringing audio device to use"
 msgstr "Выберите устройство звонка"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:835
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:791
 msgid "Output Device"
 msgstr "Устройство воспроизведения"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:839
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:795
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:2
 msgid "Select the audio output device to use"
 msgstr "Выберите устройство воспроизведения звука"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:845
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:801
 msgid "Input Device"
 msgstr "Устройство записи"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:849
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:805
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:4
 msgid "Select the audio input device to use"
 msgstr "Выберите устройство записи звука"
 
 #. That button will refresh the device list
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:852
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:808
 msgid "_Detect devices"
 msgstr "_Поиск устройств"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:854
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:810
 msgid "Click here to refresh the device list"
 msgstr "Нажмите, чтобы обновить список устройств"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1229
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1185
 msgid "No device found"
 msgstr "Устройство не найдено"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1563
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1519
+#: ../lib/engine/gui/gtk-frontend/statusicon.cpp:588
 #, fuzzy
 msgid "Preferences"
 msgstr "Настройки"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1564
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1520
 msgid "Edit your settings"
 msgstr ""
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1583
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1539
 msgid "General"
 msgstr "Общие"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1587
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1543
 msgid "Call Handling"
 msgstr "Звонки"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1592
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1548
 msgid "Sound Events"
 msgstr "Звуковые события"
 
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1597
-msgid "SIP"
-msgstr "SIP"
-
-#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1601
+#: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1552
 msgid "Audio"
 msgstr "Звук"
 
@@ -1445,7 +1381,17 @@ msgstr "Звук"
 msgid "Unsorted"
 msgstr "Неупорядоченный"
 
-#: ../lib/engine/protocol/call-core.cpp:196
+#. FIXME: rewrite to GtkBuilder
+#: ../lib/engine/gui/gtk-frontend/statusicon.cpp:584
+#, fuzzy
+msgid "Account"
+msgstr "Учётная запись"
+
+#: ../lib/engine/gui/gtk-frontend/statusicon.cpp:595
+msgid "Quit"
+msgstr "Выход"
+
+#: ../lib/engine/protocol/call-core.cpp:200
 msgid "Missed call from"
 msgstr "Пропущенный вызов от"
 
@@ -1914,9 +1860,21 @@ msgstr ""
 msgid "No answer timeout"
 msgstr "Время ожидания ответа"
 
+#: ../org.gnome.ekiga.gschema.xml.in.in.h:68
+msgid ""
+"Automatically reject or forward incoming calls if no answer is given after "
+"the specified amount of time (in seconds)"
+msgstr ""
+"Автоматически отклонять или перенаправлять входящие вызовы в случае "
+"отсутствия ответа в течение указанного времени (в секундах)"
+
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:69
 msgid "Automatic answer"
 msgstr "Автоматический ответ"
+
+#: ../org.gnome.ekiga.gschema.xml.in.in.h:70
+msgid "If enabled, automatically answer incoming calls"
+msgstr "Если включено, автоматически принимать входящие звонки"
 
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:78
 msgid "Timeout between DTMFs (in mseconds)"
@@ -2031,6 +1989,11 @@ msgstr ""
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:101
 msgid "Forward calls to host"
 msgstr "Перенаправлять вызовы на узел"
+
+#: ../org.gnome.ekiga.gschema.xml.in.in.h:102
+msgid "The host where calls should be forwarded if call forwarding is enabled"
+msgstr ""
+"Узел, на который должны перенаправляться вызовы когда включена переадресация"
 
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:103
 msgid "DTMF transmission"
@@ -2261,6 +2224,59 @@ msgstr "Проверка звука"
 #: ../plugins/gstreamer/gst-audiooutput.cpp:225
 msgid "Silent"
 msgstr "Тишина"
+
+#, fuzzy
+#~ msgid "Show o_ffline contacts"
+#~ msgstr "Показывать контакты не в сети"
+
+#, fuzzy
+#~ msgid "Show offline contacts in the roster"
+#~ msgstr "Показывать контакты не в сети"
+
+#~ msgid "_Always forward calls to the given host"
+#~ msgstr "_Всегда перенаправлять вызовы на указанный узел"
+
+#~ msgid ""
+#~ "If enabled, all incoming calls will be forwarded to the host that is "
+#~ "specified in the protocol settings"
+#~ msgstr ""
+#~ "Если включено, все входящие вызовы будут перенаправляться на узел, "
+#~ "указанный в параметрах протокола"
+
+#~ msgid "Forward calls to the given host if _no answer"
+#~ msgstr "Перенаправлять вызовы на указанный узел, если _нет ответа"
+
+#~ msgid ""
+#~ "If enabled, all incoming calls will be forwarded to the host that is "
+#~ "specified in the protocol settings if you do not answer the call"
+#~ msgstr ""
+#~ "Если включено, все входящие вызовы будут перенаправляться на узел, "
+#~ "указанный в параметрах протокола, если вы не отвечаете на вызов"
+
+#~ msgid "Forward calls to the given host if _busy"
+#~ msgstr "Перенапралять вызовы на указанный узел, если _занято"
+
+#~ msgid ""
+#~ "If enabled, all incoming calls will be forwarded to the host that is "
+#~ "specified in the protocol settings if you already are in a call or if you "
+#~ "are in busy mode"
+#~ msgstr ""
+#~ "Если включено, все входящие вызовы будут перенаправляться на указанный "
+#~ "узел, указанный в параметрах протокола, если активен другой вызов (линия "
+#~ "занята), или если вы находитесь в режиме «Не беспокоить»"
+
+#~ msgid "_Automatically answer incoming calls"
+#~ msgstr "_Автоматически отвечать на входящие звонки"
+
+#, fuzzy
+#~ msgid "Forward _URI"
+#~ msgstr "URI переадреса_ции:"
+
+#~ msgid "DTMF Mode"
+#~ msgstr "Режим DTMF"
+
+#~ msgid "SIP"
+#~ msgstr "SIP"
 
 #, fuzzy
 #~ msgid "Talk to people over the Internet"
@@ -3048,9 +3064,6 @@ msgstr "Тишина"
 #~ msgid "View information about Ekiga"
 #~ msgstr "Показать информацию о программе Ekiga"
 
-#~ msgid "Quit"
-#~ msgstr "Выход"
-
 #~ msgid "abc"
 #~ msgstr "abc"
 
@@ -3784,9 +3797,6 @@ msgstr "Тишина"
 
 #~ msgid "Show Offline _Contacts"
 #~ msgstr "Показывать контакты _вне сети"
-
-#~ msgid "Dialpad"
-#~ msgstr "Номеронабиратель"
 
 #~ msgid "Call history"
 #~ msgstr "История вызовов"

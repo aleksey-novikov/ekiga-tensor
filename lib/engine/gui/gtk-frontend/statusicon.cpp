@@ -67,6 +67,7 @@ struct _StatusIconPrivate
 
   gchar *blink_image;
 
+  GtkWidget *popup_menu;
   GtkWidget *ekiga_window;
 };
 
@@ -76,6 +77,10 @@ static guint signals = { 0 };
 /*
  * Declaration of Callbacks
  */
+static void
+on_menu_item_activated (GtkWidget *widget,
+                        gpointer data);
+
 static void
 show_popup_menu_cb (GtkStatusIcon *icon,
                     guint button,
@@ -143,6 +148,12 @@ statusicon_dispose (GObject *obj)
   StatusIcon *icon = NULL;
 
   icon = STATUSICON (obj);
+
+  if (icon->priv->popup_menu) {
+
+    g_object_unref (icon->priv->popup_menu);
+    icon->priv->popup_menu = NULL;
+  }
 
   if (icon->priv->blink_image) {
 
@@ -229,6 +240,19 @@ statusicon_get_type ()
 /*
  * Callbacks
  */
+static void
+on_menu_item_activated (GtkWidget * /*widget*/,
+                        gpointer data)
+{
+  GActionMap *map = G_ACTION_MAP (g_application_get_default());
+  if (!map)
+    return;
+
+  GAction *action = g_action_map_lookup_action (map, (const char*)data);
+  if (action)
+    g_action_activate (action, NULL);
+}
+
 static void
 show_popup_menu_cb (GtkStatusIcon *icon,
                     guint button,
@@ -525,6 +549,7 @@ StatusIcon *
 status_icon_new (GmApplication *app)
 {
   StatusIcon *self = NULL;
+  GtkWidget *item = NULL;
 
   g_return_val_if_fail (GM_IS_APPLICATION (app), NULL);
 
@@ -553,6 +578,26 @@ status_icon_new (GmApplication *app)
 
   self->priv->ekiga_window = gm_application_get_ekiga_window (app);
 
+  self->priv->popup_menu = gtk_menu_new ();
+
+  // FIXME: rewrite to GtkBuilder
+  item = gtk_menu_item_new_with_label (_("Account"));
+  g_signal_connect (item, "activate", G_CALLBACK (on_menu_item_activated), (gpointer)"account");
+  gtk_menu_shell_append(GTK_MENU_SHELL (self->priv->popup_menu), item);
+
+  item = gtk_menu_item_new_with_label (_("Preferences"));
+  g_signal_connect (item, "activate", G_CALLBACK (on_menu_item_activated), (gpointer)"preferences");
+  gtk_menu_shell_append(GTK_MENU_SHELL (self->priv->popup_menu), item);
+
+  item = gtk_separator_menu_item_new ();
+  gtk_menu_shell_append(GTK_MENU_SHELL (self->priv->popup_menu), item);
+
+  item = gtk_menu_item_new_with_label (_("Quit"));
+  g_signal_connect (item, "activate", G_CALLBACK (on_menu_item_activated), (gpointer)"quit");
+  gtk_menu_shell_append(GTK_MENU_SHELL (self->priv->popup_menu), item);
+
+  gtk_widget_show_all (GTK_WIDGET (self->priv->popup_menu));
+
   statusicon_set_status (self, details->get_presence ());
   notification_core->notification_added.connect (boost::bind (statusicon_on_notification_added,
                                                               _1, (gpointer) self));
@@ -568,6 +613,17 @@ status_icon_new (GmApplication *app)
   conn = call_core->cleared_call.connect (boost::bind (&cleared_call_cb,
                                                        _1, _2, (gpointer) self));
   self->priv->connections.add (conn);
+
+  g_signal_connect (self, "popup-menu",
+                    G_CALLBACK (show_popup_menu_cb),
+                    self->priv->popup_menu);
+
+#ifdef WIN32
+  // hide the popup menu when right-click on the icon
+  // this should have been done in GTK code in my opinion...
+  g_signal_connect (self, "button_press_event",
+                    G_CALLBACK (hide_popup_menu_cb), self->priv->popup_menu);
+#endif
 
   g_signal_connect (self, "activate",
                     G_CALLBACK (statusicon_activated_cb), self);

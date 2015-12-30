@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ekiga trunk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-30 13:02+0300\n"
+"POT-Creation-Date: 2015-12-30 15:02+0300\n"
 "PO-Revision-Date: 2012-12-19 14:05+0400\n"
 "Last-Translator: Yuri Myasoedov <omerta13@yandex.ru>\n"
 "Language-Team: русский <gnome-cyr@gnome.org>\n"
@@ -25,7 +25,6 @@ msgstr ""
 "X-Generator: KBabel 1.11.4\n"
 
 #: ../ekiga.appdata.xml.in.h:1
-#, fuzzy
 msgid ""
 "Ekiga is a VoIP and IP Telephony application that allows you to make audio "
 "calls to remote users with SIP compatible hardware and software. It supports "
@@ -64,12 +63,10 @@ msgstr "Новое устройство записи звука"
 
 #: ../lib/engine/audioinput/audioinput-core.cpp:276
 #: ../lib/engine/audiooutput/audiooutput-core.cpp:451
-#, fuzzy
 msgid "Use It"
 msgstr "Использовать"
 
 #: ../lib/engine/audiooutput/audiooutput-core.cpp:449
-#, fuzzy
 msgid "New Audio Output Device"
 msgstr "Новое устройство воспроизведения звука"
 
@@ -122,7 +119,7 @@ msgstr "Отключён"
 #. Actor stuff
 #. Translators: Example: Add ekiga.net Contact
 #: ../lib/engine/components/opal/opal-account.cpp:198
-#, fuzzy, c-format
+#, c-format
 msgid "A_dd %s Contact"
 msgstr "До_бавить контакт"
 
@@ -169,9 +166,9 @@ msgstr "Обработка…"
 #. * e.g. Editing Ekiga.net Account.
 #.
 #: ../lib/engine/components/opal/opal-account.cpp:608
-#, fuzzy, c-format
+#, c-format
 msgid "Editing %s Account"
-msgstr "Правка учётной записи"
+msgstr "Изменение учётной записи"
 
 #: ../lib/engine/components/opal/opal-account.cpp:617
 #: ../lib/engine/components/opal/opal-account.cpp:761
@@ -180,7 +177,6 @@ msgid "_Name"
 msgstr "_Имя"
 
 #: ../lib/engine/components/opal/opal-account.cpp:617
-#, fuzzy
 msgid "Ekiga.Net Account"
 msgstr "Учётная запись Ekiga.net"
 
@@ -241,12 +237,10 @@ msgstr ""
 
 #: ../lib/engine/components/opal/opal-account.cpp:634
 #: ../lib/engine/components/opal/opal-bank.cpp:177
-#, fuzzy
 msgid "_Timeout"
 msgstr "_Задержка"
 
 #: ../lib/engine/components/opal/opal-account.cpp:637
-#, fuzzy
 msgid "_Enable Account"
 msgstr "Включить учётную запись"
 
@@ -413,7 +407,6 @@ msgid "Renaming Groups"
 msgstr "Переименовать группу"
 
 #: ../lib/engine/components/opal/opal-bank.cpp:163
-#, fuzzy
 msgid "Add Account"
 msgstr "Добавить учётную запись"
 
@@ -422,7 +415,6 @@ msgid "My SIP Account"
 msgstr "Моя учётная запись SIP"
 
 #: ../lib/engine/components/opal/opal-bank.cpp:179
-#, fuzzy
 msgid "_Enable account"
 msgstr "Включить учётную запись"
 
@@ -466,13 +458,11 @@ msgid "Self"
 msgstr "Свои"
 
 #: ../lib/engine/components/opal/opal-bank.cpp:480
-#, fuzzy
 msgid "_Account"
-msgstr "Учётные записи"
+msgstr "Учётная запись"
 
 #: ../lib/engine/components/opal/opal-call.cpp:92
 #: ../lib/engine/gui/gtk-frontend/call-window.cpp:872
-#, fuzzy
 msgid "Hangup"
 msgstr "Завершить"
 
@@ -521,7 +511,6 @@ msgid "Call forbidden"
 msgstr "Вызов запрещен"
 
 #: ../lib/engine/components/opal/opal-call.cpp:507
-#, fuzzy
 msgid "Remote certificate not authenticated"
 msgstr "Не удалось пройти проверку подлинности"
 
@@ -572,7 +561,6 @@ msgid "Done"
 msgstr ""
 
 #: ../lib/engine/components/opal/opal-presentity.cpp:280
-#, fuzzy
 msgid "Name"
 msgstr "Имя"
 
@@ -1045,11 +1033,11 @@ msgstr "Отключён"
 
 #: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:909
 msgid "Dialpad"
-msgstr "Номеронабиратель"
+msgstr "Набор номера"
 
 #: ../lib/engine/gui/gtk-frontend/ekiga-window.cpp:910
-msgid "History"
-msgstr "История"
+msgid "Call history"
+msgstr "История звонков"
 
 #: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:429
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:23
@@ -1089,7 +1077,6 @@ msgstr ""
 
 #: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:519
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:98
-#, fuzzy
 msgid ""
 "The Type of Service (TOS) byte on outgoing RTP IP packets. This byte is used "
 "by the network to provide some level of Quality of Service (QoS). Default "
@@ -1180,12 +1167,11 @@ msgid "seconds"
 msgstr "секунд"
 
 #: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:577
-#, fuzzy
 msgid ""
 "Automatically reject incoming calls if no answer is given after the "
 "specified amount of time (in seconds)"
 msgstr ""
-"Автоматически отклонять или перенаправлять входящие вызовы в случае "
+"Автоматически отклонять входящие вызовы в случае "
 "отсутствия ответа в течение указанного времени (в секундах)"
 
 #: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:583
@@ -1198,7 +1184,6 @@ msgstr "INFO"
 
 #. Packing widget
 #: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:591
-#, fuzzy
 msgid "_Send DTMF as"
 msgstr "_Посылать DTMF как:"
 
@@ -1216,7 +1201,6 @@ msgstr "мсек"
 
 #: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:598
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:79
-#, fuzzy
 msgid "Timeout between DTMFs on transfer call (in mseconds)"
 msgstr "Задержка между DTMF сигналами при переводе вызова (в мсек)"
 
@@ -1352,7 +1336,6 @@ msgstr "Устройство не найдено"
 
 #: ../lib/engine/gui/gtk-frontend/preferences-window.cpp:1519
 #: ../lib/engine/gui/gtk-frontend/statusicon.cpp:588
-#, fuzzy
 msgid "Preferences"
 msgstr "Настройки"
 
@@ -1383,7 +1366,6 @@ msgstr "Неупорядоченный"
 
 #. FIXME: rewrite to GtkBuilder
 #: ../lib/engine/gui/gtk-frontend/statusicon.cpp:584
-#, fuzzy
 msgid "Account"
 msgstr "Учётная запись"
 
@@ -2000,7 +1982,6 @@ msgid "DTMF transmission"
 msgstr ""
 
 #: ../org.gnome.ekiga.gschema.xml.in.in.h:104
-#, fuzzy
 msgid ""
 "Select the mode for DTMFs transmission. The values can be 'rfc2833' (for "
 "\"RFC2833\") and 'info' (for \"SIP INFO\")"
@@ -2224,6 +2205,9 @@ msgstr "Проверка звука"
 #: ../plugins/gstreamer/gst-audiooutput.cpp:225
 msgid "Silent"
 msgstr "Тишина"
+
+#~ msgid "History"
+#~ msgstr "История"
 
 #, fuzzy
 #~ msgid "Show o_ffline contacts"
@@ -3797,9 +3781,6 @@ msgstr "Тишина"
 
 #~ msgid "Show Offline _Contacts"
 #~ msgstr "Показывать контакты _вне сети"
-
-#~ msgid "Call history"
-#~ msgstr "История вызовов"
 
 #~ msgid "Available"
 #~ msgstr "Доступен"

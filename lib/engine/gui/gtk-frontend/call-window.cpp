@@ -709,7 +709,7 @@ ekiga_call_window_update_calling_state (EkigaCallWindow *self,
       if (!self->priv->dead) {
         if (self->priv->destroy_timeout_id > 0)
           g_source_remove (self->priv->destroy_timeout_id);
-        self->priv->destroy_timeout_id = g_timeout_add_seconds (10, on_delayed_destroy_cb, self);
+        self->priv->destroy_timeout_id = g_timeout_add_seconds (5, on_delayed_destroy_cb, self);
       }
       break;
 

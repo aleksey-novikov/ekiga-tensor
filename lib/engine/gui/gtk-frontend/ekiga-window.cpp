@@ -126,20 +126,8 @@ static const char *win_menu =
 "<?xml version=\"1.0\"?>"
 "<interface>"
 "  <menu id=\"winmenu\">"
-"    <section id=\"queuemenu\">"
-"    </section>"
-"    <section>"
-"      <item>"
-"        <attribute name=\"label\" translatable=\"yes\">_Dialpad</attribute>"
-"        <attribute name=\"action\">win.stack</attribute>"
-"        <attribute name=\"target\">dialpad</attribute>"
-"      </item>"
-"      <item>"
-"        <attribute name=\"label\" translatable=\"yes\">_History</attribute>"
-"        <attribute name=\"action\">win.stack</attribute>"
-"        <attribute name=\"target\">history</attribute>"
-"      </item>"
-"    </section>"
+"    <section id=\"queuemenu\" />"
+"    <section id=\"stackmenu\" />"
 "  </menu>"
 "</interface>";
 
@@ -916,6 +904,10 @@ ekiga_window_init_gui (EkigaWindow *mw)
 
   mw->priv->builder =  gtk_builder_new ();
   gtk_builder_add_from_string (mw->priv->builder, win_menu, -1, NULL);
+
+  GMenuModel *menu = G_MENU_MODEL (gtk_builder_get_object (mw->priv->builder, "stackmenu"));
+  g_menu_append (G_MENU (menu), _("Dialpad"), "win.stack::dialpad");
+  g_menu_append (G_MENU (menu), _("History"), "win.stack::history");
 
   window_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add (GTK_CONTAINER (mw), window_vbox);

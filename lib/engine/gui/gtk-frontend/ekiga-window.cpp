@@ -907,7 +907,7 @@ ekiga_window_init_gui (EkigaWindow *mw)
 
   GMenuModel *menu = G_MENU_MODEL (gtk_builder_get_object (mw->priv->builder, "stackmenu"));
   g_menu_append (G_MENU (menu), _("Dialpad"), "win.stack::dialpad");
-  g_menu_append (G_MENU (menu), _("History"), "win.stack::history");
+  g_menu_append (G_MENU (menu), _("Call history"), "win.stack::history");
 
   window_vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add (GTK_CONTAINER (mw), window_vbox);

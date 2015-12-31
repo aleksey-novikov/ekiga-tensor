@@ -472,6 +472,30 @@ static bool on_handle_errors (std::string error,
   return true;
 }
 
+
+static void
+on_history_click (EkigaWindow *mw)
+{
+  g_return_if_fail (EKIGA_IS_WINDOW (mw));
+
+  History::Contact *contact = NULL;
+
+  call_history_view_gtk_get_selected (CALL_HISTORY_VIEW_GTK (mw->priv->call_history_view), &contact);
+
+  if (!contact || contact->get_uri().empty())
+    return;
+
+  size_t pos = contact->get_uri().find(':');
+  std::string number = contact->get_uri().substr(pos == std::string::npos ? 0 : pos + 1);
+  number = number.substr(0, number.find('@'));
+
+  if (number.empty())
+    return;
+
+  dial_helper (mw, number.c_str());
+}
+
+
 static void
 update_state (EkigaWindow *mw,
               PhoneState state)
@@ -885,6 +909,8 @@ ekiga_window_init_history (EkigaWindow *mw)
     gtk_container_child_set (GTK_CONTAINER (mw->priv->main_stack),
                              mw->priv->call_history_view,
                              "icon-name", "accessories-text-editor-symbolic", NULL);
+    g_signal_connect_swapped (mw->priv->call_history_view, "clicked",
+                              G_CALLBACK (on_history_click), mw);
   }
 }
 

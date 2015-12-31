@@ -57,7 +57,6 @@
 #include "audiooutput-core.h"
 
 #include "ekiga-app.h"
-#include "roster-view-gtk.h"
 #include "call-history-view-gtk.h"
 #include "history-source.h"
 

@@ -49,7 +49,6 @@
 #include "call-window.h"
 #include "ekiga-window.h"
 #include "statusicon.h"
-#include "roster-view-gtk.h"
 #include "history-source.h"
 #include "opal-bank.h"
 #include "book-view-gtk.h"

@@ -26,7 +26,6 @@ lib/engine/gui/gtk-frontend/call-window.cpp
 lib/engine/gui/gtk-frontend/ekiga-app.cpp
 lib/engine/gui/gtk-frontend/ekiga-window.cpp
 lib/engine/gui/gtk-frontend/preferences-window.cpp
-lib/engine/gui/gtk-frontend/roster-view-gtk.cpp
 lib/engine/gui/gtk-frontend/statusicon.cpp
 lib/engine/protocol/call-core.cpp
 lib/engine/protocol/known-codecs.h

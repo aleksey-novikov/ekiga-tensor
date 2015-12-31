@@ -51,7 +51,6 @@
 #include "statusicon.h"
 #include "history-source.h"
 #include "opal-bank.h"
-#include "book-view-gtk.h"
 #include "notification-core.h"
 #include "personal-details.h"
 #include "audioinput-core.h"

@@ -41,7 +41,6 @@
 #include "call-history-view-gtk.h"
 
 #include "gm-cell-renderer-bitext.h"
-#include "gactor-menu.h"
 #include "scoped-connections.h"
 
 
@@ -60,9 +59,6 @@ struct _CallHistoryViewGtkPrivate
   {}
 
   boost::shared_ptr<History::Book> book;
-
-  Ekiga::GActorMenuPtr menu;
-  Ekiga::GActorMenuPtr contact_menu;
 
   GtkTreeView* tree;
   Ekiga::scoped_connections conns;
@@ -149,33 +145,6 @@ on_contact_added (Ekiga::ContactPtr contact,
 }
 
 
-static void
-on_selection_changed (G_GNUC_UNUSED GtkTreeSelection* selection,
-                      gpointer data)
-{
-  CallHistoryViewGtk* self = NULL;
-  History::Contact *contact = NULL;
-
-  self = CALL_HISTORY_VIEW_GTK (data);
-
-  /* Reset old data. This also ensures GIO actions are
-   * properly removed before adding new ones.
-   */
-  self->priv->contact_menu.reset ();
-
-  /* Set or reset ContactActor data */
-  call_history_view_gtk_get_selected (self, &contact);
-
-  if (contact != NULL) {
-    self->priv->contact_menu = Ekiga::GActorMenuPtr (new Ekiga::GActorMenu (*contact));
-    g_signal_emit (self, signals[ACTIONS_CHANGED_SIGNAL], 0,
-                   self->priv->contact_menu->get_model (boost::assign::list_of (self->priv->menu)));
-  }
-  else
-    g_signal_emit (self, signals[ACTIONS_CHANGED_SIGNAL], 0, NULL);
-}
-
-
 static bool
 on_visit_contacts (Ekiga::ContactPtr contact,
                    GtkListStore *store)
@@ -195,38 +164,13 @@ on_book_contact_added (Ekiga::ContactPtr contact,
 }
 
 
-static void
-on_book_cleared (CallHistoryViewGtk* data)
-{
-  GtkListStore *store = NULL;
-  GtkTreeSelection *selection = NULL;
-
-  g_return_if_fail (IS_CALL_HISTORY_VIEW_GTK (data));
-  CallHistoryViewGtk *self = CALL_HISTORY_VIEW_GTK (data);
-
-  store = GTK_LIST_STORE (gtk_tree_view_get_model (self->priv->tree));
-  selection = gtk_tree_view_get_selection (self->priv->tree);
-
-  /* Reset old data. This also ensures GIO actions are
-   * properly removed before adding new ones.
-   */
-  self->priv->contact_menu.reset ();
-
-  if (selection)
-    g_signal_handlers_block_by_func (selection, (gpointer) on_selection_changed, self);
-  gtk_list_store_clear (store);
-  if (selection)
-    g_signal_handlers_unblock_by_func (selection, (gpointer) on_selection_changed, self);
-}
-
-
 /* react to user clicks */
 static gint
 on_clicked (G_GNUC_UNUSED GtkWidget *tree,
             GdkEventButton *event,
-            gpointer data)
+            gpointer /*data*/)
 {
-  CallHistoryViewGtk *self = CALL_HISTORY_VIEW_GTK (data);
+//  CallHistoryViewGtk *self = CALL_HISTORY_VIEW_GTK (data);
 
   // take into account only clicks and Enter keys
   if (event->type != GDK_BUTTON_PRESS && event->type != GDK_2BUTTON_PRESS && event->type != GDK_KEY_PRESS)
@@ -234,28 +178,10 @@ on_clicked (G_GNUC_UNUSED GtkWidget *tree,
   if (event->type == GDK_KEY_PRESS && ((GdkEventKey*)event)->keyval != GDK_KEY_Return && ((GdkEventKey*)event)->keyval != GDK_KEY_KP_Enter)
     return FALSE;
 
-  if (event->type == GDK_BUTTON_PRESS && event->button == 3 && self->priv->contact_menu)
-    gtk_menu_popup (GTK_MENU (self->priv->contact_menu->get_menu (boost::assign::list_of (self->priv->menu))),
-                    NULL, NULL, NULL, NULL, event->button, event->time);
-
   if ((event->type == GDK_2BUTTON_PRESS && event->button == 1) || (event->type == GDK_KEY_PRESS))
     g_action_group_activate_action (G_ACTION_GROUP (g_application_get_default ()), "call", NULL);
 
   return TRUE;
-}
-
-
-static void
-on_map_cb (G_GNUC_UNUSED GtkWidget *widget,
-           gpointer data)
-{
-  GtkTreeSelection *selection = NULL;
-
-  g_return_if_fail (IS_CALL_HISTORY_VIEW_GTK (data));
-  CallHistoryViewGtk *self = CALL_HISTORY_VIEW_GTK (data);
-
-  selection = gtk_tree_view_get_selection (self->priv->tree);
-  on_selection_changed (selection, self);
 }
 
 
@@ -353,22 +279,14 @@ call_history_view_gtk_new (boost::shared_ptr<History::Book> book,
   /* react to user clicks */
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (self->priv->tree));
   gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
-  g_signal_connect (selection, "changed",
-                    G_CALLBACK (on_selection_changed), self);
   g_signal_connect (self->priv->tree, "event-after",
                     G_CALLBACK (on_clicked), self);
-  g_signal_connect (GTK_WIDGET (self), "map",
-                    G_CALLBACK (on_map_cb), self);
 
   /* connect to the signals */
   self->priv->conns.add (book->contact_added.connect (boost::bind (&on_book_contact_added, _1, self)));
-  self->priv->conns.add (book->cleared.connect (boost::bind (&on_book_cleared, self)));
 
   /* initial populate */
   self->priv->book->visit_contacts (boost::bind (&on_visit_contacts, _1, GTK_LIST_STORE (store)));
-
-  /* register book actions */
-  self->priv->menu = Ekiga::GActorMenuPtr (new Ekiga::GActorMenu (*book));
 
   return GTK_WIDGET (self);
 }

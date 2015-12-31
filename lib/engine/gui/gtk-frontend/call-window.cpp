@@ -50,7 +50,6 @@
 #include "opal-bank.h"
 
 #include "gm-info-bar.h"
-#include "gactor-menu.h"
 #include "scoped-connections.h"
 
 #ifndef WIN32

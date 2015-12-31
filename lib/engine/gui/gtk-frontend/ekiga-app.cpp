@@ -59,7 +59,6 @@
 #include "engine.h"
 #include "runtime.h"
 #include "platform/platform.h"
-#include "gactor-menu.h"
 
 #include "gmwindow.h"
 
@@ -99,8 +98,6 @@ struct _GmApplicationPrivate
   EkigaDBusComponent *dbus_component;
 #endif
 
-  Ekiga::GActorMenuStore banks_menu;
-  Ekiga::GActorMenuPtr fof_menu;
   unsigned int banks_actions_count;
 
   Ekiga::scoped_connections conns;
@@ -380,8 +377,6 @@ gm_application_shutdown (GApplication *app)
 
   g_return_if_fail (self);
 
-  self->priv->fof_menu.reset ();
-  self->priv->banks_menu.clear ();
   Ekiga::Runtime::quit ();
 
   gm_platform_shutdown ();

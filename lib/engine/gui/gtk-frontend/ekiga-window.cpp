@@ -583,6 +583,9 @@ key_press_event_cb (EkigaWindow *mw,
   } else if (key->keyval == GDK_KEY_BackSpace) {
     ekiga_window_trim_call_url (mw);
     return true;
+  } else if (key->state & GDK_CONTROL_MASK && (key->keyval == GDK_KEY_V || key->keyval == GDK_KEY_v)) {
+    gtk_widget_grab_focus (mw->priv->entry);
+    return false;
   }
 
   return false;

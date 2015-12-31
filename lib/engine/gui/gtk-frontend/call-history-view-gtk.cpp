@@ -76,7 +76,7 @@ enum {
 
 /* and this is the list of signals supported */
 enum {
-  ACTIONS_CHANGED_SIGNAL,
+  CLICKED_SIGNAL,
   LAST_SIGNAL
 };
 
@@ -168,20 +168,17 @@ on_book_contact_added (Ekiga::ContactPtr contact,
 static gint
 on_clicked (G_GNUC_UNUSED GtkWidget *tree,
             GdkEventButton *event,
-            gpointer /*data*/)
+            gpointer data)
 {
-//  CallHistoryViewGtk *self = CALL_HISTORY_VIEW_GTK (data);
+  CallHistoryViewGtk *self = CALL_HISTORY_VIEW_GTK (data);
 
-  // take into account only clicks and Enter keys
-  if (event->type != GDK_BUTTON_PRESS && event->type != GDK_2BUTTON_PRESS && event->type != GDK_KEY_PRESS)
-    return FALSE;
-  if (event->type == GDK_KEY_PRESS && ((GdkEventKey*)event)->keyval != GDK_KEY_Return && ((GdkEventKey*)event)->keyval != GDK_KEY_KP_Enter)
-    return FALSE;
+  if ((event->type == GDK_2BUTTON_PRESS && event->button == 1) ||
+      (event->type == GDK_KEY_RELEASE && (((GdkEventKey*)event)->keyval == GDK_KEY_Return || ((GdkEventKey*)event)->keyval == GDK_KEY_KP_Enter))) {
+    g_signal_emit (self, signals[CLICKED_SIGNAL], 0, NULL);
+    return TRUE;
+  }
 
-  if ((event->type == GDK_2BUTTON_PRESS && event->button == 1) || (event->type == GDK_KEY_PRESS))
-    g_action_group_activate_action (G_ACTION_GROUP (g_application_get_default ()), "call", NULL);
-
-  return TRUE;
+  return FALSE;
 }
 
 
@@ -210,11 +207,11 @@ call_history_view_gtk_class_init (CallHistoryViewGtkClass* klass)
   GObjectClass* gobject_class = G_OBJECT_CLASS (klass);
   gobject_class->finalize = call_history_view_gtk_finalize;
 
-  signals[ACTIONS_CHANGED_SIGNAL] =
-    g_signal_new ("actions-changed",
+  signals[CLICKED_SIGNAL] =
+    g_signal_new ("clicked",
                   G_OBJECT_CLASS_TYPE (gobject_class),
                   G_SIGNAL_RUN_LAST,
-                  G_STRUCT_OFFSET (CallHistoryViewGtkClass, selection_changed),
+                  G_STRUCT_OFFSET (CallHistoryViewGtkClass, clicked),
                   NULL, NULL,
                   g_cclosure_marshal_VOID__OBJECT,
                   G_TYPE_NONE, 1, G_TYPE_MENU_MODEL);

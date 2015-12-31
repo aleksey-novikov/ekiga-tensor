@@ -56,13 +56,6 @@ GtkWidget *call_history_view_gtk_new (boost::shared_ptr<History::Book> book,
 void call_history_view_gtk_get_selected (CallHistoryViewGtk* self,
                                          History::Contact** contact);
 
-/* The signals emitted by this widget:
- *
- * - "selection-changed", comes with nothing -- it just says that either
- * something else has been selected, or what was selected changed (which can't
- * happen for call history items!)
- */
-
 /* GObject thingies */
 struct _CallHistoryViewGtk
 {
@@ -75,7 +68,7 @@ struct _CallHistoryViewGtkClass
 {
   GtkScrolledWindowClass parent;
 
-  void (*selection_changed) (CallHistoryViewGtk* self);
+  void (*clicked) (CallHistoryViewGtk* self);
 };
 
 #define CALL_HISTORY_VIEW_GTK_TYPE (call_history_view_gtk_get_type ())

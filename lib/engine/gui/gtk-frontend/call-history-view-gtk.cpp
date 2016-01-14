@@ -167,15 +167,32 @@ on_book_contact_added (Ekiga::ContactPtr contact,
 /* react to user clicks */
 static gint
 on_clicked (G_GNUC_UNUSED GtkWidget *tree,
-            GdkEventButton *event,
+            GdkEvent *event,
             gpointer data)
 {
   CallHistoryViewGtk *self = CALL_HISTORY_VIEW_GTK (data);
 
-  if ((event->type == GDK_2BUTTON_PRESS && event->button == 1) ||
+  if ((event->type == GDK_2BUTTON_PRESS && ((GdkEventButton*)event)->button == 1) ||
       (event->type == GDK_KEY_RELEASE && (((GdkEventKey*)event)->keyval == GDK_KEY_Return || ((GdkEventKey*)event)->keyval == GDK_KEY_KP_Enter))) {
     g_signal_emit (self, signals[CLICKED_SIGNAL], 0, NULL);
     return TRUE;
+  } else if (event->type == GDK_KEY_PRESS && ((GdkEventKey*)event)->state & GDK_CONTROL_MASK) {
+    guint keyval = ((GdkEventKey*)event)->keyval;
+    if (keyval == GDK_KEY_c || keyval == GDK_KEY_C || keyval == GDK_KEY_Cyrillic_es || keyval == GDK_KEY_Cyrillic_ES || keyval == GDK_KEY_Insert || keyval == GDK_KEY_KP_Insert) {
+      History::Contact *contact = NULL;
+      call_history_view_gtk_get_selected (self, &contact);
+
+      if (contact && !contact->get_uri().empty()) {
+        size_t pos = contact->get_uri().find(':');
+        std::string number = contact->get_uri().substr(pos == std::string::npos ? 0 : pos + 1);
+        number = number.substr(0, number.find('@'));
+
+        if (!number.empty())
+          gtk_clipboard_set_text (gtk_clipboard_get (GDK_SELECTION_CLIPBOARD), number.c_str(), -1);
+      }
+
+      return TRUE;
+    }
   }
 
   return FALSE;

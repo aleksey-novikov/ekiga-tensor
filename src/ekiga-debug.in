@@ -4,6 +4,7 @@ set -e
 
 CONFIG="@sysconfdir@/sysconfig/@PACKAGE_NAME@"
 DIR="$HOME/.@PACKAGE_NAME@-logs"
+TFTP_CONFIG="@sharedstatedir@/tftp.conf"
 
 mkdir -p "$DIR" ||:
 TIME=`date +%y%m%d-%H:%M:%S`
@@ -16,7 +17,7 @@ LOG_HISTORY="7"
 
 [ -f "$CONFIG" ] && . "$CONFIG"
 
-[ -f /var/lib/tftp.conf ] && . /var/lib/tftp.conf
+[ -f "$TFTP_CONFIG" ] && . "$TFTP_CONFIG"
 
 [ "$KILL" = "yes" ] && killall ekiga 2>/dev/null ||:
 

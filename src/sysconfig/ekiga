@@ -1,6 +1,9 @@
 # TFTP server for autoconfig
 TFTP_SERVER_NAME="tel-tftp.unix.tensor.ru"
 
+# TFTP connection timeout (seconds)
+TFTP_TIMEOUT="10"
+
 # kill old instances (yes|no)
 KILL="yes"
 

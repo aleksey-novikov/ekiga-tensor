@@ -1,5 +1,5 @@
 # TFTP server for autoconfig
-TFTP_SERVER="tel-tftp.unix.tensor.ru"
+TFTP_SERVER_NAME="tel-tftp.unix.tensor.ru"
 
 # kill old instances (yes|no)
 KILL="yes"

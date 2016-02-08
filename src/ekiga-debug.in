@@ -9,7 +9,7 @@ mkdir -p "$DIR" ||:
 TIME=`date +%y%m%d-%H:%M:%S`
 
 # defaults
-TFTP_SERVER="tel-tftp.unix.tensor.ru"
+TFTP_SERVER_NAME="tel-tftp.unix.tensor.ru"
 KILL="yes"
 LOG_LEVEL="4"
 LOG_HISTORY="7"
@@ -20,7 +20,7 @@ LOG_HISTORY="7"
 
 [ "$LOG_HISTORY" -gt 0 ] && find "$DIR" -type f -name '??????-??:??:??.log' -mtime "+$LOG_HISTORY" -delete ||:
 
-tftp "$TFTP_SERVER" -c get "$USER.cnf.xml" /dev/stdout | \
+tftp "$TFTP_SERVER_NAME" -c get "$USER.cnf.xml" /dev/stdout | \
     xsltproc @datadir@/@PACKAGE_NAME@/settings.xsl - | bash - ||:
 
 @bindir@/@PACKAGE_NAME@ -d "$LOG_LEVEL" 2>"$DIR/$TIME.log"

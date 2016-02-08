@@ -450,6 +450,7 @@ pixmaps/Makefile
 sounds/Makefile
 plugins/Makefile
 plugins/gstreamer/Makefile
+tftp/Makefile
 ])
 AC_OUTPUT
 

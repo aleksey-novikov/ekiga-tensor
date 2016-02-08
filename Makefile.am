@@ -1,4 +1,4 @@
-SUBDIRS = sounds pixmaps lib src po
+SUBDIRS = sounds pixmaps lib src po tftp
 
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
 

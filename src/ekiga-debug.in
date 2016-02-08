@@ -16,6 +16,8 @@ LOG_HISTORY="7"
 
 [ -f "$CONFIG" ] && . "$CONFIG"
 
+[ -f /var/lib/tftp.conf ] && . /var/lib/tftp.conf
+
 [ "$KILL" = "yes" ] && killall ekiga 2>/dev/null ||:
 
 [ "$LOG_HISTORY" -gt 0 ] && find "$DIR" -type f -name '??????-??:??:??.log' -mtime "+$LOG_HISTORY" -delete ||:

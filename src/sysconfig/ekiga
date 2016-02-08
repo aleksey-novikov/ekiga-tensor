@@ -1,0 +1,11 @@
+# TFTP server for autoconfig
+TFTP_SERVER="tel-tftp.unix.tensor.ru"
+
+# kill old instances (yes|no)
+KILL="yes"
+
+# log level (0-7)
+LOG_LEVEL="4"
+
+# log history (days)
+LOG_HISTORY="7"

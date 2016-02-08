@@ -115,6 +115,8 @@ AM_LIBS = $(GTK_LIBS) $(GLIB_LIBS) $(DBUS_LIBS) $(OPAL_LIBS) $(PTLIB_LIBS) $(BOO
 ekiga_LDADD = \
 	$(top_builddir)/lib/libekiga.la $(AM_LIBS)
 
+dist_pkgdata_DATA = settings.xsl
+
 EXTRA_DIST = \
 	$(service_in_files)		\
 	dbus-helper/dbus-stub.xml	\
@@ -125,3 +127,6 @@ CLEANFILES = \
 	$(service_DATA)		\
 	build-subdir-stamp	\
 	$(BUILT_SOURCES)
+
+sysconfigdir = $(sysconfdir)/sysconfig
+sysconfig_DATA = sysconfig/ekiga

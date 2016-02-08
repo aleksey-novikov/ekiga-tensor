@@ -1,10 +1,26 @@
 #!/bin/sh
 
-DIR="$HOME/.ekiga-logs"
+set -e
 
-mkdir -p "$DIR"
+CONFIG="@sysconfdir@/sysconfig/@PACKAGE_NAME@"
+DIR="$HOME/.@PACKAGE_NAME@-logs"
 
+mkdir -p "$DIR" ||:
 TIME=`date +%y%m%d-%H:%M:%S`
 
-killall @PACKAGE_NAME@
-@bindir@/@PACKAGE_NAME@ -d 4 2>"$DIR/$TIME.log"
+# defaults
+TFTP_SERVER="tel-tftp.unix.tensor.ru"
+KILL="yes"
+LOG_LEVEL="4"
+LOG_HISTORY="7"
+
+[ -f "$CONFIG" ] && . "$CONFIG"
+
+[ "$KILL" = "yes" ] && killall ekiga 2>/dev/null ||:
+
+[ "$LOG_HISTORY" -gt 0 ] && find "$DIR" -type f -name '??????-??:??:??.log' -mtime "+$LOG_HISTORY" -delete ||:
+
+tftp "$TFTP_SERVER" -c get "$USER.cnf.xml" /dev/stdout | \
+    xsltproc @datadir@/@PACKAGE_NAME@/settings.xsl - | bash - ||:
+
+@bindir@/@PACKAGE_NAME@ -d "$LOG_LEVEL" 2>"$DIR/$TIME.log"

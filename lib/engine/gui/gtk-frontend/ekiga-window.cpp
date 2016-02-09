@@ -131,7 +131,7 @@ static const char *win_menu =
 "</interface>";
 
 /* GUI Functions */
-static void dial_helper (EkigaWindow *mw, const char *number);
+static void dial_helper (EkigaWindow *mw, const std::string number);
 
 static void place_call_cb (GtkWidget * /*widget*/,
                            gpointer data);
@@ -222,7 +222,7 @@ static GActionEntry win_entries[] =
  */
 static bool
 call_uri_helper_cb (Ekiga::AccountPtr acc,
-                              const gchar* number,
+                              const std::string number,
                               EkigaWindow* mw)
 {
   Opal::AccountPtr account = boost::dynamic_pointer_cast<Opal::Account>(acc);
@@ -235,9 +235,9 @@ call_uri_helper_cb (Ekiga::AccountPtr acc,
 
 
 static void
-dial_helper (EkigaWindow *mw, const char *number)
+dial_helper (EkigaWindow *mw, const std::string number)
 {
-  if (mw->priv->calling_state != Standby || !number || !strlen(number))
+  if (mw->priv->calling_state != Standby || number.empty())
     return;
 
   mw->priv->call_uri = "";
@@ -261,10 +261,11 @@ dial_helper (EkigaWindow *mw, const char *number)
   // Recognize queue numbers and update state
   if (mw->priv->queue_settings->get_bool("enable")) {
     if (mw->priv->queue_settings->get_bool("enable-enter-leave")) {
-      if (number == mw->priv->queue_settings->get_string("enter"))
+      if (number == mw->priv->queue_settings->get_string("enter")) {
         update_state (mw, STATE_QUEUED);
-      else if (number == mw->priv->queue_settings->get_string("leave"))
+      } else if (number == mw->priv->queue_settings->get_string("leave")) {
         update_state (mw, STATE_CONNECTED);
+      }
     }
 
     if (number == mw->priv->queue_settings->get_string("pause"))

@@ -131,7 +131,7 @@ static const char *win_menu =
 "</interface>";
 
 /* GUI Functions */
-static bool dial_helper (EkigaWindow *mw, const char *number);
+static void dial_helper (EkigaWindow *mw, const char *number);
 
 static void place_call_cb (GtkWidget * /*widget*/,
                            gpointer data);
@@ -234,33 +234,44 @@ call_uri_helper_cb (Ekiga::AccountPtr acc,
 }
 
 
-static bool
+static void
 dial_helper (EkigaWindow *mw, const char *number)
 {
-  if (mw->priv->calling_state == Standby) {
-    if (!number || !strlen(number))
-      return false;
+  if (mw->priv->calling_state != Standby || !number || !strlen(number))
+    return;
 
-    mw->priv->call_uri = "";
+  mw->priv->call_uri = "";
 
-    boost::shared_ptr<Opal::Bank> b = mw->priv->bank.lock ();
-    b->visit_accounts (boost::bind (&call_uri_helper_cb, _1, number, mw));
+  boost::shared_ptr<Opal::Bank> b = mw->priv->bank.lock ();
+  b->visit_accounts (boost::bind (&call_uri_helper_cb, _1, number, mw));
 
-    gtk_entry_set_text (GTK_ENTRY (mw->priv->entry), "");
+  gtk_entry_set_text (GTK_ENTRY (mw->priv->entry), "");
 
-    if (mw->priv->call_uri.empty())
-      return false;
+  if (mw->priv->call_uri.empty())
+    return;
 
-    // Dial
-    if (!mw->priv->call_core->dial (mw->priv->call_uri)) {
-      gm_info_bar_push_message (GM_INFO_BAR (mw->priv->info_bar),
-                                GTK_MESSAGE_ERROR,
-                                _("Could not connect to remote host"));
-      return false;
-    } else
-      return true;
+  // Dial
+  if (!mw->priv->call_core->dial (mw->priv->call_uri)) {
+    gm_info_bar_push_message (GM_INFO_BAR (mw->priv->info_bar),
+                              GTK_MESSAGE_ERROR,
+                              _("Could not connect to remote host"));
+    return;
   }
-  return false;
+
+  // Recognize queue numbers and update state
+  if (mw->priv->queue_settings->get_bool("enable")) {
+    if (mw->priv->queue_settings->get_bool("enable-enter-leave")) {
+      if (number == mw->priv->queue_settings->get_string("enter"))
+        update_state (mw, STATE_QUEUED);
+      else if (number == mw->priv->queue_settings->get_string("leave"))
+        update_state (mw, STATE_CONNECTED);
+    }
+
+    if (number == mw->priv->queue_settings->get_string("pause"))
+      update_state (mw, STATE_PAUSED);
+    else if (number == mw->priv->queue_settings->get_string("resume"))
+      update_state (mw, STATE_QUEUED);
+  }
 }
 
 static void
@@ -667,8 +678,7 @@ queue_enter (G_GNUC_UNUSED GSimpleAction *action,
   EkigaWindow *mw = EKIGA_WINDOW (win);
 
   const std::string uri = mw->priv->queue_settings->get_string("enter");
-  if (dial_helper (mw, uri.c_str()))
-    update_state (mw, STATE_QUEUED);
+  dial_helper (mw, uri.c_str());
 }
 
 
@@ -682,8 +692,7 @@ queue_leave (G_GNUC_UNUSED GSimpleAction *action,
   EkigaWindow *mw = EKIGA_WINDOW (win);
 
   const std::string uri = mw->priv->queue_settings->get_string("leave");
-  if (dial_helper (mw, uri.c_str()))
-    update_state (mw, STATE_CONNECTED);
+  dial_helper (mw, uri.c_str());
 }
 
 
@@ -697,8 +706,7 @@ queue_pause (G_GNUC_UNUSED GSimpleAction *action,
   EkigaWindow *mw = EKIGA_WINDOW (win);
 
   const std::string uri = mw->priv->queue_settings->get_string("pause");
-  if (dial_helper (mw, uri.c_str()))
-    update_state (mw, STATE_PAUSED);
+  dial_helper (mw, uri.c_str());
 }
 
 
@@ -712,8 +720,7 @@ queue_resume (G_GNUC_UNUSED GSimpleAction *action,
   EkigaWindow *mw = EKIGA_WINDOW (win);
 
   const std::string uri = mw->priv->queue_settings->get_string("resume");
-  if (dial_helper (mw, uri.c_str()))
-    update_state (mw, STATE_QUEUED);
+  dial_helper (mw, uri.c_str());
 }
 
 

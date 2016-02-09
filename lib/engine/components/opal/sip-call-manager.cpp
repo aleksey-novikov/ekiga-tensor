@@ -171,6 +171,8 @@ Opal::Sip::CallManager::set_dtmf_mode (unsigned mode)
 unsigned
 Opal::Sip::CallManager::get_dtmf_mode () const
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic warning "-Wswitch-enum"
   switch (sip_endpoint.GetSendUserInputMode ()) {
   case OpalConnection::SendUserInputAsInlineRFC2833:  // RFC2833
     return 0;
@@ -178,6 +180,7 @@ Opal::Sip::CallManager::get_dtmf_mode () const
   default:
     return 1;
   }
+#pragma GCC diagnostic pop
 }
 
 

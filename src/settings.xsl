@@ -60,6 +60,8 @@
       </xsl:if>
       <xsl:text>&#10;</xsl:text>
 
+<!-- Disable change this setting (due static queues)
+
       <xsl:text>gsettings set org.gnome.ekiga.queue enable-enter-leave </xsl:text>
       <xsl:if test="AddQueueMember != '' and RemoveQueueMember != ''">
       <xsl:text>true</xsl:text>
@@ -68,6 +70,7 @@
       <xsl:text>false</xsl:text>
       </xsl:if>
       <xsl:text>&#10;</xsl:text>
+-->
 
       <xsl:apply-templates select="AddQueueMember|RemoveQueueMember|PauseQueueMember|UnPauseQueueMember" />
   </xsl:template>

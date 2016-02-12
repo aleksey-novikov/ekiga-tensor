@@ -102,24 +102,24 @@ static void
 status_icon_clicked_cb (G_GNUC_UNUSED GtkWidget* widget,
                         gpointer data);
 
-static void
+/*static void
 missed_count_cb (GtkWidget *widget,
 		 guint calls,
-		 gpointer data);
+		 gpointer data);*/
 
-static gboolean
-statusicon_blink_cb (gpointer data);
+//static gboolean
+//statusicon_blink_cb (gpointer data);
 
 
 /*
  * Declaration of local functions
  */
-static void
+/*static void
 statusicon_start_blinking (StatusIcon *icon,
                            const char *stock_id);
 
 static void
-statusicon_stop_blinking (StatusIcon *icon);
+statusicon_stop_blinking (StatusIcon *icon);*/
 
 static void
 statusicon_set_status (StatusIcon *widget,
@@ -330,7 +330,7 @@ status_icon_clicked_cb (G_GNUC_UNUSED GtkWidget* widget,
   }
 }
 
-static void
+/*static void
 missed_count_cb (G_GNUC_UNUSED GtkWidget *widget,
 		 guint calls,
 		 gpointer data)
@@ -356,10 +356,10 @@ missed_count_cb (G_GNUC_UNUSED GtkWidget *widget,
     gtk_status_icon_set_tooltip_text (GTK_STATUS_ICON (self), NULL);
 
   self->priv->missed_calls = (calls > 0);
-}
+}*/
 
 
-static gboolean
+/*static gboolean
 statusicon_blink_cb (gpointer data)
 {
   StatusIcon *statusicon = STATUSICON (data);
@@ -374,7 +374,7 @@ statusicon_blink_cb (gpointer data)
   statusicon->priv->blinking = !statusicon->priv->blinking;
 
   return true;
-}
+}*/
 
 
 static void
@@ -405,7 +405,7 @@ cleared_call_cb (boost::shared_ptr<Ekiga::Call> /*call*/,
 /*
  * Local functions
  */
-static void
+/*static void
 statusicon_start_blinking (StatusIcon *icon,
                            const char *icon_name)
 {
@@ -434,7 +434,7 @@ statusicon_stop_blinking (StatusIcon *self)
   }
 
   statusicon_set_status (STATUSICON (self), self->priv->status);
-}
+}*/
 
 
 static void
@@ -629,9 +629,9 @@ status_icon_new (GmApplication *app)
                     G_CALLBACK (statusicon_activated_cb), self);
 
   // FIXME (ekiga_window has no signal now)
-  if (self->priv->ekiga_window)
+/*  if (self->priv->ekiga_window)
     g_signal_connect (self->priv->ekiga_window, "missed-count",
-                      G_CALLBACK (missed_count_cb), self);
+                      G_CALLBACK (missed_count_cb), self);*/
 
   g_signal_connect (self, "clicked",
                     G_CALLBACK (status_icon_clicked_cb), self);
